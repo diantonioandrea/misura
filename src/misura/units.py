@@ -259,16 +259,19 @@ def convert(first: "unit", target: "str", partial: bool = False) -> unit:
 
     partialTargets = []
 
+    table = SI_TABLE.copy()
+    table.update(SI_DERIVED_TABLE)
+
     for sym in symbols.keys():
-        for unitFamily in unitsTable:
-            if sym in unitsTable[unitFamily]:
+        for unitFamily in table:
+            if sym in table[unitFamily]:
                 family = unitFamily
                 break
 
         familyCounter = 0
 
         for targetSym in targetSymbols:
-            if targetSym in unitsTable[family]:
+            if targetSym in table[family]:
                 targetSymbol = targetSym
                 familyCounter += 1
 
@@ -286,7 +289,7 @@ def convert(first: "unit", target: "str", partial: bool = False) -> unit:
             if symbols[sym] != targetSymbols[targetSymbol]:
                 raise ConversionError(first, target)
             
-            factor *= (unitsTable[family][sym] / unitsTable[family][targetSymbol]) ** symbols[sym]
+            factor *= (table[family][sym] / table[family][targetSymbol]) ** symbols[sym]
             partialTargets.append(targetSymbol + str(targetSymbols[targetSymbol]))
             continue
 

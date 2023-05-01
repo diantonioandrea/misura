@@ -7,7 +7,7 @@ class ConversionError(Exception):
 # Conversion table.
 
 # Base units - SI.
-unitsTable = {
+SI_TABLE = {
     "time": {'qs': 1e-30, 'rs': 1e-27, 'ys': 1e-24, 'zs': 1e-21, 'as': 1e-18, 'fs': 1e-15, 'ps': 1e-12, 'ns': 1e-09, 'µs': 1e-06, 'ms': 0.001, 'cs': 0.01, 'ds': 0.1, 's': 1.0, 'das': 10.0, 'hs': 100.0, 'ks': 1000.0, 'Ms': 1000000.0, 'Gs': 1000000000.0, 'Ts': 1000000000000.0, 'Ps': 1000000000000000.0, 'Es': 1e+18, 'Zs': 1e+21, 'Ys': 1e+24, 'Rs': 1e+27, 'Qs': 1e+30},
     
     "length": {'qm': 1e-30, 'rm': 1e-27, 'ym': 1e-24, 'zm': 1e-21, 'am': 1e-18, 'fm': 1e-15, 'pm': 1e-12, 'nm': 1e-09, 'µm': 1e-06, 'mm': 0.001, 'cm': 0.01, 'dm': 0.1, 'm': 1.0, 'dam': 10.0, 'hm': 100.0, 'km': 1000.0, 'Mm': 1000000.0, 'Gm': 1000000000.0, 'Tm': 1000000000000.0, 'Pm': 1000000000000000.0, 'Em': 1e+18, 'Zm': 1e+21, 'Ym': 1e+24, 'Rm': 1e+27, 'Qm': 1e+30},
@@ -25,7 +25,7 @@ unitsTable = {
 
 # Derived units - SI.
 # Missing Celsius.
-unitsTable.update({
+SI_DERIVED_TABLE = {
     "plane angle": {'qrad': 1e-30, 'rrad': 1e-27, 'yrad': 1e-24, 'zrad': 1e-21, 'arad': 1e-18, 'frad': 1e-15, 'prad': 1e-12, 'nrad': 1e-09, 'µrad': 1e-06, 'mrad': 0.001, 'crad': 0.01, 'drad': 0.1, 'rad': 1.0, 'darad': 10.0, 'hrad': 100.0, 'krad': 1000.0, 'Mrad': 1000000.0, 'Grad': 1000000000.0, 'Trad': 1000000000000.0, 'Prad': 1000000000000000.0, 'Erad': 1e+18, 'Zrad': 1e+21, 'Yrad': 1e+24, 'Rrad': 1e+27, 'Qrad': 1e+30},
 
     "solid angle" : {'qsr': 1e-30, 'rsr': 1e-27, 'ysr': 1e-24, 'zsr': 1e-21, 'asr': 1e-18, 'fsr': 1e-15, 'psr': 1e-12, 'nsr': 1e-09, 'µsr': 1e-06, 'msr': 0.001, 'csr': 0.01, 'dsr': 0.1, 'sr': 1.0, 'dasr': 10.0, 'hsr': 100.0, 'ksr': 1000.0, 'Msr': 1000000.0, 'Gsr': 1000000000.0, 'Tsr': 1000000000000.0, 'Psr': 1000000000000000.0, 'Esr': 1e+18, 'Zsr': 1e+21, 'Ysr': 1e+24, 'Rsr': 1e+27, 'Qsr': 1e+30},
@@ -67,4 +67,4 @@ unitsTable.update({
     "equivalent dose": {'qSv': 1e-30, 'rSv': 1e-27, 'ySv': 1e-24, 'zSv': 1e-21, 'aSv': 1e-18, 'fSv': 1e-15, 'pSv': 1e-12, 'nSv': 1e-09, 'µSv': 1e-06, 'mSv': 0.001, 'cSv': 0.01, 'dSv': 0.1, 'Sv': 1.0, 'daSv': 10.0, 'hSv': 100.0, 'kSv': 1000.0, 'MSv': 1000000.0, 'GSv': 1000000000.0, 'TSv': 1000000000000.0, 'PSv': 1000000000000000.0, 'ESv': 1e+18, 'ZSv': 1e+21, 'YSv': 1e+24, 'RSv': 1e+27, 'QSv': 1e+30},
 
     "catalyc activity": {'qkat': 1e-30, 'rkat': 1e-27, 'ykat': 1e-24, 'zkat': 1e-21, 'akat': 1e-18, 'fkat': 1e-15, 'pkat': 1e-12, 'nkat': 1e-09, 'µkat': 1e-06, 'mkat': 0.001, 'ckat': 0.01, 'dkat': 0.1, 'kat': 1.0, 'dakat': 10.0, 'hkat': 100.0, 'kkat': 1000.0, 'Mkat': 1000000.0, 'Gkat': 1000000000.0, 'Tkat': 1000000000000.0, 'Pkat': 1000000000000000.0, 'Ekat': 1e+18, 'Zkat': 1e+21, 'Ykat': 1e+24, 'Rkat': 1e+27, 'Qkat': 1e+30}
-})
+}
