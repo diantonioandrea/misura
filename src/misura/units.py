@@ -41,7 +41,7 @@ class unit:
         return symbolFromDict(self.symbols)
 
 
-    # STRINGS
+    # STRINGS.
 
 
     def __str__(self) -> str:
@@ -74,7 +74,7 @@ class unit:
         return bool(self.value)
 
 
-    # MATH
+    # MATH.
 
 
     # Abs.
@@ -115,7 +115,7 @@ class unit:
     # Addition.
     def __add__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
-            raise SymbolError(self, other, "+")
+            other = convert(other, self.symbol())
         
         return unit(self.value + other.value, self.symbol())
     
@@ -125,7 +125,7 @@ class unit:
     # Subtraction.
     def __sub__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
-            raise SymbolError(self, other, "-")
+            other = convert(other, self.symbol())
         
         return unit(self.value - other.value, self.symbol())
     
@@ -138,6 +138,7 @@ class unit:
             return unit(self.value * other, self.symbol())
         
         newSymbols = self.symbols.copy()
+        other = convert(other, self.symbol(), partial=True)
 
         for sym in newSymbols:
             if sym in other.symbols:
@@ -158,6 +159,7 @@ class unit:
             return unit(self.value / other, self.symbol())
         
         newSymbols = self.symbols.copy()
+        other = convert(other, self.symbol(), partial=True)
 
         for sym in newSymbols:
             if sym in other.symbols:
@@ -192,7 +194,7 @@ class unit:
         return unit(self.value % other, self.symbol())
     
 
-    # COMPARISONS
+    # COMPARISONS.
 
 
     # Less than.
