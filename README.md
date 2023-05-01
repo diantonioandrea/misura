@@ -1,4 +1,4 @@
-![PyPI](https://img.shields.io/pypi/v/misura)
+<!-- ![PyPI](https://img.shields.io/pypi/v/misura) -->
 ![GitHub last commit](https://img.shields.io/github/last-commit/diantonioandrea/misura)
 ![GitHub Release Date](https://img.shields.io/github/release-date/diantonioandrea/misura)
 
