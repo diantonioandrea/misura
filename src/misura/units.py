@@ -260,7 +260,7 @@ class unit:
         if type(other) != unit:
             return self.value != other
         
-        return self.value != other.value and self.symbol() != other.symbol()
+        return self.value != other.value or self.symbol() != other.symbol()
 
 # Utilities.
 
