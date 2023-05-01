@@ -1,7 +1,9 @@
-# Unit class.
-
 from colorama import Style
 from re import findall
+
+from .conversion import *
+
+# Unit class.
 
 class unit:
     def __init__(self, value: any, symbol: str) -> None:
@@ -15,22 +17,7 @@ class unit:
         self.value = value
         
         # From symbol: str to self.symbols: dict.
-        self.symbols = dict()
-        symbols = symbol.split(" ")
-        
-        for sym in symbols:
-            candidate = findall(r"-?\d+\.?\d*", sym)
-
-            if len(candidate) == 1:
-                power = candidate[0]
-            
-            elif len(candidate) > 1:
-                raise UnitError(symbol)
-            
-            else:
-                power = "1"
-
-            self.symbols[sym.replace(power, "")] = float(power)
+        self.symbols = dictFromSymbol(symbol)
 
     # Returns a readable symbol.
     def symbol(self, print: bool = False) -> str:
@@ -262,7 +249,60 @@ class unit:
         
         return self.value != other.value or self.symbol() != other.symbol()
 
+# Conversion function.
+def convert(first: "unit", target: "str") -> unit:    
+    factor = 1.0
+    symbols = first.symbols.copy()
+    targetSymbols = dictFromSymbol(target)
+
+    for sym in symbols.keys():
+        for unitFamily in unitsTable:
+            if sym in unitsTable[unitFamily]:
+                family = unitFamily
+                break
+
+        familyCounter = 0
+
+        for targetSym in targetSymbols:
+            if targetSym in unitsTable[family]:
+                targetSymbol = targetSym
+                familyCounter += 1
+
+        if familyCounter != 1:
+            raise ConversionError(first, target)
+        
+        elif sym != targetSymbol:
+            if symbols[sym] != targetSymbols[targetSymbol]:
+                raise ConversionError(first, target)
+            
+            factor *= (unitsTable[family][sym] / unitsTable[family][targetSymbol]) ** symbols[sym]
+
+    return unit(first.value * factor, target)
+
 # Utilities.
+
+def dictFromSymbol(symbol: str) -> dict:
+    symbols = dict()
+        
+    for sym in symbol.split(" "):
+        candidate = findall(r"-?\d+\.?\d*", sym)
+
+        if len(candidate) == 1:
+            power = candidate[0]
+        
+        elif len(candidate) > 1:
+            raise UnitError(symbol)
+        
+        else:
+            power = "1"
+
+        try:
+            symbols[sym.replace(power, "")] = int(power)
+
+        except(ValueError):
+            symbols[sym.replace(power, "")] = float(power)
+
+    return symbols
 
 def symbolFromDict(symbols: dict) -> str:
     return " ".join(sorted([sym + ("{}".format(symbols[sym]) if symbols[sym] != 1 else "") for sym in symbols if symbols[sym] != 0]))

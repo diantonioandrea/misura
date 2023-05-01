@@ -1,8 +1,23 @@
-from .units import unit
-
-def convert(first: unit, second: unit) -> unit:
-    pass
+# Exceptions.
 
 class ConversionError(Exception):
-    def __init__(self, first, second) -> None:
-        super().__init__("Cannot convert from {} to {}".format(first.symbol(), second.symbol()))
+    def __init__(self, first, target) -> None:
+        super().__init__("cannot convert from {} to {}".format(first.symbol(), target))
+
+# Conversion table.
+
+unitsTable = {
+    "time": {'qs': 1e-30, 'rs': 1e-27, 'ys': 1e-24, 'zs': 1e-21, 'as': 1e-18, 'fs': 1e-15, 'ps': 1e-12, 'ns': 1e-09, 'µs': 1e-06, 'ms': 0.001, 'cs': 0.01, 'ds': 0.1, 's': 1.0, 'das': 10.0, 'hs': 100.0, 'ks': 1000.0, 'Ms': 1000000.0, 'Gs': 1000000000.0, 'Ts': 1000000000000.0, 'Ps': 1000000000000000.0, 'Es': 1e+18, 'Zs': 1e+21, 'Ys': 1e+24, 'Rs': 1e+27, 'Qs': 1e+30},
+    
+    "length": {'qm': 1e-30, 'rm': 1e-27, 'ym': 1e-24, 'zm': 1e-21, 'am': 1e-18, 'fm': 1e-15, 'pm': 1e-12, 'nm': 1e-09, 'µm': 1e-06, 'mm': 0.001, 'cm': 0.01, 'dm': 0.1, 'm': 1.0, 'dam': 10.0, 'hm': 100.0, 'km': 1000.0, 'Mm': 1000000.0, 'Gm': 1000000000.0, 'Tm': 1000000000000.0, 'Pm': 1000000000000000.0, 'Em': 1e+18, 'Zm': 1e+21, 'Ym': 1e+24, 'Rm': 1e+27, 'Qm': 1e+30},
+    
+    "mass": {'qg': 1e-30, 'rg': 1e-27, 'yg': 1e-24, 'zg': 1e-21, 'ag': 1e-18, 'fg': 1e-15, 'pg': 1e-12, 'ng': 1e-09, 'µg': 1e-06, 'mg': 0.001, 'cg': 0.01, 'dg': 0.1, 'g': 1.0, 'dag': 10.0, 'hg': 100.0, 'kg': 1000.0, 'Mg': 1000000.0, 'Gg': 1000000000.0, 'Tg': 1000000000000.0, 'Pg': 1000000000000000.0, 'Eg': 1e+18, 'Zg': 1e+21, 'Yg': 1e+24, 'Rg': 1e+27, 'Qg': 1e+30},
+    
+    "electric current": {'qA': 1e-30, 'rA': 1e-27, 'yA': 1e-24, 'zA': 1e-21, 'aA': 1e-18, 'fA': 1e-15, 'pA': 1e-12, 'nA': 1e-09, 'µA': 1e-06, 'mA': 0.001, 'cA': 0.01, 'dA': 0.1, 'A': 1.0, 'daA': 10.0, 'hA': 100.0, 'kA': 1000.0, 'MA': 1000000.0, 'GA': 1000000000.0, 'TA': 1000000000000.0, 'PA': 1000000000000000.0, 'EA': 1e+18, 'ZA': 1e+21, 'YA': 1e+24, 'RA': 1e+27, 'QA': 1e+30},
+    
+    "thermodynamic temperature": {'qT': 1e-30, 'rT': 1e-27, 'yT': 1e-24, 'zT': 1e-21, 'aT': 1e-18, 'fT': 1e-15, 'pT': 1e-12, 'nT': 1e-09, 'µT': 1e-06, 'mT': 0.001, 'cT': 0.01, 'dT': 0.1, 'T': 1.0, 'daT': 10.0, 'hT': 100.0, 'kT': 1000.0, 'MT': 1000000.0, 'GT': 1000000000.0, 'TT': 1000000000000.0, 'PT': 1000000000000000.0, 'ET': 1e+18, 'ZT': 1e+21, 'YT': 1e+24, 'RT': 1e+27, 'QT': 1e+30},
+    
+    "amount of substance": {'qmol': 1e-30, 'rmol': 1e-27, 'ymol': 1e-24, 'zmol': 1e-21, 'amol': 1e-18, 'fmol': 1e-15, 'pmol': 1e-12, 'nmol': 1e-09, 'µmol': 1e-06, 'mmol': 0.001, 'cmol': 0.01, 'dmol': 0.1, 'mol': 1.0, 'damol': 10.0, 'hmol': 100.0, 'kmol': 1000.0, 'Mmol': 1000000.0, 'Gmol': 1000000000.0, 'Tmol': 1000000000000.0, 'Pmol': 1000000000000000.0, 'Emol': 1e+18, 'Zmol': 1e+21, 'Ymol': 1e+24, 'Rmol': 1e+27, 'Qmol': 1e+30},
+    
+    "luminous intensity": {'qcd': 1e-30, 'rcd': 1e-27, 'ycd': 1e-24, 'zcd': 1e-21, 'acd': 1e-18, 'fcd': 1e-15, 'pcd': 1e-12, 'ncd': 1e-09, 'µcd': 1e-06, 'mcd': 0.001, 'ccd': 0.01, 'dcd': 0.1, 'cd': 1.0, 'dacd': 10.0, 'hcd': 100.0, 'kcd': 1000.0, 'Mcd': 1000000.0, 'Gcd': 1000000000.0, 'Tcd': 1000000000000.0, 'Pcd': 1000000000000000.0, 'Ecd': 1e+18, 'Zcd': 1e+21, 'Ycd': 1e+24, 'Rcd': 1e+27, 'Qcd': 1e+30}
+}
