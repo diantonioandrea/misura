@@ -4,13 +4,11 @@
 
 # misura
 
-Python library for easy unit handling and conversion[^1] for scientific & engineering applications.  
+Python library for easy unit handling and conversion for scientific & engineering applications.  
 
 **misura** is a Python library designed to simplify the *handling of units of measure* for scientific and engineering applications. It provides a unified interface for *dealing with different units and their conversions*, allowing for quick and accurate calculations without the need for complex manual conversions.  
 
 Make sure to take a look at the [documentation](https://github.com/diantonioandrea/misura/blob/main/docs/docs.md#introduction), at the [contributing guidelines](https://github.com/diantonioandrea/misura/blob/main/.github/CONTRIBUTING.md) and at the [examples](#examples).
-
-[^1]: To be implemented.
 
 ## Installation
 
@@ -63,9 +61,29 @@ print(num3 ** 2)
 The output is:
 
 	6 m / s
-	8 m(2.0) / s(2.0)
-	1.0 m / s(2.0)
-	4 s(2.0)
+	8 m(2) / s(2)
+	1.0 m / s(2)
+	4 s(2)
+
+### Manual and automatic conversion
+
+``` python
+from misura import unit, convert
+
+num1 = unit(2, "m2")
+num2 = unit(4, "kg")
+num3 = unit(400, "m s-1")
+
+print(convert(num1, "cm2"))
+print(num2 + unit(5, "g"))
+print(convert(num3, "km", partial=True))
+```
+
+The output is:
+
+	20000.0 cm(2)
+	4.005 kg
+	0.4 km / s
 
 ### Comparisons
 
