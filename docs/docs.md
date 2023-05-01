@@ -36,7 +36,9 @@ Available options are:
 class unit
 	def __init__(self, value: any, symbol: str)
 ```
-**value** must be an object which implements the following methods, which are the available operations between *misura.unit* objects:
+**value** must be an object which implements the following methods, which are the available operations between *misura.unit* objects[^1]:
+
+[^1]: Not all of them are needed but only the ones used.
 
 ``` python
 def __str__(self) -> str
