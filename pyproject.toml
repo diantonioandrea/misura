@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling", "setuptools"]
+build-backend = "hatchling.build"
+
+[project]
+name = "misura"
+version = "1.0.0"
+authors = [
+  { name="Andrea Di Antonio", email="mail@diantonioandrea.com" },
+]
+description = ""
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = ["setuptools"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/diantonioandrea/misura"
+"Documentation" = "https://github.com/diantonioandrea/misura/blob/main/docs/docs.md"
+"Bug Tracker" = "https://github.com/diantonioandrea/misura/issues"
