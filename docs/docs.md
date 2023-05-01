@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-0. [Projects built with CLIbrary](#projects-built-with-misura)
+0. [Projects built with misura](#projects-built-with-misura)
 1. [Introduction](#introduction)
 	1. [Globals](#globals)
 2. [Units of measure](#units-of-measure)
