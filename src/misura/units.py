@@ -53,12 +53,18 @@ class unit:
         # {"m": 1, "s": -1} -> "m s-1".
         return symbolFromDict(self.symbols)
 
-    # String.
+
+    # STRINGS
+
+
     def __str__(self) -> str:
         return "{} {}".format(self.value, self.symbol(print=True)) if self.symbol() else str(self.value)
     
     def __repr__(self) -> str:
         return str(self)
+    
+    def __format__(self, string) -> str: # Unit highlighting works for print only.
+        return self.value.__format__(string) + (" " + self.symbol(print=True) if self.symbol() else "")
 
 
     # PYTHON TYPES CONVERSION.
