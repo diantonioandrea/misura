@@ -250,10 +250,12 @@ class unit:
         return self.value != other.value or self.symbol() != other.symbol()
 
 # Conversion function.
-def convert(first: "unit", target: "str") -> unit:    
+def convert(first: "unit", target: "str", partial: bool = False) -> unit:    
     factor = 1.0
     symbols = first.symbols.copy()
     targetSymbols = dictFromSymbol(target)
+
+    partialTargets = []
 
     for sym in symbols.keys():
         for unitFamily in unitsTable:
@@ -268,7 +270,14 @@ def convert(first: "unit", target: "str") -> unit:
                 targetSymbol = targetSym
                 familyCounter += 1
 
-        if familyCounter != 1:
+        if familyCounter == 0:
+            if not partial:
+                raise ConversionError(first, target)
+            
+            partialTargets.append(sym + str(symbols[sym]))
+            continue
+
+        elif familyCounter > 1:
             raise ConversionError(first, target)
         
         elif sym != targetSymbol:
@@ -276,8 +285,10 @@ def convert(first: "unit", target: "str") -> unit:
                 raise ConversionError(first, target)
             
             factor *= (unitsTable[family][sym] / unitsTable[family][targetSymbol]) ** symbols[sym]
+            partialTargets.append(targetSymbol + str(targetSymbols[targetSymbol]))
+            continue
 
-    return unit(first.value * factor, target)
+    return unit(first.value * factor, target) if not partial else unit(first.value * factor, " ".join(partialTargets))
 
 # Utilities.
 
