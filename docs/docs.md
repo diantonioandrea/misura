@@ -8,7 +8,7 @@
 
 0. [Projects built with CLIbrary](#projects-built-with-misura)
 1. [Introduction](#introduction)
-	1. [Globals](#globals)
+	1. [Globals](#globals)
 2. [Units of measure](#units-of-measure)
 	1. [Creation of numbers with units of measure](#creation-of-numbers-with-units-of-measure)
 3. [Conversions](#conversions)
