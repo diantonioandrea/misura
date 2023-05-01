@@ -83,3 +83,4 @@ Some examples are:
 * Metres per second squared: `"m s-2"`.
 * kilograms: `"kg"`.
 * Litres: `"L"`.
+* `"kg2 m-3 s4 K2.5"`
