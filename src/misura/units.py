@@ -115,7 +115,7 @@ class unit:
         return unit(ceil(self.value), self.symbol())
     
     # Trunc.
-    def __ceil__(self) -> "unit":
+    def __trunc__(self) -> "unit":
         from math import trunc
         return unit(trunc(self.value), self.symbol())
     
