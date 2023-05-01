@@ -1,7 +1,7 @@
 # Unit class.
 
 from colorama import Style
-import re
+from re import findall
 
 class unit:
     def __init__(self, value: any, symbol: str) -> None:
@@ -19,7 +19,7 @@ class unit:
         symbols = symbol.split(" ")
         
         for sym in symbols:
-            candidate = re.findall(r"-?\d+\.?\d*", sym)
+            candidate = findall(r"-?\d+\.?\d*", sym)
 
             if len(candidate) == 1:
                 power = candidate[0]
