@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "setuptools"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
@@ -11,7 +11,7 @@ authors = [
 description = "Python library for easy unit handling and conversion for scientific & engineering applications."
 readme = "README.md"
 requires-python = ">=3.7"
-dependencies = ["setuptools"]
+dependencies = ["setuptools", "colorama"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
