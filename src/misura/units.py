@@ -59,11 +59,66 @@ class unit:
     
     def __repr__(self) -> str:
         return str(self)
+
+
+    # PYTHON TYPES CONVERSION.
+
+
+    # Int.
+    def __int__(self) -> int:
+        return int(self.value)
     
+    # Float.
+    def __float__(self) -> float:
+        return float(self.value)
+    
+    # Complex.
+    def __complex__(self) -> complex:
+        return complex(self.value)
+
+    # Bool.
+    def __bool__(self) -> bool:
+        return bool(self.value)
+
 
     # MATH
 
 
+    # Abs.
+    def __abs__(self) -> "unit":
+        return unit(abs(self.value), self.symbol())
+    
+    # Positive.
+    def __pos__(self) -> "unit":
+        return unit(+self.value, self.symbol())
+    
+    # Negative.
+    def __neg__(self) -> "unit":
+        return unit(-self.value, self.symbol())
+    
+    # Invert.
+    def __invert__(self) -> "unit":
+        return unit(~self.value, self.symbol())
+    
+    # Round.
+    def __round__(self, number: int) -> "unit":
+        return unit(round(self.value, number), self.symbol())
+    
+    # Floor.
+    def __floor__(self) -> "unit":
+        from math import floor
+        return unit(floor(self.value), self.symbol())
+    
+    # Ceil.
+    def __ceil__(self) -> "unit":
+        from math import ceil
+        return unit(ceil(self.value), self.symbol())
+    
+    # Trunc.
+    def __ceil__(self) -> "unit":
+        from math import trunc
+        return unit(trunc(self.value), self.symbol())
+    
     # Addition.
     def __add__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
@@ -121,21 +176,85 @@ class unit:
         
         return unit(self.value / other.value, symbolFromDict(newSymbols)) if symbolFromDict(newSymbols) else self.value / other.value
     
+    def __floordiv__(self, other: any) -> "unit":
+        return unit(self.value // other, self.symbol())
+
     def __rtruediv__(self, other: any) -> any:
         return self ** -1 * other
     
     # Power.
-    def __pow__(self, exponent: any) -> "unit":
-        if exponent == 0:
+    def __pow__(self, other: any) -> "unit":
+        if other == 0:
             return 1
 
         newSymbols = self.symbols.copy()
 
         for sym in newSymbols:
-            newSymbols[sym] *= exponent
+            newSymbols[sym] *= other
 
-        return unit(self.value ** exponent, symbolFromDict(newSymbols))
+        return unit(self.value ** other, symbolFromDict(newSymbols))
+    
+    # Modulo.
+    def __mod__(self, other: any) -> "unit":
+        return unit(self.value % other, self.symbol())
+    
 
+    # COMPARISONS
+
+
+    # Less than.
+    def __lt__(self, other: any) -> "unit":
+        if type(other) != unit:
+            return self.value < other
+        
+        if self.symbol() != other.symbol():
+            raise SymbolError(self, other, "<")
+        
+        return self.value < other.value
+    
+    # Less or equal.
+    def __le__(self, other: any) -> "unit":
+        if type(other) != unit:
+            return self.value <= other
+        
+        if self.symbol() != other.symbol():
+            raise SymbolError(self, other, "<=")
+        
+        return self.value <= other.value
+    
+    # Greater than.
+    def __gt__(self, other: any) -> "unit":
+        if type(other) != unit:
+            return self.value > other
+        
+        if self.symbol() != other.symbol():
+            raise SymbolError(self, other, ">")
+        
+        return self.value > other.value
+    
+    # Greater or equal.
+    def __ge__(self, other: any) -> "unit":
+        if type(other) != unit:
+            return self.value >= other
+        
+        if self.symbol() != other.symbol():
+            raise SymbolError(self, other, ">=")
+        
+        return self.value >= other.value
+    
+    # Equal.
+    def __eq__(self, other: any) -> "unit":
+        if type(other) != unit:
+            return self.value == other
+        
+        return self.value == other.value and self.symbol() == other.symbol()
+
+    # Not equal.
+    def __ne__(self, other: any) -> "unit":
+        if type(other) != unit:
+            return self.value != other
+        
+        return self.value != other.value and self.symbol() != other.symbol()
 
 # Utilities.
 
