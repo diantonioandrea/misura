@@ -252,7 +252,7 @@ class unit:
         return self.value != other.value or self.symbol() != other.symbol()
 
 # Conversion function.
-def convert(first: "unit", target: "str", partial: bool = False) -> unit:    
+def convert(first: "unit", target: "str", partial: bool = False) -> unit:
     factor = 1.0
     symbols = first.symbols.copy()
     targetSymbols = dictFromSymbol(target)

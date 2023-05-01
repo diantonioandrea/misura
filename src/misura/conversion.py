@@ -2,7 +2,7 @@
 
 class ConversionError(Exception):
     def __init__(self, first, target) -> None:
-        super().__init__("cannot convert from {} to {}".format(first.symbol(), target))
+        super().__init__("cannot convert from \'{}\' to \'{}\'".format(first.symbol(), target))
 
 # Conversion table.
 
@@ -60,7 +60,7 @@ SI_DERIVED_TABLE = {
 
     "illuminance": {'qlx': 1e-30, 'rlx': 1e-27, 'ylx': 1e-24, 'zlx': 1e-21, 'alx': 1e-18, 'flx': 1e-15, 'plx': 1e-12, 'nlx': 1e-09, 'µlx': 1e-06, 'mlx': 0.001, 'clx': 0.01, 'dlx': 0.1, 'lx': 1.0, 'dalx': 10.0, 'hlx': 100.0, 'klx': 1000.0, 'Mlx': 1000000.0, 'Glx': 1000000000.0, 'Tlx': 1000000000000.0, 'Plx': 1000000000000000.0, 'Elx': 1e+18, 'Zlx': 1e+21, 'Ylx': 1e+24, 'Rlx': 1e+27, 'Qlx': 1e+30},
 
-    "activity": {'qBq': 1e-30, 'rBq': 1e-27, 'yBq': 1e-24, 'zBq': 1e-21, 'aBq': 1e-18, 'fBq': 1e-15, 'pBq': 1e-12, 'nBq': 1e-09, 'µBq': 1e-06, 'mBq': 0.001, 'cBq': 0.01, 'dBq': 0.1, 'Bq': 1.0, 'daBq': 10.0, 'hBq': 100.0, 'kBq': 1000.0, 'MBq': 1000000.0, 'GBq': 1000000000.0, 'TBq': 1000000000000.0, 'PBq': 1000000000000000.0, 'EBq': 1e+18, 'ZBq': 1e+21, 'YBq': 1e+24, 'RBq': 1e+27, 'QBq': 1e+30},
+    "radionuclide activity": {'qBq': 1e-30, 'rBq': 1e-27, 'yBq': 1e-24, 'zBq': 1e-21, 'aBq': 1e-18, 'fBq': 1e-15, 'pBq': 1e-12, 'nBq': 1e-09, 'µBq': 1e-06, 'mBq': 0.001, 'cBq': 0.01, 'dBq': 0.1, 'Bq': 1.0, 'daBq': 10.0, 'hBq': 100.0, 'kBq': 1000.0, 'MBq': 1000000.0, 'GBq': 1000000000.0, 'TBq': 1000000000000.0, 'PBq': 1000000000000000.0, 'EBq': 1e+18, 'ZBq': 1e+21, 'YBq': 1e+24, 'RBq': 1e+27, 'QBq': 1e+30},
 
     "absorbed dose": {'qGy': 1e-30, 'rGy': 1e-27, 'yGy': 1e-24, 'zGy': 1e-21, 'aGy': 1e-18, 'fGy': 1e-15, 'pGy': 1e-12, 'nGy': 1e-09, 'µGy': 1e-06, 'mGy': 0.001, 'cGy': 0.01, 'dGy': 0.1, 'Gy': 1.0, 'daGy': 10.0, 'hGy': 100.0, 'kGy': 1000.0, 'MGy': 1000000.0, 'GGy': 1000000000.0, 'TGy': 1000000000000.0, 'PGy': 1000000000000000.0, 'EGy': 1e+18, 'ZGy': 1e+21, 'YGy': 1e+24, 'RGy': 1e+27, 'QGy': 1e+30},
 

@@ -10,6 +10,12 @@
 1. [Introduction](#introduction)
 	1. [Globals](#globals)
 2. [Units of measure](#units-of-measure)
+	1. [Creation of numbers with units of measure](#creation-of-numbers-with-units-of-measure)
+3. [Conversions](#conversions)
+	1. [Available units](#available-units)
+	2. [Manually convert a number](#manually-convert-a-number)
+	3. [Partially convert a number](#partially-convert-a-number)
+	4. [Automatic conversion](#automatic-conversion)
 
 ## Introduction
 
@@ -33,8 +39,8 @@ Available options are:
 ### Creation of numbers with units of measure
 
 ``` python
-class unit
-	def __init__(self, value: any, symbol: str)
+misura.units.unit
+	__init__(self, value: any, symbol: str)
 ```
 **value** must be an object which implements the following methods, which are the available operations between *misura.unit* objects[^1]:
 
@@ -84,3 +90,121 @@ Some examples are:
 * kilograms: `"kg"`.
 * Litres: `"L"`.
 * `"kg2 m-3 s4 K2.5"`
+
+## Conversions
+
+[Go back to ToC](#table-of-contents)
+
+### Available units
+
+Currently available units are:
+
+* SI base units:
+	* Time, Second, **s**.
+	* Lenth, Metre, **m**.
+	* Mass, Kilogram, **kg**.
+	* Electric current, Ampere, **A**.
+	* Thermodynamic temperature, Kelvin, **K**.
+	* Amount of substance, Mole, **mol**.
+	* Luminous intensity, Candela, **cd**.
+* SI derived units.
+	* Plane angle, Radian, **rad**.
+	* Solid angle, Steradian, **sr**.
+	* Frequency, Hertz, **Hz**.
+	* Force, Newton, **N**.
+	* Pressure, Pascal, **Pa**.
+	* Energy, Joule, **J**.
+	* Power, Watt, **W**.
+	* Electric charge, Coulomb, **C**.
+	* Electric potential, Volt, **V**.
+	* Capacitance, Farad, **F**.
+	* Resistance, Ohm, **Ω**.
+	* Electrical conductance, Siemens, **S**.
+	* Magnetic flux, Weber, **Wb**.
+	* Magentic flux density, Tesla, **T**.
+	* Inductance, Henry, **H**.
+	* Luminous flux, Lumen, **lm**.
+	* Illuminance, Lux, **lx**.
+	* Radionuclide activity, Becquerel, **Bq**.
+	* Absorbed dose, Gray, **Gy**.
+	* Equivalent dose, Sievert, **Sv**.
+	* Catalytic activity, Katal, **kat**.
+
+For every SI unit there's the possibility to access the following prefixes and orders of magnitude:
+
+* q: 1e-30
+* r: 1e-27
+* y: 1e-24
+* z: 1e-21
+* a: 1e-18
+* f: 1e-15
+* p: 1e-12
+* n: 1e-09
+* µ: 1e-06
+* m: 1e-03
+* c: 1e-02
+* d: 1e-01
+* da: 1e+01
+* h: 1e+02
+* k: 1e+03
+* M: 1e+06
+* G: 1e+09
+* T: 1e+12
+* P: 1e+15
+* E: 1e+18
+* Z: 1e+21
+* Y: 1e+24
+* R: 1e+27
+* Q: 1e+30
+
+At the moment *it is not possible* to convert from base units to derived units and viceversa.
+
+### Manually convert a number
+
+``` python
+misura.units.convert(first: "unit", target: "str", partial: bool = False) -> unit
+```
+
+The function `convert` takes a anumber with a unit of measure and a target unit of measure and tries to convert it, raising a `ConversionError` should this fail.
+
+An example is:
+
+``` python
+from misura import unit, convert
+
+num1 = unit(0.2, "m2")
+
+print(convert(num1, "cm2"))
+print(convert(num1, "kg"))
+```
+
+The output is:
+
+	2000.0 cm(2)
+	misura.conversion.ConversionError: cannot convert from m2 to kg
+
+### Partially convert a number
+
+``` python
+misura.units.convert(first: "unit", target: "str", partial: bool = False) -> unit
+```
+
+A partial conversion takes place when only some of the units of measure of a number get converted.
+
+An example is:
+
+``` python
+from misura import unit, convert
+
+num1 = unit(200, "m s-1")
+
+print(convert(num1, "km"))
+```
+
+The output is:
+
+	0.2 km / s
+
+### Automatic conversion
+
+During operations between numbers with compatible but different units of measure, the second number gets converted, partially or totally, according to the first number's unit of measure.

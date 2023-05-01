@@ -101,11 +101,9 @@ print(num1 > num3)
 
 The output is:
 
-``` python
-False
-True
-"misura.units.SymbolError: unsupported operand symbol(s) for >: 'm s-1.0' and 's'"
-```
+	False
+	True
+	misura.units.SymbolError: unsupported operand symbol(s) for >: 'm s-1.0' and 's'
 
 ### Unary operators and functions
 
