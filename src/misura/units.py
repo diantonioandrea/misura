@@ -305,6 +305,9 @@ class unit:
 
 # Conversion function.
 def convert(first: unit, target: str, partial: bool = False, un_pack: bool = False) -> unit:
+    if not first.convertible:
+        raise ConversionError(first, target)
+
     factor = 1.0
     symbols = first.symbols.copy()
     targetSymbols = dictFromSymbol(target)
@@ -348,8 +351,16 @@ def convert(first: unit, target: str, partial: bool = False, un_pack: bool = Fal
     return unit(first.value * factor, target) if not partial else unit(first.value * factor, " ".join(partialTargets))
 
 # Unpacking function.
-def unpack(first: unit, targets: str) -> unit:
+def unpack(first: unit, targets: str = "") -> unit:
     table = SI_DERIVED_UNPACKING_TABLE.copy()
+
+    if targets == "":
+        derivedUnits = [symbol for symbol in first.symbols if symbol in table]
+
+        if len(derivedUnits):
+            return unpack(first, " ".join(derivedUnits))
+        
+        return first
 
     for target in targets.split(" "):
         if target not in table:
@@ -417,4 +428,4 @@ class UnitError(TypeError):
 
 class SymbolError(Exception):
     def __init__(self, first: "unit", second: "unit", operation: str) -> None:
-        super().__init__("unsupported operand symbol(s) for {0}: \'{1}\' and \'{2}\' [{3} {0} {4}]".format(operation, first.symbol(), second.symbol(), first, second))
+        super().__init__("unsupported operand symbol(s) for {0}: \'{1}\' and \'{2}\'\nraised by: {3} {0} {4}".format(operation, first.symbol(), second.symbol(), first, second))
