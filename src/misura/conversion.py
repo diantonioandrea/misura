@@ -4,6 +4,10 @@ class ConversionError(Exception):
     def __init__(self, first, target) -> None:
         super().__init__("cannot convert from \'{}\' to \'{}\'".format(first.symbol(), target))
 
+class UnpackError(Exception):
+    def __init__(self, first, target) -> None:
+        super().__init__("cannot unpack \'{}\' from \'{}\'".format(target, first.symbol()))
+
 # Conversion table.
 
 # Base units - SI.

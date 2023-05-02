@@ -252,7 +252,7 @@ class unit:
         return self.value != other.value or self.symbol() != other.symbol()
 
 # Conversion function.
-def convert(first: "unit", target: "str", partial: bool = False) -> unit:
+def convert(first: "unit", target: "str", partial: bool = False, unpack: bool = False) -> unit:
     factor = 1.0
     symbols = first.symbols.copy()
     targetSymbols = dictFromSymbol(target)
@@ -292,8 +292,29 @@ def convert(first: "unit", target: "str", partial: bool = False) -> unit:
             factor *= (table[family][sym] / table[family][targetSymbol]) ** symbols[sym]
             partialTargets.append(targetSymbol + str(targetSymbols[targetSymbol]))
             continue
-
+        
+        elif partial:
+            partialTargets.append(sym + str(symbols[sym]))
+    
     return unit(first.value * factor, target) if not partial else unit(first.value * factor, " ".join(partialTargets))
+
+# Unpacking function.
+def unpack(first: "unit", targets: "str") -> unit:
+    table = SI_DERIVED_UNPACKING_TABLE.copy()
+
+    for target in targets.split(" "):
+        if target not in table:
+            raise UnpackError(first, target)
+        
+        first = convert(first, target, partial=True, unpack=False)
+
+        if target not in first.symbols:
+            raise UnpackError(first, target)
+
+        newSymbols = {key: first.symbols[key] for key in first.symbols if key != target}
+        first = (unit(first.value, symbolFromDict(newSymbols)) if len(newSymbols) else first.value) * unit(1, table[target])
+    
+    return first
 
 # Utilities.
 
