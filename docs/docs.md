@@ -236,3 +236,20 @@ The output is:
 
 	2.004 m / s
 	misura.conversion.ConversionError :cannot convert from 'kg' to 'm s-1'
+
+Total conversion is used for operations such as addition and subraction, while partial conversion is used for multiplication and division.
+
+An example is:
+
+``` python
+from misura import unit
+
+num1 = unit(2, "m")
+num2 = unit(4, "cm s")
+
+print(num1 * num2)
+```
+
+The output is:
+
+	0.08 m(2) s
