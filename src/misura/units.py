@@ -1,7 +1,9 @@
-# Unit class.
-
 from colorama import Style
 from re import findall
+
+from .conversion import *
+
+# Unit class.
 
 class unit:
     def __init__(self, value: any, symbol: str) -> None:
@@ -15,22 +17,7 @@ class unit:
         self.value = value
         
         # From symbol: str to self.symbols: dict.
-        self.symbols = dict()
-        symbols = symbol.split(" ")
-        
-        for sym in symbols:
-            candidate = findall(r"-?\d+\.?\d*", sym)
-
-            if len(candidate) == 1:
-                power = candidate[0]
-            
-            elif len(candidate) > 1:
-                raise UnitError(symbol)
-            
-            else:
-                power = "1"
-
-            self.symbols[sym.replace(power, "")] = float(power)
+        self.symbols = dictFromSymbol(symbol)
 
     # Returns a readable symbol.
     def symbol(self, print: bool = False) -> str:
@@ -54,7 +41,7 @@ class unit:
         return symbolFromDict(self.symbols)
 
 
-    # STRINGS
+    # STRINGS.
 
 
     def __str__(self) -> str:
@@ -87,7 +74,7 @@ class unit:
         return bool(self.value)
 
 
-    # MATH
+    # MATH.
 
 
     # Abs.
@@ -128,7 +115,7 @@ class unit:
     # Addition.
     def __add__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
-            raise SymbolError(self, other, "+")
+            other = convert(other, self.symbol())
         
         return unit(self.value + other.value, self.symbol())
     
@@ -138,7 +125,7 @@ class unit:
     # Subtraction.
     def __sub__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
-            raise SymbolError(self, other, "-")
+            other = convert(other, self.symbol())
         
         return unit(self.value - other.value, self.symbol())
     
@@ -151,6 +138,7 @@ class unit:
             return unit(self.value * other, self.symbol())
         
         newSymbols = self.symbols.copy()
+        other = convert(other, self.symbol(), partial=True)
 
         for sym in newSymbols:
             if sym in other.symbols:
@@ -171,6 +159,7 @@ class unit:
             return unit(self.value / other, self.symbol())
         
         newSymbols = self.symbols.copy()
+        other = convert(other, self.symbol(), partial=True)
 
         for sym in newSymbols:
             if sym in other.symbols:
@@ -205,7 +194,7 @@ class unit:
         return unit(self.value % other, self.symbol())
     
 
-    # COMPARISONS
+    # COMPARISONS.
 
 
     # Less than.
@@ -262,7 +251,74 @@ class unit:
         
         return self.value != other.value or self.symbol() != other.symbol()
 
+# Conversion function.
+def convert(first: "unit", target: "str", partial: bool = False) -> unit:
+    factor = 1.0
+    symbols = first.symbols.copy()
+    targetSymbols = dictFromSymbol(target)
+
+    partialTargets = []
+
+    table = SI_TABLE.copy()
+    table.update(SI_DERIVED_TABLE)
+
+    for sym in symbols.keys():
+        for unitFamily in table:
+            if sym in table[unitFamily]:
+                family = unitFamily
+                break
+
+        familyCounter = 0
+
+        for targetSym in targetSymbols:
+            if targetSym in table[family]:
+                targetSymbol = targetSym
+                familyCounter += 1
+
+        if familyCounter == 0:
+            if not partial:
+                raise ConversionError(first, target)
+            
+            partialTargets.append(sym + str(symbols[sym]))
+            continue
+
+        elif familyCounter > 1:
+            raise ConversionError(first, target)
+        
+        elif sym != targetSymbol:
+            if symbols[sym] != targetSymbols[targetSymbol]:
+                raise ConversionError(first, target)
+            
+            factor *= (table[family][sym] / table[family][targetSymbol]) ** symbols[sym]
+            partialTargets.append(targetSymbol + str(targetSymbols[targetSymbol]))
+            continue
+
+    return unit(first.value * factor, target) if not partial else unit(first.value * factor, " ".join(partialTargets))
+
 # Utilities.
+
+def dictFromSymbol(symbol: str) -> dict:
+    symbols = dict()
+        
+    for sym in symbol.split(" "):
+        candidate = findall(r"-?\d+\.?\d*", sym)
+
+        if len(candidate) == 1:
+            power = candidate[0]
+        
+        elif len(candidate) > 1:
+            raise UnitError(symbol)
+        
+        else:
+            power = "1"
+
+        try:
+            symbols[sym.replace(power, "")] = int(power)
+
+        except(ValueError):
+            symbols[sym.replace(power, "")] = float(power)
+
+    return symbols
 
 def symbolFromDict(symbols: dict) -> str:
     return " ".join(sorted([sym + ("{}".format(symbols[sym]) if symbols[sym] != 1 else "") for sym in symbols if symbols[sym] != 0]))
