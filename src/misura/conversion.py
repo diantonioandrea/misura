@@ -2,11 +2,11 @@
 
 class ConversionError(Exception):
     def __init__(self, first, target: str) -> None:
-        super().__init__("cannot convert from \'{0}\' to \'{1}\'\nraised by: {2} -> {1}".format(first.symbol(), target, first))
+        super().__init__("cannot convert from \'{0}\' to \'{1}\'\nraised by: \'{2}\' -> \'{1}\'".format(first.symbol(), target, first))
 
 class UnpackError(Exception):
     def __init__(self, first, target: str) -> None:
-        super().__init__("cannot unpack \'{1}\' from \'{0}\'\nraised by: {2} <{1}>".format(first.symbol(), target, first))
+        super().__init__("cannot unpack \'{1}\' from \'{0}\'\nraised by: \'{2}\'".format(first.symbol(), target, first))
 
 # Conversion table.
 

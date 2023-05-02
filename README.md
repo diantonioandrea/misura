@@ -15,6 +15,7 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 * Mathematical and logical operations between units: [Example](#mathematical-operations), [example](#comparisons).
 * Manual conversions: [Example](#manual-and-automatic-conversion).
 * Automatic conversions on operations: [Example](#manual-and-automatic-conversion).
+* Unpack derived units: [Example](#unpack-derived-units).
 * Large compatibility with other libraries: [Example](#working-with-other-libraries).
 * Custom exceptions: [Example](#comparisons).
 
@@ -119,6 +120,23 @@ The output is:
 	4.005 kg
 	0.4 km / s
 
+### Unpack derived units
+
+``` python
+from misura import unit, unpack
+
+num1 = unit(2, "J2")
+num2 = unit(4, "C H")
+
+print(unpack(num1))
+print(unpack(num2, "H"))
+```
+
+The output is:
+
+	2.0 kg(2) m(4) / s(4)
+	4.0 C kg m(2) / A(2) s(2)
+
 ### Comparisons
 
 ``` python
@@ -137,7 +155,9 @@ The output is:
 
 	False
 	True
-	misura.units.SymbolError: unsupported operand symbol(s) for >: 'm s-1.0' and 's'
+	
+	misura.conversion.ConversionError: cannot convert from 's' to 'm s-1'
+	raised by: '2 s' -> m 's-1'
 
 ### Unary operators and functions
 

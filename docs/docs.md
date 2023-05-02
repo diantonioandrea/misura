@@ -10,12 +10,14 @@
 1. [Introduction](#introduction)
 	1. [Globals](#globals)
 2. [Units of measure](#units-of-measure)
-	1. [Creation of numbers with units of measure](#creation-of-numbers-with-units-of-measure)
+	1. [Creation of quantities with units of measure](#creation-of-quantities-with-units-of-measure)
 3. [Conversions](#conversions)
 	1. [Available units](#available-units)
-	2. [Manually convert a number](#manually-convert-a-number)
-	3. [Partially convert a number](#partially-convert-a-number)
+	2. [Manually convert a quantity](#manually-convert-a-quantity)
+	3. [Partially convert a quantity](#partially-convert-a-quantity)
 	4. [Automatic conversion](#automatic-conversion)
+4. [Unit unpacking](#unit-unpacking)
+	1. [Manually unpacking a quantity](#manual-unpacking-a-quantity)
 
 ## Introduction
 
@@ -36,7 +38,7 @@ Available options are:
 
 [Go back to ToC](#table-of-contents)
 
-### Creation of numbers with units of measure
+### Creation of quantities with units of measure
 
 ``` python
 misura.units.unit
@@ -167,7 +169,7 @@ so that all the following example conversions are possible:
 
 At the moment *it is not possible* to convert from base units to derived units and viceversa.
 
-### Manually convert a number
+### Manually convert a quantity
 
 ``` python
 misura.units.convert(first: unit, target: str, partial: bool = False) -> unit
@@ -189,15 +191,17 @@ print(convert(num1, "kg"))
 The output is:
 
 	2000.0 cm(2)
+	
 	misura.conversion.ConversionError: cannot convert from 'm2' to 'kg'
+	raised by: '0.2 m(2)' -> 'kg'
 
-### Partially convert a number
+### Partially convert a quantity
 
 ``` python
 misura.units.convert(first: unit, target: str, partial: bool = False) -> unit
 ```
 
-A partial conversion takes place when only some of the units of measure of a number get converted.
+A partial conversion takes place when only some of the units of measure of a quantity get converted.
 
 An example is:
 
@@ -217,7 +221,7 @@ The partial conversions works on the family of units that exists both in the uni
 
 ### Automatic conversion
 
-During operations between numbers with compatible but different units of measure, the second number gets converted, partially or totally, according to the first number's unit of measure.
+During operations between quantities with compatible but different units of measure, the second quantity gets converted, partially or totally, according to the first quantity's unit of measure.
 
 An example is:
 
@@ -235,7 +239,9 @@ print(num1 + num3)
 The output is:
 
 	2.004 m / s
+	
 	misura.conversion.ConversionError: cannot convert from 'kg' to 'm s-1'
+	raised by: '5 kg' -> 'm s-1'
 
 Total conversion is used for operations such as addition and subraction, while partial conversion is used for multiplication and division.
 
@@ -253,3 +259,33 @@ print(num1 * num2)
 The output is:
 
 	0.08 m(2) s
+
+## Unit unpacking
+
+[Go back to ToC](#table-of-contents)
+
+### Manual unpacking a quantity
+
+``` python
+def unpack(first: unit, targets: str = "") -> unit:
+```
+
+The function `unpack` takes a misura.unit and an optional target symbol string and tries to unpack the specified derived units, raising a `UnpackError` should this fail.
+
+An example is:
+
+``` python
+from misura import unit, unpack
+
+num1 = unit(0.2, "C2 W")
+
+print(unpack(num1))
+print(unpack(num1, "kg"))
+```
+
+The output is:
+
+	0.2 A(2) kg m(2) / s
+
+	misura.conversion.UnpackError: cannot unpack 'kg' from 'C2 W'
+	raised by: '0.2 C(2) W'

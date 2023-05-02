@@ -305,7 +305,12 @@ class unit:
 
 # Conversion function.
 def convert(first: unit, target: str, partial: bool = False, un_pack: bool = False) -> unit:
+    # un_pack: automatic (un)packing. To be written [1.3/4.0].
     if not first.convertible:
+        raise ConversionError(first, target)
+    
+    # Check compatibility.
+    if (unpack(first).symbol() != unpack(unit(1, target)).symbol()) if not partial else False:
         raise ConversionError(first, target)
 
     factor = 1.0
@@ -319,7 +324,6 @@ def convert(first: unit, target: str, partial: bool = False, un_pack: bool = Fal
 
     for sym in symbols.keys():
         family = getFamily(sym)
-
         familyCounter = 0
 
         for targetSym in targetSymbols:
@@ -355,12 +359,7 @@ def unpack(first: unit, targets: str = "") -> unit:
     table = SI_DERIVED_UNPACKING_TABLE.copy()
 
     if targets == "": # Unpacks all derived units.
-        derivedUnits = [symbol for symbol in first.symbols if symbol in table]
-
-        if len(derivedUnits):
-            return unpack(first, " ".join(derivedUnits))
-        
-        return first
+        targets = " ".join([symbol for symbol in first.symbols if symbol in table])
 
     for target in targets.split(" "):
         if target not in table:
@@ -428,4 +427,4 @@ class UnitError(TypeError):
 
 class SymbolError(Exception):
     def __init__(self, first: "unit", second: "unit", operation: str) -> None:
-        super().__init__("unsupported operand symbol(s) for {0}: \'{1}\' and \'{2}\'\nraised by: {3} {0} {4}".format(operation, first.symbol(), second.symbol(), first, second))
+        super().__init__("unsupported operand symbol(s) for {0}: \'{1}\' and \'{2}\'\nraised by: \'{3}\' {0} \'{4}\'".format(operation, first.symbol(), second.symbol(), first, second))
