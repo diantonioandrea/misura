@@ -281,12 +281,14 @@ from misura import unit, unpack
 num1 = unit(0.2, "C2 W")
 
 print(unpack(num1))
+print(unpack(num1, "C"))
 print(unpack(num1, "kg"))
 ```
 
 The output is:
 
 	0.2 A(2) kg m(2) / s
+	0.2 A(2) W s(2)
 
 	misura.conversion.UnpackError: cannot unpack 'kg' from 'C2 W'
 	raised by: '0.2 C(2) W'
