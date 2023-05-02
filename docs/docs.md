@@ -18,6 +18,8 @@
 	4. [Automatic conversion](#automatic-conversion)
 4. [Unit unpacking](#unit-unpacking)
 	1. [Manually unpacking a quantity](#manually-unpacking-a-quantity)
+5. [Unit packing](#unit-packing)
+	1. [Manually packing a quantity](#manually-packing-a-quantity)
 
 ## Introduction
 
@@ -267,7 +269,7 @@ The output is:
 ### Manually unpacking a quantity
 
 ``` python
-def unpack(first: unit, targets: str = "") -> unit:
+misura.units.unpack(first: unit, targets: str = "") -> unit:
 ```
 
 The function `unpack` takes a misura.unit and an optional target symbol string and tries to unpack the specified derived units, raising a `UnpackError` should this fail.  
@@ -292,3 +294,13 @@ The output is:
 
 	misura.conversion.UnpackError: cannot unpack 'kg' from 'C2 W'
 	raised by: '0.2 C(2) W'
+
+## Unit packing
+
+[Go back to ToC](#table-of-contents)
+
+### Manually packing a quantity
+
+``` python
+misura.units.pack(first: unit, targets: str = "") -> unit:
+```

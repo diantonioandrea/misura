@@ -21,7 +21,7 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 * Mathematical and logical operations between units: [Example](#mathematical-operations), [example](#comparisons).
 * Manual conversions: [Example](#manual-and-automatic-conversion).
 * Automatic conversions on operations: [Example](#manual-and-automatic-conversion).
-* Unpack derived units: [Example](#unpack-derived-units).
+* Unpack and pack derived units: [Example](#unpack-derived-units), [example](#pack-units).
 * Large compatibility with other libraries: [Example](#working-with-other-libraries).
 * Custom exceptions: [Example](#comparisons).
 
@@ -142,6 +142,14 @@ The output is:
 
 	2.0 kg(2) m(4) / s(4)
 	4.0 C kg m(2) / A(2) s(2)
+
+### Pack derived units
+
+``` python
+
+```
+
+The output is:
 
 ### Comparisons
 
