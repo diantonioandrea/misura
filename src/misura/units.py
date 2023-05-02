@@ -310,7 +310,7 @@ def convert(first: unit, target: str, partial: bool = False, un_pack: bool = Fal
         raise ConversionError(first, target)
     
     # Check compatibility.
-    if (unpack(first).symbol() != unpack(unit(1, target)).symbol()) if not partial else False:
+    if (unpack(first).dimensionality() != unpack(unit(1, target)).dimensionality()) if not partial else False:
         raise ConversionError(first, target)
 
     factor = 1.0
@@ -360,6 +360,9 @@ def unpack(first: unit, targets: str = "") -> unit:
 
     if targets == "": # Unpacks all derived units.
         targets = " ".join([symbol for symbol in first.symbols if symbol in table])
+
+        if targets == "":
+            return first
 
     for target in targets.split(" "):
         if target not in table:
