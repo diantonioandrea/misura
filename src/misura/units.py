@@ -305,13 +305,14 @@ class unit:
 
 # Conversion function.
 def convert(first: unit, target: str, partial: bool = False, un_pack: bool = False) -> unit:
-    # un_pack: automatic (un)packing. To be written [1.2 - 4.0].
+    # un_pack: automatic (un)packing. To be written [1.(3/4).0].
     if not first.convertible:
         raise ConversionError(first, target)
     
     # Check compatibility.
-    if (unpack(first).dimensionality() != unpack(unit(1, target)).dimensionality()) if not partial else False:
-        raise ConversionError(first, target)
+    if not partial:
+        if unpack(first).dimensionality() != unpack(unit(1, target)).dimensionality():
+            raise ConversionError(first, target)
 
     factor = 1.0
     symbols = first.symbols.copy()
@@ -366,12 +367,9 @@ def unpack(first: unit, targets: str = "") -> unit:
             return first
 
     for target in targets.split(" "):
-        try:
-            conversionTarget = [symbol for symbol in derivedTable[getFamily(target)] if derivedTable[getFamily(target)][symbol] == 1].pop()
-            first = convert(first, conversionTarget, partial=True, un_pack=False)
-
-        except(IndexError):
-            raise UnpackError(first, target)
+        # This shouldn't raise an IndexError as long as there's a reference unit for every family.
+        conversionTarget = [symbol for symbol in derivedTable[getFamily(target)] if derivedTable[getFamily(target)][symbol] == 1].pop()
+        first = convert(first, conversionTarget, partial=True, un_pack=False)
         
         if conversionTarget not in unpackTable:
             raise UnpackError(first, target)
