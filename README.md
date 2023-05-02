@@ -65,6 +65,29 @@ The output is:
 	1.0 m / s(2)
 	4 s(2)
 
+### Working with other libraries
+
+``` python
+from misura import unit, convert
+from decimal import Decimal, getcontext
+import numpy
+
+getcontext().prec = 40
+
+arr1 = numpy.array([unit(2, "m"), unit(50, "m s-1"), unit(2, "kg")])
+num2 = unit(numpy.sqrt(Decimal(5)), "kg")
+
+print(arr1 * 3)
+print(num2)
+```
+
+The output is:
+
+	[6 m 150 m / s 6 kg]
+	2.236067977499789696409173668731276235441 kg
+
+Unit highlighting helps distinguish between different numbers.
+
 ### Manual and automatic conversion
 
 ``` python
