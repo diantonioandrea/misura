@@ -10,6 +10,14 @@ Python library for easy unit handling and conversion for scientific & engineerin
 
 Make sure to take a look at the [documentation](https://github.com/diantonioandrea/misura/blob/main/docs/docs.md#introduction), at the [contributing guidelines](https://github.com/diantonioandrea/misura/blob/main/.github/CONTRIBUTING.md) and at the [examples](#examples).
 
+### Features
+
+* Mathematical and logic perations between units: [Example](#mathematical-operations), [example](#comparisons).
+* Manual conversions: [Example](#manual-and-automatic-conversion).
+* Automatic conversions on operations: [Example](#manual-and-automatic-conversion).
+* Large compatibility with other libraries: [Example](#working-with-other-libraries).
+* Custom exceptions: [Example](#comparisons).
+
 ## Installation
 
 ### Installing misura
