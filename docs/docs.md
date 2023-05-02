@@ -11,13 +11,13 @@
 	1. [Globals](#globals)
 2. [Units of measure](#units-of-measure)
 	1. [Creation of quantities with units of measure](#creation-of-quantities-with-units-of-measure)
-3. [Conversions](#conversions)
+3. [Unit conversions](#unit-conversions)
 	1. [Available units](#available-units)
 	2. [Manually convert a quantity](#manually-convert-a-quantity)
 	3. [Partially convert a quantity](#partially-convert-a-quantity)
 	4. [Automatic conversion](#automatic-conversion)
 4. [Unit unpacking](#unit-unpacking)
-	1. [Manually unpacking a quantity](#manual-unpacking-a-quantity)
+	1. [Manually unpacking a quantity](#manually-unpacking-a-quantity)
 
 ## Introduction
 
@@ -93,7 +93,7 @@ Some examples are:
 * Litres: `"L"`.
 * `"kg2 m-3 s4 K2.5"`
 
-## Conversions
+## Unit conversions
 
 [Go back to ToC](#table-of-contents)
 
@@ -264,7 +264,7 @@ The output is:
 
 [Go back to ToC](#table-of-contents)
 
-### Manual unpacking a quantity
+### Manually unpacking a quantity
 
 ``` python
 def unpack(first: unit, targets: str = "") -> unit:
