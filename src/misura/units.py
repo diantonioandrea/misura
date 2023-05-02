@@ -161,9 +161,6 @@ class unit:
         if self.convertible:
             other = convert(other, self.symbol(), partial=True)
 
-        else:
-            raise SymbolError(self, other, "*")
-
         for sym in newSymbols:
             if sym in other.symbols:
                 newSymbols[sym] += other.symbols[sym]
@@ -186,9 +183,6 @@ class unit:
 
         if self.convertible:
             other = convert(other, self.symbol(), partial=True)
-
-        else:
-            raise SymbolError(self, other, "/")
 
         for sym in newSymbols:
             if sym in other.symbols:
