@@ -1,8 +1,12 @@
 # Exceptions.
 
 class ConversionError(Exception):
-    def __init__(self, first, target) -> None:
-        super().__init__("cannot convert from \'{}\' to \'{}\'".format(first.symbol(), target))
+    def __init__(self, first, target: str) -> None:
+        super().__init__("cannot convert from \'{0}\' to \'{1}\'\nraised by: \'{2}\' -> \'{1}\'".format(first.symbol(), target, first))
+
+class UnpackError(Exception):
+    def __init__(self, first, target: str) -> None:
+        super().__init__("cannot unpack \'{1}\' from \'{0}\'\nraised by: \'{2}\'".format(first.symbol(), target, first))
 
 # Conversion table.
 
@@ -16,7 +20,7 @@ SI_TABLE = {
     
     "electric current": {'qA': 1e-30, 'rA': 1e-27, 'yA': 1e-24, 'zA': 1e-21, 'aA': 1e-18, 'fA': 1e-15, 'pA': 1e-12, 'nA': 1e-09, 'µA': 1e-06, 'mA': 0.001, 'cA': 0.01, 'dA': 0.1, 'A': 1.0, 'daA': 10.0, 'hA': 100.0, 'kA': 1000.0, 'MA': 1000000.0, 'GA': 1000000000.0, 'TA': 1000000000000.0, 'PA': 1000000000000000.0, 'EA': 1e+18, 'ZA': 1e+21, 'YA': 1e+24, 'RA': 1e+27, 'QA': 1e+30},
     
-    "thermodynamic temperature": {'qT': 1e-30, 'rT': 1e-27, 'yT': 1e-24, 'zT': 1e-21, 'aT': 1e-18, 'fT': 1e-15, 'pT': 1e-12, 'nT': 1e-09, 'µT': 1e-06, 'mT': 0.001, 'cT': 0.01, 'dT': 0.1, 'T': 1.0, 'daT': 10.0, 'hT': 100.0, 'kT': 1000.0, 'MT': 1000000.0, 'GT': 1000000000.0, 'TT': 1000000000000.0, 'PT': 1000000000000000.0, 'ET': 1e+18, 'ZT': 1e+21, 'YT': 1e+24, 'RT': 1e+27, 'QT': 1e+30},
+    "thermodynamic temperature": {'qK': 1e-30, 'rK': 1e-27, 'yK': 1e-24, 'zK': 1e-21, 'aK': 1e-18, 'fK': 1e-15, 'pK': 1e-12, 'nK': 1e-09, 'µK': 1e-06, 'mK': 0.001, 'cK': 0.01, 'dK': 0.1, 'K': 1.0, 'daK': 10.0, 'hK': 100.0, 'kK': 1000.0, 'MK': 1000000.0, 'GK': 1000000000.0, 'TK': 1000000000000.0, 'PK': 1000000000000000.0, 'EK': 1e+18, 'ZK': 1e+21, 'YK': 1e+24, 'RK': 1e+27, 'QK': 1e+30},
     
     "amount of substance": {'qmol': 1e-30, 'rmol': 1e-27, 'ymol': 1e-24, 'zmol': 1e-21, 'amol': 1e-18, 'fmol': 1e-15, 'pmol': 1e-12, 'nmol': 1e-09, 'µmol': 1e-06, 'mmol': 0.001, 'cmol': 0.01, 'dmol': 0.1, 'mol': 1.0, 'damol': 10.0, 'hmol': 100.0, 'kmol': 1000.0, 'Mmol': 1000000.0, 'Gmol': 1000000000.0, 'Tmol': 1000000000000.0, 'Pmol': 1000000000000000.0, 'Emol': 1e+18, 'Zmol': 1e+21, 'Ymol': 1e+24, 'Rmol': 1e+27, 'Qmol': 1e+30},
     
@@ -67,4 +71,26 @@ SI_DERIVED_TABLE = {
     "equivalent dose": {'qSv': 1e-30, 'rSv': 1e-27, 'ySv': 1e-24, 'zSv': 1e-21, 'aSv': 1e-18, 'fSv': 1e-15, 'pSv': 1e-12, 'nSv': 1e-09, 'µSv': 1e-06, 'mSv': 0.001, 'cSv': 0.01, 'dSv': 0.1, 'Sv': 1.0, 'daSv': 10.0, 'hSv': 100.0, 'kSv': 1000.0, 'MSv': 1000000.0, 'GSv': 1000000000.0, 'TSv': 1000000000000.0, 'PSv': 1000000000000000.0, 'ESv': 1e+18, 'ZSv': 1e+21, 'YSv': 1e+24, 'RSv': 1e+27, 'QSv': 1e+30},
 
     "catalyc activity": {'qkat': 1e-30, 'rkat': 1e-27, 'ykat': 1e-24, 'zkat': 1e-21, 'akat': 1e-18, 'fkat': 1e-15, 'pkat': 1e-12, 'nkat': 1e-09, 'µkat': 1e-06, 'mkat': 0.001, 'ckat': 0.01, 'dkat': 0.1, 'kat': 1.0, 'dakat': 10.0, 'hkat': 100.0, 'kkat': 1000.0, 'Mkat': 1000000.0, 'Gkat': 1000000000.0, 'Tkat': 1000000000000.0, 'Pkat': 1000000000000000.0, 'Ekat': 1e+18, 'Zkat': 1e+21, 'Ykat': 1e+24, 'Rkat': 1e+27, 'Qkat': 1e+30}
+}
+
+SI_DERIVED_UNPACKING_TABLE = {
+    "Hz": "s-1",
+    "N": "kg m s-2",
+    "Pa": "kg m-1 s-2",
+    "J": "kg m2 s-2",
+    "W": "kg m2 s-3",
+    "C": "A s",
+    "V": "kg m2 s-3 A-1",
+    "F": "kg-1 m-2 s4 A2",
+    "Ω": "kg m2 s-3 A-2",
+    "S": "kg-1 m-2 s3 A2",
+    "Wb": "kg m2 s-2 A-1",
+    "T": "kg s-2 A-1",
+    "H": "kg m2 s-2 A-2",
+    "lm": "cd sr",
+    "lx": "cd sr m-2",
+    "Bq": "s-1",
+    "Gy": "m2 s-2",
+    "Sv": "m2 s-2",
+    "kat": "mol s-1"
 }
