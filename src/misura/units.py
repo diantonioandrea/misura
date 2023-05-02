@@ -15,9 +15,20 @@ class unit:
             raise UnitError(symbol)
 
         self.value = value
-        
+
+        table = SI_TABLE.copy()
+        table.update(SI_DERIVED_TABLE)
+
         # From symbol: str to self.symbols: dict.
         self.symbols = dictFromSymbol(symbol)
+
+        # Checks whether the unit can be converted with the available units.
+        self.convertible = True
+
+        for symbol in self.symbols:
+            if not any([symbol in table[family] for family in table]):
+                self.convertible = False
+                break
 
     # Returns a readable symbol.
     def symbol(self, print: bool = False) -> str:
@@ -115,7 +126,11 @@ class unit:
     # Addition.
     def __add__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
-            other = convert(other, self.symbol())
+            if self.convertible:
+                other = convert(other, self.symbol())
+
+            else:
+                raise SymbolError(self, other, "+")
         
         return unit(self.value + other.value, self.symbol())
     
@@ -125,7 +140,11 @@ class unit:
     # Subtraction.
     def __sub__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
-            other = convert(other, self.symbol())
+            if self.convertible:
+                other = convert(other, self.symbol())
+
+            else:
+                raise SymbolError(self, other, "-")
         
         return unit(self.value - other.value, self.symbol())
     
@@ -138,7 +157,12 @@ class unit:
             return unit(self.value * other, self.symbol())
         
         newSymbols = self.symbols.copy()
-        other = convert(other, self.symbol(), partial=True)
+
+        if self.convertible:
+            other = convert(other, self.symbol(), partial=True)
+
+        else:
+            raise SymbolError(self, other, "*")
 
         for sym in newSymbols:
             if sym in other.symbols:
@@ -159,7 +183,12 @@ class unit:
             return unit(self.value / other, self.symbol())
         
         newSymbols = self.symbols.copy()
-        other = convert(other, self.symbol(), partial=True)
+
+        if self.convertible:
+            other = convert(other, self.symbol(), partial=True)
+
+        else:
+            raise SymbolError(self, other, "/")
 
         for sym in newSymbols:
             if sym in other.symbols:
@@ -203,7 +232,11 @@ class unit:
             return self.value < other
         
         if self.symbol() != other.symbol():
-            raise SymbolError(self, other, "<")
+            if self.convertible:
+                other = convert(other, self.symbol())
+
+            else:
+                raise SymbolError(self, other, "<")
         
         return self.value < other.value
     
@@ -213,7 +246,11 @@ class unit:
             return self.value <= other
         
         if self.symbol() != other.symbol():
-            raise SymbolError(self, other, "<=")
+            if self.convertible:
+                other = convert(other, self.symbol())
+
+            else:
+                raise SymbolError(self, other, "<=")
         
         return self.value <= other.value
     
@@ -223,7 +260,11 @@ class unit:
             return self.value > other
         
         if self.symbol() != other.symbol():
-            raise SymbolError(self, other, ">")
+            if self.convertible:
+                other = convert(other, self.symbol())
+
+            else:
+                raise SymbolError(self, other, ">")
         
         return self.value > other.value
     
@@ -233,7 +274,11 @@ class unit:
             return self.value >= other
         
         if self.symbol() != other.symbol():
-            raise SymbolError(self, other, ">=")
+            if self.convertible:
+                other = convert(other, self.symbol())
+
+            else:
+                raise SymbolError(self, other, ">=")
         
         return self.value >= other.value
     
