@@ -170,7 +170,7 @@ At the moment *it is not possible* to convert from base units to derived units a
 ### Manually convert a number
 
 ``` python
-misura.units.convert(first :"unit", target :"str", partial :bool = False) -> unit
+misura.units.convert(first: unit, target: str, partial: bool = False) -> unit
 ```
 
 The function `convert` takes a misura.unit and a target symbol string and tries to convert it, raising a `ConversionError` should this fail.
@@ -194,7 +194,7 @@ The output is:
 ### Partially convert a number
 
 ``` python
-misura.units.convert(first :"unit", target :"str", partial :bool = False) -> unit
+misura.units.convert(first: unit, target: str, partial: bool = False) -> unit
 ```
 
 A partial conversion takes place when only some of the units of measure of a number get converted.
