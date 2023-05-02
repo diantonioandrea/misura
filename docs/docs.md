@@ -44,7 +44,7 @@ Available options are:
 misura.units.unit
 	__init__(self, value: any, symbol: str)
 ```
-**value** must be an object which implements the following methods, which are the available operations between *misura.unit* objects[^1]:
+`value` must be an object which implements the following methods, which are the available operations between *misura.unit* objects[^1]:
 
 [^1]: Not all of them are needed but only the ones used.
 
@@ -82,7 +82,7 @@ def __eq__(self, other: any) -> any
 def __ne__(self, other: any) -> any
 ```
 
-**symbol** must be the string of the units of measure, separated by a space and followed by their exponents.  
+`symbol` must be the string of the units of measure, separated by a space and followed by their exponents.  
 Some examples are:
 
 * Metres: `"m"`.
@@ -270,7 +270,8 @@ The output is:
 def unpack(first: unit, targets: str = "") -> unit:
 ```
 
-The function `unpack` takes a misura.unit and an optional target symbol string and tries to unpack the specified derived units, raising a `UnpackError` should this fail.
+The function `unpack` takes a misura.unit and an optional target symbol string and tries to unpack the specified derived units, raising a `UnpackError` should this fail.  
+Leaving `targets` empty will unpack every derived unit.
 
 An example is:
 
