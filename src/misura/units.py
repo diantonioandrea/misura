@@ -305,7 +305,7 @@ class unit:
 
 # Conversion function.
 def convert(first: unit, target: str, partial: bool = False, un_pack: bool = False) -> unit:
-    # un_pack: automatic (un)packing. To be written [1.3/4.0].
+    # un_pack: automatic (un)packing. To be written [1.2 - 4.0].
     if not first.convertible:
         raise ConversionError(first, target)
     
@@ -356,25 +356,28 @@ def convert(first: unit, target: str, partial: bool = False, un_pack: bool = Fal
 
 # Unpacking function.
 def unpack(first: unit, targets: str = "") -> unit:
-    table = SI_DERIVED_UNPACKING_TABLE.copy()
+    unpackTable = SI_DERIVED_UNPACKING_TABLE.copy()
+    derivedTable = SI_DERIVED_TABLE.copy()
 
     if targets == "": # Unpacks all derived units.
-        targets = " ".join([symbol for symbol in first.symbols if symbol in table])
+        targets = " ".join([symbol for symbol in first.symbols if getFamily(symbol) in derivedTable])
 
         if targets == "":
             return first
 
     for target in targets.split(" "):
-        if target not in table:
+        try:
+            conversionTarget = [symbol for symbol in derivedTable[getFamily(target)] if derivedTable[getFamily(target)][symbol] == 1].pop()
+            first = convert(first, conversionTarget, partial=True, un_pack=False)
+
+        except(IndexError):
             raise UnpackError(first, target)
         
-        first = convert(first, target, partial=True, un_pack=False)
-
-        if target not in first.symbols:
+        if conversionTarget not in unpackTable:
             raise UnpackError(first, target)
 
-        newSymbols = {key: first.symbols[key] for key in first.symbols if key != target}
-        first = (unit(first.value, symbolFromDict(newSymbols)) if len(newSymbols) else first.value) * (unit(1, table[target]) ** first.symbols[target])
+        newSymbols = {key: first.symbols[key] for key in first.symbols if key != conversionTarget}
+        first = (unit(first.value, symbolFromDict(newSymbols)) if len(newSymbols) else first.value) * (unit(1, unpackTable[conversionTarget]) ** first.symbols[conversionTarget])
     
     return first
 
