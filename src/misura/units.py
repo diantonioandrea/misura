@@ -315,10 +315,7 @@ def convert(first: unit, target: str, partial: bool = False, un_pack: bool = Fal
     table.update(SI_DERIVED_TABLE)
 
     for sym in symbols.keys():
-        for unitFamily in table:
-            if sym in table[unitFamily]:
-                family = unitFamily
-                break
+        family = getFamily(sym)
 
         familyCounter = 0
 
