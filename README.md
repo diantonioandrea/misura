@@ -75,15 +75,18 @@ import numpy
 getcontext().prec = 40
 
 arr1 = numpy.array([unit(2, "m"), unit(50, "m s-1"), unit(2, "kg")])
+arr2 = unit(numpy.array([1, 2, 3]), "J")
 num2 = unit(numpy.sqrt(Decimal(5)), "kg")
 
 print(arr1 * 3)
+print(arr2 ** 2)
 print(num2)
 ```
 
 The output is:
 
 	[6 m 150 m / s 6 kg]
+	[1 4 9] J(2)
 	2.236067977499789696409173668731276235441 kg
 
 Unit highlighting helps distinguish between different numbers.
