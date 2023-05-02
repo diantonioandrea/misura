@@ -354,7 +354,7 @@ def convert(first: unit, target: str, partial: bool = False, un_pack: bool = Fal
 def unpack(first: unit, targets: str = "") -> unit:
     table = SI_DERIVED_UNPACKING_TABLE.copy()
 
-    if targets == "":
+    if targets == "": # Unpacks all derived units.
         derivedUnits = [symbol for symbol in first.symbols if symbol in table]
 
         if len(derivedUnits):
@@ -372,7 +372,7 @@ def unpack(first: unit, targets: str = "") -> unit:
             raise UnpackError(first, target)
 
         newSymbols = {key: first.symbols[key] for key in first.symbols if key != target}
-        first = (unit(first.value, symbolFromDict(newSymbols)) if len(newSymbols) else first.value) * unit(1, table[target])
+        first = (unit(first.value, symbolFromDict(newSymbols)) if len(newSymbols) else first.value) * (unit(1, table[target]) ** first.symbols[target])
     
     return first
 
