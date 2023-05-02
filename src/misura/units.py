@@ -24,11 +24,17 @@ class unit:
 
         # Checks whether the unit can be converted with the available units.
         self.convertible = True
+        self.dimensionalities = dict()
 
         for symbol in self.symbols:
             if not any([symbol in table[family] for family in table]):
                 self.convertible = False
                 break
+        
+        # Define quantity's dimentsionality based on self.symbols.
+        if self.convertible:
+            for symbol in self.symbols:
+                self.dimensionalities[getFamily(symbol)] = self.symbols[symbol]
 
     # Returns a readable symbol.
     def symbol(self, print: bool = False) -> str:
@@ -51,17 +57,44 @@ class unit:
         # {"m": 1, "s": -1} -> "m s-1".
         return symbolFromDict(self.symbols)
 
+    # Returns a readable dimensionality.
+    def dimensionality(self, print: bool = False) -> str:
+        from .globals import style # Unit highlighting.
+        
+        if not len(self.dimensionalities):
+            return ""
 
+        # Fancy version.
+        if print:
+            # {"length": 2, "time": -1} -> "[length(2) / time]".
+            numerator = " ".join(sorted([sym + ("({})".format(self.dimensionalities[sym]) if self.dimensionalities[sym] != 1 else "") for sym in self.dimensionalities if self.dimensionalities[sym] > 0]))
+            denominator = (" / " + " ".join(sorted([sym + ("({})".format(-1 * self.dimensionalities[sym]) if self.dimensionalities[sym] != -1 else "") for sym in self.dimensionalities if self.dimensionalities[sym] < 0]))) if len([sym for sym in self.dimensionalities if self.dimensionalities[sym] < 0]) else ""
+
+            if not numerator and denominator:
+                numerator = "1"
+
+            if style.unitHighlighting:
+                return Style.BRIGHT + numerator + denominator + Style.RESET_ALL if numerator else ""
+            
+            return "[" + numerator + denominator + "]" if numerator else ""
+        
+        # {"length": 2, "time": -1} -> "length2 time-1".
+        return symbolFromDict(self.dimensionalities)
+    
     # STRINGS.
 
 
-    def __str__(self) -> str:
+    def __str__(self, dim: bool = False) -> str:
+        if dim:
+            return self.dimensionality(print=True) if self.dimensionality() else ""
+        
         return "{} {}".format(self.value, self.symbol(print=True)) if self.symbol() else str(self.value)
     
-    def __repr__(self) -> str:
-        return str(self)
+    def __repr__(self, dim: bool = False) -> str:
+        return self.__str__(dim)
     
     def __format__(self, string) -> str: # Unit highlighting works for print only.
+        # This works with symbols only.
         return self.value.__format__(string) + (" " + self.symbol(print=True) if self.symbol() else "")
 
 
@@ -382,6 +415,17 @@ def dictFromSymbol(symbol: str) -> dict:
 
 def symbolFromDict(symbols: dict) -> str:
     return " ".join(sorted([sym + ("{}".format(symbols[sym]) if symbols[sym] != 1 else "") for sym in symbols if symbols[sym] != 0]))
+
+def getFamily(symbol: str) -> str:
+    # Returns the family of a convertible unit (length, mass, ...).
+    table = SI_TABLE.copy()
+    table.update(SI_DERIVED_TABLE)
+
+    for family in table:
+        if symbol in table[family]:
+            return family
+        
+    return ""
 
 # Exceptions.
 
