@@ -12,7 +12,7 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 
 ### Features
 
-* Mathematical and logic perations between units: [Example](#mathematical-operations), [example](#comparisons).
+* Mathematical and logical operations between units: [Example](#mathematical-operations), [example](#comparisons).
 * Manual conversions: [Example](#manual-and-automatic-conversion).
 * Automatic conversions on operations: [Example](#manual-and-automatic-conversion).
 * Large compatibility with other libraries: [Example](#working-with-other-libraries).
