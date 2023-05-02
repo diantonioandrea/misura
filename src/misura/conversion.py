@@ -68,3 +68,25 @@ SI_DERIVED_TABLE = {
 
     "catalyc activity": {'qkat': 1e-30, 'rkat': 1e-27, 'ykat': 1e-24, 'zkat': 1e-21, 'akat': 1e-18, 'fkat': 1e-15, 'pkat': 1e-12, 'nkat': 1e-09, 'µkat': 1e-06, 'mkat': 0.001, 'ckat': 0.01, 'dkat': 0.1, 'kat': 1.0, 'dakat': 10.0, 'hkat': 100.0, 'kkat': 1000.0, 'Mkat': 1000000.0, 'Gkat': 1000000000.0, 'Tkat': 1000000000000.0, 'Pkat': 1000000000000000.0, 'Ekat': 1e+18, 'Zkat': 1e+21, 'Ykat': 1e+24, 'Rkat': 1e+27, 'Qkat': 1e+30}
 }
+
+SI_DERIVED_UNPACKING_TABLE = {
+    "Hz": "s-1",
+    "N": "kg m s-2",
+    "Pa": "kg m-1 s-2",
+    "J": "kg m2 s-2",
+    "W": "kg m2 s-3",
+    "C": "A s",
+    "V": "kg m2 s-3 A-1",
+    "F": "kg-1 m-2 s4 A2",
+    "Ω": "kg m2 s-3 A-2",
+    "S": "kg-1 m-2 s3 A2",
+    "Wb": "kg m2 s-2 A-1",
+    "T": "kg s-2 A-1",
+    "H": "kg m2 s-2 A-2",
+    "lm": "cd sr",
+    "lx": "cd sr m-2",
+    "Bq": "s-1",
+    "Gy": "m2 s-2",
+    "Sv": "m2 s-2",
+    "kat": "mol s-1"
+}
