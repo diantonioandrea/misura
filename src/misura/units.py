@@ -139,7 +139,7 @@ class unit:
     # Addition.
     def __add__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
-            if self.convertible:
+            if self.convertible and other.convertible:
                 other = convert(other, self.symbol())
 
             else:
@@ -153,7 +153,7 @@ class unit:
     # Subtraction.
     def __sub__(self, other: "unit") -> "unit":
         if self.symbol() != other.symbol():
-            if self.convertible:
+            if self.convertible and other.convertible:
                 other = convert(other, self.symbol())
 
             else:
@@ -171,7 +171,7 @@ class unit:
         
         newSymbols = self.symbols.copy()
 
-        if self.convertible:
+        if self.convertible and other.convertible:
             other = convert(other, self.symbol(), partial=True)
 
         for sym in newSymbols:
@@ -194,7 +194,7 @@ class unit:
         
         newSymbols = self.symbols.copy()
 
-        if self.convertible:
+        if self.convertible and other.convertible:
             other = convert(other, self.symbol(), partial=True)
 
         for sym in newSymbols:
@@ -239,7 +239,7 @@ class unit:
             return self.value < other
         
         if self.symbol() != other.symbol():
-            if self.convertible:
+            if self.convertible and other.convertible:
                 other = convert(other, self.symbol())
 
             else:
@@ -253,7 +253,7 @@ class unit:
             return self.value <= other
         
         if self.symbol() != other.symbol():
-            if self.convertible:
+            if self.convertible and other.convertible:
                 other = convert(other, self.symbol())
 
             else:
@@ -267,7 +267,7 @@ class unit:
             return self.value > other
         
         if self.symbol() != other.symbol():
-            if self.convertible:
+            if self.convertible and other.convertible:
                 other = convert(other, self.symbol())
 
             else:
@@ -281,7 +281,7 @@ class unit:
             return self.value >= other
         
         if self.symbol() != other.symbol():
-            if self.convertible:
+            if self.convertible and other.convertible:
                 other = convert(other, self.symbol())
 
             else:
@@ -417,4 +417,4 @@ class UnitError(TypeError):
 
 class SymbolError(Exception):
     def __init__(self, first: "unit", second: "unit", operation: str) -> None:
-        super().__init__("unsupported operand symbol(s) for {}: \'{}\' and \'{}\'".format(operation, first.symbol(), second.symbol()))
+        super().__init__("unsupported operand symbol(s) for {0}: \'{1}\' and \'{2}\' [{3} {0} {4}]".format(operation, first.symbol(), second.symbol(), first, second))
