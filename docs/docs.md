@@ -30,7 +30,7 @@ Python library for easy unit handling and conversion for scientific & engineerin
 misura has some "global options" to allow personalization.  
 Available options are:
 
-* `misura.style.unitHighlighting`, bool: Enables units of measure highlighting. Dafault :`True`.
+* `misura.style.unitHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
 
 ## Units of measure
 
@@ -40,11 +40,11 @@ Available options are:
 
 ``` python
 misura.units.unit
-	__init__(self, value :any, symbol :str)
+	__init__(self, value: any, symbol: str)
 ```
 **value** must be an object which implements the following methods, which are the available operations between *misura.unit* objects[^1]:
 
-[^1] :Not all of them are needed but only the ones used.
+[^1]: Not all of them are needed but only the ones used.
 
 ``` python
 def __str__(self) -> str
@@ -59,36 +59,36 @@ def __abs__(self) -> any
 def __pos__(self) -> any
 def __neg__(self) -> any
 def __invert__(self) -> any
-def __round__(self, number :int) -> any
-def __floor__(self, number :int) -> any
-def __ceil__(self, number :int) -> any
-def __trunc__(self, number :int) -> any
+def __round__(self, number: int) -> any
+def __floor__(self, number: int) -> any
+def __ceil__(self, number: int) -> any
+def __trunc__(self, number: int) -> any
 
-def __add__(self, other :any) -> any
-def __sub__(self, other :any) -> any
-def __mul__(self, other :any) -> any
-def __truediv__(self, other :any) -> any
-def __floordiv__(self, other :any) -> any
-def __pow__(self, other :any) -> any
-def __mod__(self, other :any) -> any
+def __add__(self, other: any) -> any
+def __sub__(self, other: any) -> any
+def __mul__(self, other: any) -> any
+def __truediv__(self, other: any) -> any
+def __floordiv__(self, other: any) -> any
+def __pow__(self, other: any) -> any
+def __mod__(self, other: any) -> any
 
-def __lt__(self, other :any) -> any
-def __le__(self, other :any) -> any
-def __gt__(self, other :any) -> any
-def __ge__(self, other :any) -> any
-def __eq__(self, other :any) -> any
-def __ne__(self, other :any) -> any
+def __lt__(self, other: any) -> any
+def __le__(self, other: any) -> any
+def __gt__(self, other: any) -> any
+def __ge__(self, other: any) -> any
+def __eq__(self, other: any) -> any
+def __ne__(self, other: any) -> any
 ```
 
 **symbol** must be the string of the units of measure, separated by a space and followed by their exponents.  
 Some examples are:
 
-* Metres :`"m"`.
-* Metres squared :`"m2"`.
-* Metres per second :`"m s-1"`.
-* Metres per second squared :`"m s-2"`.
-* kilograms :`"kg"`.
-* Litres :`"L"`.
+* Metres: `"m"`.
+* Metres squared: `"m2"`.
+* Metres per second: `"m s-1"`.
+* Metres per second squared: `"m s-2"`.
+* kilograms: `"kg"`.
+* Litres: `"L"`.
 * `"kg2 m-3 s4 K2.5"`
 
 ## Conversions
@@ -189,7 +189,7 @@ print(convert(num1, "kg"))
 The output is:
 
 	2000.0 cm(2)
-	misura.conversion.ConversionError :cannot convert from 'm2' to 'kg'
+	misura.conversion.ConversionError: cannot convert from 'm2' to 'kg'
 
 ### Partially convert a number
 
@@ -235,7 +235,7 @@ print(num1 + num3)
 The output is:
 
 	2.004 m / s
-	misura.conversion.ConversionError :cannot convert from 'kg' to 'm s-1'
+	misura.conversion.ConversionError: cannot convert from 'kg' to 'm s-1'
 
 Total conversion is used for operations such as addition and subraction, while partial conversion is used for multiplication and division.
 
