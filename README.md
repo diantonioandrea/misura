@@ -1,4 +1,10 @@
+![GitHub](https://img.shields.io/github/license/diantonioandrea/misura)
+
 ![PyPI](https://img.shields.io/pypi/v/misura)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/misura)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/misura)
+
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/diantonioandrea/misura)
 ![GitHub last commit](https://img.shields.io/github/last-commit/diantonioandrea/misura)
 ![GitHub Release Date](https://img.shields.io/github/release-date/diantonioandrea/misura)
 
