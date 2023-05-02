@@ -23,18 +23,10 @@ class unit:
         self.symbols = dictFromSymbol(symbol)
 
         # Checks whether the unit can be converted with the available units.
-        self.convertible = True
-        self.dimensionalities = dict()
-
-        for symbol in self.symbols:
-            if not any([symbol in table[family] for family in table]):
-                self.convertible = False
-                break
-        
+        self.convertible = all([any([symbol in table[family] for family in table]) for symbol in self.symbols])
+       
         # Define quantity's dimentsionality based on self.symbols.
-        if self.convertible:
-            for symbol in self.symbols:
-                self.dimensionalities[getFamily(symbol)] = self.symbols[symbol]
+        self.dimensionalities = {getFamily(symbol): self.symbols[symbol] for symbol in self.symbols}
 
     # Returns a readable symbol.
     def symbol(self, print: bool = False) -> str:
@@ -58,40 +50,28 @@ class unit:
         return symbolFromDict(self.symbols)
 
     # Returns a readable dimensionality.
-    def dimensionality(self, print: bool = False) -> str:
-        from .globals import style # Unit highlighting.
-        
+    # No fancy style.
+    def dimensionality(self) -> str:
         if not len(self.dimensionalities):
             return ""
-
-        # Fancy version.
-        if print:
-            # {"length": 2, "time": -1} -> "[length(2) / time]".
-            numerator = " ".join(sorted([sym + ("({})".format(self.dimensionalities[sym]) if self.dimensionalities[sym] != 1 else "") for sym in self.dimensionalities if self.dimensionalities[sym] > 0]))
-            denominator = (" / " + " ".join(sorted([sym + ("({})".format(-1 * self.dimensionalities[sym]) if self.dimensionalities[sym] != -1 else "") for sym in self.dimensionalities if self.dimensionalities[sym] < 0]))) if len([sym for sym in self.dimensionalities if self.dimensionalities[sym] < 0]) else ""
-
-            if not numerator and denominator:
-                numerator = "1"
-
-            if style.unitHighlighting:
-                return Style.BRIGHT + numerator + denominator + Style.RESET_ALL if numerator else ""
-            
-            return "[" + numerator + denominator + "]" if numerator else ""
         
-        # {"length": 2, "time": -1} -> "length2 time-1".
-        return symbolFromDict(self.dimensionalities)
+        # {"length": 2, "time": -1} -> "[length(2) / time]".
+        numerator = " * ".join(sorted([sym + ("({})".format(self.dimensionalities[sym]) if self.dimensionalities[sym] != 1 else "") for sym in self.dimensionalities if self.dimensionalities[sym] > 0]))
+        denominator = (" / " + " * ".join(sorted([sym + ("({})".format(-1 * self.dimensionalities[sym]) if self.dimensionalities[sym] != -1 else "") for sym in self.dimensionalities if self.dimensionalities[sym] < 0]))) if len([sym for sym in self.dimensionalities if self.dimensionalities[sym] < 0]) else ""
+
+        if not numerator and denominator:
+            numerator = "1"
+        
+        return "[" + numerator + denominator + "]" if numerator else ""
     
     # STRINGS.
 
 
-    def __str__(self, dim: bool = False) -> str:
-        if dim:
-            return self.dimensionality(print=True) if self.dimensionality() else ""
-        
+    def __str__(self) -> str:
         return "{} {}".format(self.value, self.symbol(print=True)) if self.symbol() else str(self.value)
     
-    def __repr__(self, dim: bool = False) -> str:
-        return self.__str__(dim)
+    def __repr__(self) -> str:
+        return str(self)
     
     def __format__(self, string) -> str: # Unit highlighting works for print only.
         # This works with symbols only.
@@ -324,7 +304,7 @@ class unit:
         return self.value != other.value or self.symbol() != other.symbol()
 
 # Conversion function.
-def convert(first: "unit", target: "str", partial: bool = False, unpack: bool = False) -> unit:
+def convert(first: unit, target: str, partial: bool = False, un_pack: bool = False) -> unit:
     factor = 1.0
     symbols = first.symbols.copy()
     targetSymbols = dictFromSymbol(target)
@@ -371,14 +351,14 @@ def convert(first: "unit", target: "str", partial: bool = False, unpack: bool = 
     return unit(first.value * factor, target) if not partial else unit(first.value * factor, " ".join(partialTargets))
 
 # Unpacking function.
-def unpack(first: "unit", targets: "str") -> unit:
+def unpack(first: unit, targets: str) -> unit:
     table = SI_DERIVED_UNPACKING_TABLE.copy()
 
     for target in targets.split(" "):
         if target not in table:
             raise UnpackError(first, target)
         
-        first = convert(first, target, partial=True, unpack=False)
+        first = convert(first, target, partial=True, un_pack=False)
 
         if target not in first.symbols:
             raise UnpackError(first, target)
@@ -387,6 +367,11 @@ def unpack(first: "unit", targets: "str") -> unit:
         first = (unit(first.value, symbolFromDict(newSymbols)) if len(newSymbols) else first.value) * unit(1, table[target])
     
     return first
+
+# Packing (simplifying) function.
+def pack(first: unit, target: str = "") -> unit:
+    # To be written [1.3.0].
+    pass
 
 # Utilities.
 
