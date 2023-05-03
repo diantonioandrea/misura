@@ -147,11 +147,7 @@ class quantity:
                 first = convert(self, other.unit())
                 second = convert(other, self.unit())
 
-                if len(first.unit()) < len(second.unit()):
-                    self = first
-                
-                else:
-                    other = second
+                self, other = (first, other) if len(first.unit()) < len(second.unit()) else (self, second)
 
             else:
                 raise QuantityError(self, other, "+")
@@ -169,11 +165,7 @@ class quantity:
                 first = convert(self, other.unit())
                 second = convert(other, self.unit())
 
-                if len(first.unit()) < len(second.unit()):
-                    self = first
-                
-                else:
-                    other = second
+                self, other = (first, other) if len(first.unit()) < len(second.unit()) else (self, second)
 
             else:
                 raise QuantityError(self, other, "-")
