@@ -371,7 +371,7 @@ def unpack(converted: quantity, targets: str = "") -> quantity:
         if targets == "":
             return converted
 
-    for target in targets.split(" "):
+    for target in dictFromUnit(targets):
         # This shouldn't raise an IndexError as long as there's a reference quantity for every family.
         conversionTarget = [unit for unit in derivedTable[getFamily(target)] if derivedTable[getFamily(target)][unit] == 1].pop()
         converted = convert(converted, conversionTarget, partial=True, un_pack=False)
@@ -385,6 +385,42 @@ def unpack(converted: quantity, targets: str = "") -> quantity:
     return converted
 
 # Packing (simplifying) function.
-def pack(converted: quantity, target: str = "") -> quantity:
-    # To be written [1.3.0].
-    pass
+def pack(converted: quantity, targets: str = "", full: bool = False) -> quantity:
+    packTable: dict = SI_DERIVED_UNPACKING_TABLE.copy()
+    baseTable: dict = SI_TABLE.copy()
+
+    if targets == "":
+        raise PackError(converted, targets)
+    
+    # Simplify converted -> base unit.
+    for unit in converted.units.keys():
+        conversionTarget = [unit for unit in baseTable[getFamily(unit)] if baseTable[getFamily(unit)][unit] == 1].pop()
+        converted = convert(converted, conversionTarget, partial=True, un_pack=False)
+
+    for target in dictFromUnit(targets):
+        if target not in packTable:
+            raise PackError(converted, targets)
+        
+        targetUnits = dictFromUnit(packTable[target])
+
+        # Packing powers.
+        powers = {converted.units[targetUnit] // targetUnits[targetUnit] for targetUnit in targetUnits if targetUnit in converted.units}
+        
+        if not len(powers):
+            raise PackError(converted, targets)
+        
+        if full: # The packability check can be skipped
+            # Packability check.
+            for targetUnit in targetUnits:
+                if targetUnit not in converted.units:
+                    raise PackError(converted, targets, True)
+                
+                if converted.units[targetUnit] % targetUnits[targetUnit]:
+                    raise PackError(converted, targets, True)
+            
+            if min(powers) < max(powers) or max(powers) < 0:
+                raise PackError(converted, targets, True)
+        
+        converted *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(powers)
+
+    return converted
