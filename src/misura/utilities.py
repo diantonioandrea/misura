@@ -7,16 +7,16 @@ from .tables import SI_TABLE, SI_DERIVED_TABLE
 
 def dictFromUnit(unit: str) -> dict:
     units = dict()
-        
+
     for sym in unit.split(" "):
         candidate = findall(r"-?\d+\.?\d*", sym)
 
         if len(candidate) == 1:
             power = candidate[0]
-        
+
         elif len(candidate) > 1:
             raise UnitError(unit)
-        
+
         else:
             power = "1"
 
@@ -47,5 +47,5 @@ def getFamily(unit: str) -> str:
     for family in table:
         if unit in table[family]:
             return family
-        
+
     return ""

@@ -8,6 +8,8 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/diantonioandrea/misura)
 ![GitHub Release Date](https://img.shields.io/github/release-date/diantonioandrea/misura)
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e2123731f65944c9b5ce26fa0242bde9)](https://app.codacy.com/gh/diantonioandrea/misura/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 # misura
 
 ``` python
@@ -229,7 +231,7 @@ The output is:
 	True
 	
 	misura.conversion.ConversionError: cannot convert from 's' to 'm s-1'
-	raised by: '2 s' -> m 's-1'
+	raised by: '2 s' -> 'm s-1'
 
 ### Unary operators and functions
 
