@@ -247,12 +247,14 @@ print(num4)
 
 The output is:
 
-	m / s
-	[length / time]
-	21 m / s
-	False
-	4002.0 m
-	[1 2 3] T
+```
+m / s
+[length / time]
+21 m / s
+False
+4002.0 m
+[1 2 3] T
+```
 
 ### Conversions, unpacking and packing
 
@@ -277,12 +279,14 @@ print(pack(num7, "C", full=True))
 
 The output is:
 
-	20000.0 cm(2)
-	4.005 kg
-	2.0 kg(2) m(4) / s(4)
-	4.0 C kg m(2) / A(2) s(2)
-	16.0 J
-	45.0 C(2)
+```
+20000.0 cm(2)
+4.005 kg
+2.0 kg(2) m(4) / s(4)
+4.0 C kg m(2) / A(2) s(2)
+16.0 J
+45.0 C(2)
+```
 
 ### Global options
 
@@ -301,5 +305,7 @@ print(num2)
 
 The output is:
 
-	2 [m / s]
-	5 [s]
+```
+2 [m / s]
+5 [s]
+```
