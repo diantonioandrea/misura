@@ -191,10 +191,10 @@ The function `unpack` takes a `quantity` object, converted and an optional strin
 misura.pack(converted: quantity, targets: str = "") -> quantity
 ```
 
-The function `unpack` takes a `quantity` object, converted and an optional string, `targets`.
+The function `unpack` takes a `quantity` object, converted and a string, `targets`.
 
 * `converted: quantity` is the quantity that needs to be converted.
-* `targets: str = ""` is the string of target units, the derived units that need to be matched. If empty, *it packs what it can*.
+* `targets: str` is the string of target units, the derived units that need to be matched.
 
 Take a look at these [examples](#conversions-unpacking-and-packing-1).
 
@@ -217,7 +217,8 @@ Take a look at these [examples](#global-options-1)
 * `UnitError`: raised on invalid `unit` passed to `quantity(value, unit)`.
 * `QuantityError`: raised on operations between incompatible quantities.
 * `ConversionError`: raised on error during conversions.
-* `UnpackError`: raised on error during conversions.
+* `UnpackError`: raised on error during unpacking.
+* `PackError`: raised on error during packing.
 
 ## Examples
 

@@ -309,8 +309,7 @@ class quantity:
 # CONVERSION, UNPACKING AND PACKING
 
 # Conversion function.
-def convert(converted: quantity, target: str, partial: bool = False, un_pack: bool = False) -> quantity:
-    # un_pack: automatic (un)packing. To be written [1.(3/4).0].
+def convert(converted: quantity, target: str, partial: bool = False, un_pack: bool = True) -> quantity:
     if not converted.convertible:
         raise ConversionError(converted, target)
     
@@ -318,6 +317,17 @@ def convert(converted: quantity, target: str, partial: bool = False, un_pack: bo
     if not partial:
         if unpack(converted).dimensionality() != unpack(quantity(1, target)).dimensionality():
             raise ConversionError(converted, target)
+    
+    # Automatic (un)packing.
+    # Version 1.
+    if un_pack and not partial:
+        try:
+            return convert(pack(converted, target), target, partial=False, un_pack=False)
+        
+        except:
+            pass
+
+        return convert(unpack(converted), unpack(quantity(1, target)).unit(), partial=False, un_pack=False)
 
     factor: float = 1.0
     units: dict = converted.units.copy()
@@ -386,22 +396,26 @@ def unpack(converted: quantity, targets: str = "") -> quantity:
     
     return converted
 
-# Packing (simplifying) function.
+# Packing function.
 def pack(converted: quantity, targets: str = "", full: bool = False) -> quantity:
     packTable: dict = SI_DERIVED_UNPACKING_TABLE.copy()
-    baseTable: dict = SI_TABLE.copy()
+
+    unitsTable: dict = SI_TABLE.copy()
+    unitsTable.update(SI_DERIVED_TABLE)
 
     if targets == "":
-        raise PackError(converted, targets)
+        raise PackError(converted, "")
     
     # Simplify converted -> base unit.
     for unit in converted.units.keys():
-        conversionTarget = [unit for unit in baseTable[getFamily(unit)] if baseTable[getFamily(unit)][unit] == 1].pop()
+        conversionTarget = [unit for unit in unitsTable[getFamily(unit)] if unitsTable[getFamily(unit)][unit] == 1].pop()
         converted = convert(converted, conversionTarget + str(converted.units[unit]), partial=True, un_pack=False)
+
+    converted = unpack(converted)
 
     for target in dictFromUnit(targets):
         if target not in packTable:
-            raise PackError(converted, targets)
+            continue
         
         targetUnits = dictFromUnit(packTable[target])
 
