@@ -1,14 +1,4 @@
-# Exceptions.
-
-class ConversionError(Exception):
-    def __init__(self, first, target: str) -> None:
-        super().__init__("cannot convert from \'{0}\' to \'{1}\'\nraised by: \'{2}\' -> \'{1}\'".format(first.symbol(), target, first))
-
-class UnpackError(Exception):
-    def __init__(self, first, target: str) -> None:
-        super().__init__("cannot unpack \'{1}\' from \'{0}\'\nraised by: \'{2}\'".format(first.symbol(), target, first))
-
-# Conversion table.
+# Conversion tables.
 
 # Base units - SI.
 SI_TABLE = {
@@ -16,7 +6,7 @@ SI_TABLE = {
     
     "length": {'qm': 1e-30, 'rm': 1e-27, 'ym': 1e-24, 'zm': 1e-21, 'am': 1e-18, 'fm': 1e-15, 'pm': 1e-12, 'nm': 1e-09, 'µm': 1e-06, 'mm': 0.001, 'cm': 0.01, 'dm': 0.1, 'm': 1.0, 'dam': 10.0, 'hm': 100.0, 'km': 1000.0, 'Mm': 1000000.0, 'Gm': 1000000000.0, 'Tm': 1000000000000.0, 'Pm': 1000000000000000.0, 'Em': 1e+18, 'Zm': 1e+21, 'Ym': 1e+24, 'Rm': 1e+27, 'Qm': 1e+30},
     
-    "mass": {'qg': 1e-30, 'rg': 1e-27, 'yg': 1e-24, 'zg': 1e-21, 'ag': 1e-18, 'fg': 1e-15, 'pg': 1e-12, 'ng': 1e-09, 'µg': 1e-06, 'mg': 0.001, 'cg': 0.01, 'dg': 0.1, 'g': 1.0, 'dag': 10.0, 'hg': 100.0, 'kg': 1000.0, 'Mg': 1000000.0, 'Gg': 1000000000.0, 'Tg': 1000000000000.0, 'Pg': 1000000000000000.0, 'Eg': 1e+18, 'Zg': 1e+21, 'Yg': 1e+24, 'Rg': 1e+27, 'Qg': 1e+30},
+    "mass": {'qg': 1e-33, 'rg': 1e-30, 'yg': 1e-27, 'zg': 1e-24, 'ag': 1e-21, 'fg': 1e-18, 'pg': 1e-15, 'ng': 1e-12, 'µg': 1e-09, 'mg': 1e-06, 'cg': 1e-05, 'dg': 1e-04, 'g': 0.001, 'dag': 0.01, 'hg': 0.1, 'kg': 1.0, 'Mg': 1000.0, 'Gg': 1000000.0, 'Tg': 1000000000.0, 'Pg': 1000000000000.0, 'Eg': 1e+15, 'Zg': 1e+18, 'Yg': 1e+21, 'Rg': 1e+24, 'Qg': 1e+27},
     
     "electric current": {'qA': 1e-30, 'rA': 1e-27, 'yA': 1e-24, 'zA': 1e-21, 'aA': 1e-18, 'fA': 1e-15, 'pA': 1e-12, 'nA': 1e-09, 'µA': 1e-06, 'mA': 0.001, 'cA': 0.01, 'dA': 0.1, 'A': 1.0, 'daA': 10.0, 'hA': 100.0, 'kA': 1000.0, 'MA': 1000000.0, 'GA': 1000000000.0, 'TA': 1000000000000.0, 'PA': 1000000000000000.0, 'EA': 1e+18, 'ZA': 1e+21, 'YA': 1e+24, 'RA': 1e+27, 'QA': 1e+30},
     

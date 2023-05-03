@@ -6,18 +6,18 @@
 
 ## Table of Contents
 
-0. [Projects built with misura](#projects-built-with-misura)
-1. [Introduction](#introduction)
-	1. [Globals](#globals)
-2. [Units of measure](#units-of-measure)
-	1. [Creation of quantities with units of measure](#creation-of-quantities-with-units-of-measure)
-3. [Unit conversions](#unit-conversions)
-	1. [Available units](#available-units)
-	2. [Manually convert a quantity](#manually-convert-a-quantity)
-	3. [Partially convert a quantity](#partially-convert-a-quantity)
-	4. [Automatic conversion](#automatic-conversion)
-4. [Unit unpacking](#unit-unpacking)
-	1. [Manually unpacking a quantity](#manually-unpacking-a-quantity)
+* [Projects built with misura](#projects-built-with-misura)
+* [Introduction](#introduction)
+* [Quantities](#quantities)
+	* [Methods](#methods)
+	* [Operations](#operations)
+* [Conversions, unpacking and packing](#conversions-unpacking-and-packing)
+	* [Conversion](#conversion)
+	* [Unpacking](#unpacking)
+	* [Packing](#packing)
+* [Global options](#global-options)
+* [Exceptions](#exceptions)
+* [Examples](#examples) 
 
 ## Introduction
 
@@ -27,29 +27,39 @@ Python library for easy unit handling and conversion for scientific & engineerin
 
 **misura** is written in Python and developed by [Andrea Di Antonio](https://github.com/diantonioandrea).
 
-### Globals
-
-misura has some "global options" to allow personalization.  
-Available options are:
-
-* `misura.style.unitHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
-
-## Units of measure
+## Quantities
 
 [Go back to ToC](#table-of-contents)
 
-### Creation of quantities with units of measure
+Quantities are defined as `misura.quantity(value: any, unit: str)` objects.  
+
+`values` stands for the value of the quantity itself, while `unit` represents its unit of measure.  
+`quantity(2, "kg")` is a well-defined quantity.  
+
+`unit` must be a string in which the different units of measure must be *separated by a space* and *followed by their exponent*, if different from `1`.  
+`quantity(3, "m s-1")` is a well-defined quantity.
+
+### Methods
+
+`misura.quantity` objects implement the following methods:
 
 ``` python
-misura.units.unit
-	__init__(self, value: any, symbol: str)
+def unit(self, print: bool = False) -> str
+def dimensionality(self) -> str
 ```
-`value` must be an object which implements the following methods, which are the available operations between *misura.unit* objects[^1]:
 
-[^1]: Not all of them are needed but only the ones used.
+which:
+
+* `unit()`: Returns the units string of the quantity. It returns it in a fancier way if `print = True`.
+* `dimensionality()`: Returns the dimensionality string of the quantity if it is convertible.
+
+### Operations
+
+`misura.quantity` objects implement the following dunder methods:
 
 ``` python
 def __str__(self) -> str
+def __repr__(self) -> str
 def __format__(self, string) -> str
 
 def __int__(self) -> int
@@ -82,24 +92,15 @@ def __eq__(self, other: any) -> any
 def __ne__(self, other: any) -> any
 ```
 
-`symbol` must be the string of the units of measure, separated by a space and followed by their exponents.  
-Some examples are:
+For a quantity to be well-defined, `value` should implement all of the methods in this list which will be called during the execution of the program.
 
-* Metres: `"m"`.
-* Metres squared: `"m2"`.
-* Metres per second: `"m s-1"`.
-* Metres per second squared: `"m s-2"`.
-* kilograms: `"kg"`.
-* Litres: `"L"`.
-* `"kg2 m-3 s4 K2.5"`
+Take a look at these [examples](#quantities-1).
 
-## Unit conversions
+## Conversions, unpacking and packing
 
 [Go back to ToC](#table-of-contents)
 
-### Available units
-
-Currently available units are:
+**misura** currently supports the following *families* (physical quantities):
 
 * SI base units:
 	* Time, Second, **s**.
@@ -132,163 +133,173 @@ Currently available units are:
 	* Equivalent dose, Sievert, **Sv**.
 	* Catalytic activity, Katal, **kat**.
 
-For every SI unit there's the possibility to access the following prefixes and orders of magnitude:
+with the following orders of magnitude:
 
-	q-  =  1e-30
-	r-  =  1e-27
-	y-  =  1e-24
-	z-  =  1e-21
-	a-  =  1e-18
-	f-  =  1e-15
-	p-  =  1e-12
-	n-  =  1e-09
-	µ-  =  1e-06
-	m-  =  1e-03
-	c-  =  1e-02
-	d-  =  1e-01
+	q  =  1e-30
+	r  =  1e-27
+	y  =  1e-24
+	z  =  1e-21
+	a  =  1e-18
+	f  =  1e-15
+	p  =  1e-12
+	n  =  1e-09
+	µ  =  1e-06
+	m  =  1e-03
+	c  =  1e-02
+	d  =  1e-01
 	------------
-	da- =  1e+01
-	h-  =  1e+02
-	k-  =  1e+03
-	M-  =  1e+06
-	G-  =  1e+09
-	T-  =  1e+12
-	P-  =  1e+15
-	E-  =  1e+18
-	Z-  =  1e+21
-	Y-  =  1e+24
-	R-  =  1e+27
-	Q-  =  1e+30
+	da =  1e+01
+	h  =  1e+02
+	k  =  1e+03
+	M  =  1e+06
+	G  =  1e+09
+	T  =  1e+12
+	P  =  1e+15
+	E  =  1e+18
+	Z  =  1e+21
+	Y  =  1e+24
+	R  =  1e+27
+	Q  =  1e+30
 
-so that all the following example conversions are possible:
-
-* from `"m2"` to `"mm2"`.
-* from `"g"` to `"kg"`.
-* from `"mW"` to `"MW"`.
-* from `"QJ"` to `"qJ"`.
-
-At the moment *it is not possible* to convert from base units to derived units and viceversa.
-
-### Manually convert a quantity
+### Conversion
 
 ``` python
-misura.units.convert(first: unit, target: str, partial: bool = False) -> unit
+misura.convert(converted: quantity, target: str, partial: bool = False, un_pack: bool = False) -> quantity
 ```
 
-The function `convert` takes a misura.unit and a target symbol string and tries to convert it, raising a `ConversionError` should this fail.
+The function `convert` takes a `quantity` object, converted, a string, `target`, and two flags: `partial` and `un_pack`.
 
-An example is:
+* `converted: quantity` is the quantity that needs to be converted.
+* `target: str` is the string of target units, the units that need to be matched after conversion.
+* `partial: bool` whether or not the conversion should be partial, e.g. `"m s-1" -> "km s-1"`.
+* `un_pack: bool` whether or not to (un)pack derived units during conversion.
+
+### unpacking
 
 ``` python
-from misura import unit, convert
-
-num1 = unit(0.2, "m2")
-
-print(convert(num1, "cm2"))
-print(convert(num1, "kg"))
+misura.unpack(converted: quantity, targets: str = "") -> quantity
 ```
 
-The output is:
+The function `unpack` takes a `quantity` object, converted and an optional string, `targets`.
 
-	2000.0 cm(2)
-	
-	misura.conversion.ConversionError: cannot convert from 'm2' to 'kg'
-	raised by: '0.2 m(2)' -> 'kg'
+* `converted: quantity` is the quantity that needs to be converted.
+* `targets: str = ""` is the string of target units, the derived units that need to be unpacked. If empty, it unpacks every derived unit.
 
-### Partially convert a quantity
+### packing
 
 ``` python
-misura.units.convert(first: unit, target: str, partial: bool = False) -> unit
+misura.pack(converted: quantity, targets: str, full: bool = False) -> quantity
 ```
 
-A partial conversion takes place when only some of the units of measure of a quantity get converted.
+The function `pack` takes a `quantity` object, converted, two strings, `targets` and `ignore`, and a flag, `full`.
 
-An example is:
+* `converted: quantity` is the quantity that needs to be converted.
+* `targets: str` is the string of target units, the derived units that need to be matched.
+* `ignore: str = ""` Due to the fact that `pack` works by first unpacking the units, some units can be manually ignored to enhance the final result.
+* `full: bool = False` whether or not to fully pack a unit.
 
-``` python
-from misura import unit, convert
+Take a look at these [examples](#conversions-unpacking-and-packing-1).
 
-num1 = unit(200, "m s-1")
-
-print(convert(num1, "km"))
-```
-
-The output is:
-
-	0.2 km / s
-
-The partial conversions works on the family of units that exists both in the unit and in the target passed to `convert`.
-
-### Automatic conversion
-
-During operations between quantities with compatible but different units of measure, the second quantity gets converted, partially or totally, according to the first quantity's unit of measure.
-
-An example is:
-
-``` python
-from misura import unit
-
-num1 = unit(2, "m s-1")
-num2 = unit(4, "cm das-1")
-num3 = unit(5, "kg")
-
-print(num1 + num2)
-print(num1 + num3)
-```
-
-The output is:
-
-	2.004 m / s
-	
-	misura.conversion.ConversionError: cannot convert from 'kg' to 'm s-1'
-	raised by: '5 kg' -> 'm s-1'
-
-Total conversion is used for operations such as addition and subraction, while partial conversion is used for multiplication and division.
-
-An example is:
-
-``` python
-from misura import unit
-
-num1 = unit(2, "m")
-num2 = unit(4, "cm s")
-
-print(num1 * num2)
-```
-
-The output is:
-
-	0.08 m(2) s
-
-## Unit unpacking
+## Global options
 
 [Go back to ToC](#table-of-contents)
 
-### Manually unpacking a quantity
+**misura** implements the following global options:
+
+* `misura.style.unitHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
+
+Take a look at these [examples](#global-options-1)
+
+## Exceptions
+
+[Go back to ToC](#table-of-contents)
+
+**misura** implements the following exceptions:
+
+* `UnitError`: raised on invalid `unit` passed to `quantity(value, unit)`.
+* `QuantityError`: raised on operations between incompatible quantities.
+* `ConversionError`: raised on error during conversions.
+* `UnpackError`: raised on error during unpacking.
+* `PackError`: raised on error during packing.
+
+## Examples
+
+[Go back to ToC](#table-of-contents)
+
+### Quantities
 
 ``` python
-def unpack(first: unit, targets: str = "") -> unit:
-```
+from misura import quantity
+import numpy
 
-The function `unpack` takes a misura.unit and an optional target symbol string and tries to unpack the specified derived units, raising a `UnpackError` should this fail.  
-Leaving `targets` empty will unpack every derived unit.
+num1 = quantity(7, "m s-1")
+num2 = quantity(4, "km")
+num3 = numpy.array([quantity(2, "m"), quantity(4, "km")])
+num4 = quantity(numpy.array([1, 2, 3]), "T")
 
-An example is:
-
-``` python
-from misura import unit, unpack
-
-num1 = unit(0.2, "C2 W")
-
-print(unpack(num1))
-print(unpack(num1, "C"))
-print(unpack(num1, "kg"))
+print(num1.unit(print=True))
+print(num1.dimensionality())
+print(num1 * 3)
+print(num2 ** 2 < 16)
+print(numpy.sum(num3))
+print(num4)
 ```
 
 The output is:
 
-	0.2 A(2) kg m(2) / s
-	0.2 A(2) W s(2)
+	m / s
+	[length / time]
+	21 m / s
+	False
+	4002.0 m
+	[1 2 3] T
 
-	misura.conversion.UnpackError: cannot unpack 'kg' from 'C2 W'
-	raised by: '0.2 C(2) W'
+### Conversions, unpacking and packing
+
+``` python
+from misura import quantity, convert, unpack, pack
+
+num1 = quantity(2, "m2")
+num2 = quantity(4, "kg")
+num3 = quantity(2, "J2")
+num4 = quantity(4, "C H")
+num5 = quantity(7, "N m")
+num6 = quantity(9, "J")
+num7 = quantity(45, "A2 s2")
+
+print(convert(num1, "cm2"))
+print(num2 + quantity(5, "g"))
+print(unpack(num3))
+print(unpack(num4, "H"))
+print(num5 + num6)
+print(pack(num7, "C", full=True))
+```
+
+The output is:
+
+	20000.0 cm(2)
+	4.005 kg
+	2.0 kg(2) m(4) / s(4)
+	4.0 C kg m(2) / A(2) s(2)
+	16.0 J
+	45.0 C(2)
+
+### Global options
+
+``` python
+from misura import quantity
+from misura import style
+
+style.quantityHighlighting = False
+
+num1 = quantity(2, "m s-1")
+num2 = quantity(5, "s")
+
+print(num1)
+print(num2)
+```
+
+The output is:
+
+	2 [m / s]
+	5 [s]
