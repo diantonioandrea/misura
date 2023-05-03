@@ -191,10 +191,11 @@ The function `unpack` takes a `quantity` object, converted and an optional strin
 misura.pack(converted: quantity, targets: str, full: bool = False) -> quantity
 ```
 
-The function `unpack` takes a `quantity` object, converted, a string, `targets` and a flag, `full`.
+The function `pack` takes a `quantity` object, converted, two strings, `targets` and `ignore`, and a flag, `full`.
 
 * `converted: quantity` is the quantity that needs to be converted.
 * `targets: str` is the string of target units, the derived units that need to be matched.
+* `ignore: str = ""` Due to the fact that `pack` works by first unpacking the units, some units can be manually ignored to enhance the final result.
 * `full: bool = False` whether or not to fully pack a unit.
 
 Take a look at these [examples](#conversions-unpacking-and-packing-1).

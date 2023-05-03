@@ -405,7 +405,7 @@ def unpack(converted: quantity, targets: str = "") -> quantity:
     return converted
 
 # Packing function.
-def pack(converted: quantity, targets: str = "", full: bool = False) -> quantity:
+def pack(converted: quantity, targets: str, ignore: str = "", full: bool = False) -> quantity:
     packTable: dict = SI_DERIVED_UNPACKING_TABLE.copy()
 
     unitsTable: dict = SI_TABLE.copy()
@@ -419,7 +419,8 @@ def pack(converted: quantity, targets: str = "", full: bool = False) -> quantity
         conversionTarget = [unit for unit in unitsTable[getFamily(unit)] if unitsTable[getFamily(unit)][unit] == 1].pop()
         converted = convert(converted, conversionTarget + str(converted.units[unit]), partial=True, un_pack=False)
 
-    converted = unpack(converted)
+    # Unpack only relevant units.
+    converted = quantity(converted.value, unitFromDict({unit: converted.units[unit] for unit in converted.units if unit in dictFromUnit(ignore)})) * unpack(quantity(1, unitFromDict({unit: converted.units[unit] for unit in converted.units if unit not in dictFromUnit(ignore)}))) if ignore else unpack(converted)
 
     for target in dictFromUnit(targets):
         if target not in packTable:

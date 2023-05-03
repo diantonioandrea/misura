@@ -2,16 +2,17 @@
 
 from misura import quantity, convert, unpack, pack
 
-num0 = quantity(5, "m2")
-num1 = quantity(67, "km")
-num2 = quantity(12, "A s")
-num3 = quantity(1, "C mW")
-num4 = quantity(900, "J")
-num5 = quantity(15, "H TT")
-num6 = quantity(12, "m2 s-2")
-num7 = quantity(3, "kg km2")
-num8 = quantity(13, "J")
-num9 = quantity(0.9, "mN km")
+num0  = quantity(5, "m2")
+num1  = quantity(67, "km")
+num2  = quantity(12, "A s")
+num3  = quantity(1, "C mW")
+num4  = quantity(900, "J")
+num5  = quantity(15, "H TT")
+num6  = quantity(12, "m2 s-2")
+num7  = quantity(3, "kg km2")
+num8  = quantity(13, "J")
+num9  = quantity(0.9, "mN km")
+num10 = quantity(3, "N m T")
 
 # Math.
 print(num0 ** .5)
@@ -41,3 +42,4 @@ print(pack(num7, "J"))
 # Automatic conversion with (un)packing.
 print(num8 + num9)
 print(num9 + num8)
+print(pack(num10, "J", ignore="T"))

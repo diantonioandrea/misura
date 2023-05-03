@@ -50,20 +50,6 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 These are some examples of operations between quantities.  
 Note that, by enabling `misura.style.unitHighlighting`, **misura** uses colorama to highlight units of measure. by disabling it, the output is in the form of `num [unit]`
 
-### Creating a quantity:
-
-``` python
-from misura import quantity
-
-num = quantity(2, "m s-1")
-
-print(num)
-```
-
-The output is:
-
-	2 m / s
-
 ### Mathematical operations
 
 ``` python
@@ -152,10 +138,19 @@ The output is:
 ### Pack derived quantities
 
 ``` python
+from misura import quantity, pack
 
+num1 = quantity(3, "N m T")
+num2 = quantity(45, "A2 s2")
+
+print(pack(num1, "J", ignore="T"))
+print(pack(num2, "C", full=True))
 ```
 
 The output is:
+
+	3.0 J T
+	45.0 C(2)
 
 ### Comparisons
 
