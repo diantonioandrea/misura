@@ -1,6 +1,6 @@
 ![GitHub](https://img.shields.io/github/license/diantonioandrea/misura)
 
-![PyPI](https://img.shields.io/pypi/v/misura)
+![PyPI](https://img.shields.io/pypi/v/misura?label=misura%20on%20pypi)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/misura)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/misura)
 
