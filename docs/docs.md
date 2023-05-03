@@ -283,11 +283,10 @@ from misura import style
 style.quantityHighlighting = False
 
 num1 = quantity(2, "m s-1")
-num2 = quantity(4.5, "m s-1")
-num3 = quantity(5, "s")
+num2 = quantity(5, "s")
 
 print(num1)
-print(num3)
+print(num2)
 ```
 
 The output is:
