@@ -31,6 +31,14 @@ def dictFromUnit(unit: str) -> dict:
 def unitFromDict(units: dict) -> str:
     return " ".join(sorted([sym + ("{}".format(units[sym]) if units[sym] != 1 else "") for sym in units if units[sym] != 0]))
 
+def getRep(family: str) -> str:
+    # Returns the reference unit given its family.
+    table = SI_TABLE.copy()
+    table.update(SI_DERIVED_TABLE)
+
+    if family in table:
+        return [unit for unit in table[family] if table[family][unit] == 1].pop()
+
 def getFamily(unit: str) -> str:
     # Returns the family of a convertible unit (length, mass, ...).
     table = SI_TABLE.copy()

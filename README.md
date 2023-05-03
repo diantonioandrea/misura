@@ -39,6 +39,63 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 
 	python3 -m pip install --upgrade misura
 
+### Verifying installation and base informations
+
+By
+
+	python -m misura
+
+You'll be able to verify the installation of **misura** along getting some informations about the library and on the available units of measure[^1].
+
+[^1]: Examle referring to version 1.3.1
+
+```
+misura v1.3.1
+
+Python library for easy unit handling and conversion for scientific & engineering applications.
+
+Developed by Andrea Di Antonio, more on https://github.com/diantonioandrea/misura
+Documentation on https://github.com/diantonioandrea/misura/blob/main/docs/docs.md
+Bug tracker on https://github.com/diantonioandrea/misura/issues
+
+Here's a list of available units.
+
+BASE UNITS
+
+Time: s
+Length: m
+Mass: kg
+Electric current: A
+Thermodynamic temperature: K
+Amount of substance: mol
+Luminous intensity: cd
+
+DERIVED UNITS
+
+Plane angle: rad
+Solid angle: sr
+Frequency: Hz [s-1]
+Force: N [kg m s-2]
+Pressure: Pa [kg m-1 s-2]
+Energy: J [kg m2 s-2]
+Power: W [kg m2 s-3]
+Electric charge: C [A s]
+Electric potential: V [kg m2 s-3 A-1]
+Capacitance: F [kg-1 m-2 s4 A2]
+Resistance: Ω [kg m2 s-3 A-2]
+Electrical conductance: S [kg-1 m-2 s3 A2]
+Magnetic flux: Wb [kg m2 s-2 A-1]
+Magnetic flux density: T [kg s-2 A-1]
+Inductance: H [kg m2 s-2 A-2]
+Luminous flux: lm [cd sr]
+Illuminance: lx [cd sr m-2]
+Radionuclide activity: Bq [s-1]
+Absorbed dose: Gy [m2 s-2]
+Equivalent dose: Sv [m2 s-2]
+Catalyc activity: kat [mol s-1]
+```
+
+
 ### Importing misura
 
 **misura** can be imported by:
