@@ -41,11 +41,11 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 
 ### Verifying installation and base informations
 
-By
+By:
 
 	python -m misura
 
-You'll be able to verify the installation of **misura** along getting some informations about the library and on the available units of measure[^1].
+you'll be able to verify the installation of **misura** along getting some informations about the library and on the available units of measure[^1]:
 
 [^1]: Examle referring to version 1.3.1
 
