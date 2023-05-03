@@ -26,12 +26,15 @@ Python library for easy unit handling and conversion for scientific & engineerin
 
 [Go back to ToC](#table-of-contents)
 
-Quantities are defined as `misura.quantity(value: any, symbol: str)` objects.  
+Quantities are defined as `misura.quantity(value: any, unit: str)` objects.  
 
-`values` stands for the value of the quantity itself, while `symbol` represents its unit of measure. having this definition, `quantity(2, "kg")` is a well-defined quantity.  
-`symbol` cannot be an empty string.
+`values` stands for the value of the quantity itself, while `unit` represents its unit of measure.  
+`quantity(2, "kg")` is a well-defined quantity.  
 
-`misura.units` objects implement the following methods:
+`unit` must be a string in which the different units of measure are separated by a space and followed by their exponent, if present.  
+`quantity(3, "m s-1")` is a well-defined quantity.
+
+`misura.quantity` objects implement the following methods:
 
 ``` python
 def __str__(self) -> str
@@ -113,6 +116,28 @@ Take a look at these [examples](#exceptions-1)
 [Go back to ToC](#table-of-contents)
 
 ### Quantities
+
+``` python
+from misura import quantity
+import numpy
+
+num0 = quantity(7, "m s-1")
+num1 = quantity(4, "km")
+num2 = numpy.array([quantity(2, "m"), quantity(4, "km")])
+num3 = quantity(numpy.array([1, 2, 3]), "T")
+
+print(num0 * 3)
+print(num1 ** 2 < 16)
+print(numpy.sum(num2))
+print(num3)
+```
+
+The output is:
+
+	21 m / s
+	False
+	4002.0 m
+	[1 2 3] T
 
 ### Conversions, unpacking and packing
 

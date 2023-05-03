@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from colorama import Style
 
 from .exceptions import *
@@ -15,19 +17,19 @@ class quantity:
         except(AssertionError):
             raise UnitError(unit)
 
-        self.value = value
+        self.value: any = value
 
-        table = SI_TABLE.copy()
+        table: dict = SI_TABLE.copy()
         table.update(SI_DERIVED_TABLE)
 
         # From unit: str to self.units: dict.
-        self.units = dictFromUnit(unit)
+        self.units: dict = dictFromUnit(unit)
 
         # Checks whether the unit can be converted with the available units.
-        self.convertible = all([any([unit in table[family] for family in table]) for unit in self.units])
+        self.convertible: bool = all([any([unit in table[family] for family in table]) for unit in self.units])
        
         # Define quantity's dimentsionality based on self.units.
-        self.dimensionalities = {getFamily(unit): self.units[unit] for unit in self.units}
+        self.dimensionalities: dict = {getFamily(unit): self.units[unit] for unit in self.units} if self.convertible else dict()
 
     # Returns a readable unit.
     def unit(self, print: bool = False) -> str:
@@ -103,42 +105,42 @@ class quantity:
 
 
     # Abs.
-    def __abs__(self) -> "quantity":
+    def __abs__(self) -> quantity:
         return quantity(abs(self.value), self.unit())
     
     # Positive.
-    def __pos__(self) -> "quantity":
+    def __pos__(self) -> quantity:
         return quantity(+self.value, self.unit())
     
     # Negative.
-    def __neg__(self) -> "quantity":
+    def __neg__(self) -> quantity:
         return quantity(-self.value, self.unit())
     
     # Invert.
-    def __invert__(self) -> "quantity":
+    def __invert__(self) -> quantity:
         return quantity(~self.value, self.unit())
     
     # Round.
-    def __round__(self, number: int) -> "quantity":
+    def __round__(self, number: int) -> quantity:
         return quantity(round(self.value, number), self.unit())
     
     # Floor.
-    def __floor__(self) -> "quantity":
+    def __floor__(self) -> quantity:
         from math import floor
         return quantity(floor(self.value), self.unit())
     
     # Ceil.
-    def __ceil__(self) -> "quantity":
+    def __ceil__(self) -> quantity:
         from math import ceil
         return quantity(ceil(self.value), self.unit())
     
     # Trunc.
-    def __trunc__(self) -> "quantity":
+    def __trunc__(self) -> quantity:
         from math import trunc
         return quantity(trunc(self.value), self.unit())
     
     # Addition.
-    def __add__(self, other: "quantity") -> "quantity":
+    def __add__(self, other: quantity) -> quantity:
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
                 other = convert(other, self.unit())
@@ -148,11 +150,11 @@ class quantity:
         
         return quantity(self.value + other.value, self.unit())
     
-    def __radd__(self, other: "quantity") -> "quantity":
+    def __radd__(self, other: quantity) -> quantity:
         return self.__add__(other)
     
     # Subtraction.
-    def __sub__(self, other: "quantity") -> "quantity":
+    def __sub__(self, other: quantity) -> quantity:
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
                 other = convert(other, self.unit())
@@ -162,7 +164,7 @@ class quantity:
         
         return quantity(self.value - other.value, self.unit())
     
-    def __rsub__(self, other: "quantity") -> "quantity":
+    def __rsub__(self, other: quantity) -> quantity:
         return self.__sub__(other)
 
     # Multiplication.
@@ -208,14 +210,14 @@ class quantity:
         
         return quantity(self.value / other.value, unitFromDict(newUnits)) if unitFromDict(newUnits) else self.value / other.value
     
-    def __floordiv__(self, other: any) -> "quantity":
+    def __floordiv__(self, other: any) -> quantity:
         return quantity(self.value // other, self.unit())
 
     def __rtruediv__(self, other: any) -> any:
         return self ** -1 * other
     
     # Power.
-    def __pow__(self, other: any) -> "quantity":
+    def __pow__(self, other: any) -> quantity:
         if other == 0:
             return 1
 
@@ -227,7 +229,7 @@ class quantity:
         return quantity(self.value ** other, unitFromDict(newUnits))
     
     # Modulo.
-    def __mod__(self, other: any) -> "quantity":
+    def __mod__(self, other: any) -> quantity:
         return quantity(self.value % other, self.unit())
     
 
@@ -235,7 +237,7 @@ class quantity:
 
 
     # Less than.
-    def __lt__(self, other: any) -> "quantity":
+    def __lt__(self, other: any) -> quantity:
         if type(other) != quantity:
             return self.value < other
         
@@ -249,7 +251,7 @@ class quantity:
         return self.value < other.value
     
     # Less or equal.
-    def __le__(self, other: any) -> "quantity":
+    def __le__(self, other: any) -> quantity:
         if type(other) != quantity:
             return self.value <= other
         
@@ -263,7 +265,7 @@ class quantity:
         return self.value <= other.value
     
     # Greater than.
-    def __gt__(self, other: any) -> "quantity":
+    def __gt__(self, other: any) -> quantity:
         if type(other) != quantity:
             return self.value > other
         
@@ -277,7 +279,7 @@ class quantity:
         return self.value > other.value
     
     # Greater or equal.
-    def __ge__(self, other: any) -> "quantity":
+    def __ge__(self, other: any) -> quantity:
         if type(other) != quantity:
             return self.value >= other
         
@@ -291,14 +293,14 @@ class quantity:
         return self.value >= other.value
     
     # Equal.
-    def __eq__(self, other: any) -> "quantity":
+    def __eq__(self, other: any) -> quantity:
         if type(other) != quantity:
             return self.value == other
         
         return self.value == other.value and self.unit() == other.unit()
 
     # Not equal.
-    def __ne__(self, other: any) -> "quantity":
+    def __ne__(self, other: any) -> quantity:
         if type(other) != quantity:
             return self.value != other
         
@@ -312,18 +314,18 @@ def convert(converted: quantity, target: str, partial: bool = False, un_pack: bo
     if not converted.convertible:
         raise ConversionError(converted, target)
     
-    # Check compatibility.
+    # Check dimensionality.
     if not partial:
         if unpack(converted).dimensionality() != unpack(quantity(1, target)).dimensionality():
             raise ConversionError(converted, target)
 
-    factor = 1.0
-    units = converted.units.copy()
-    targetUnits = dictFromUnit(target)
+    factor: float = 1.0
+    units: dict = converted.units.copy()
+    targetUnits: dict = dictFromUnit(target)
 
-    partialTargets = []
+    partialTargets: dict = dict()
 
-    table = SI_TABLE.copy()
+    table: dict = SI_TABLE.copy()
     table.update(SI_DERIVED_TABLE)
 
     for sym in units.keys():
@@ -339,7 +341,7 @@ def convert(converted: quantity, target: str, partial: bool = False, un_pack: bo
             if not partial:
                 raise ConversionError(converted, target)
             
-            partialTargets.append(sym + str(units[sym]))
+            partialTargets[sym] = units[sym]
             continue
 
         elif familyCounter > 1:
@@ -350,18 +352,18 @@ def convert(converted: quantity, target: str, partial: bool = False, un_pack: bo
                 raise ConversionError(converted, target)
             
             factor *= (table[family][sym] / table[family][targetUnit]) ** units[sym]
-            partialTargets.append(targetUnit + str(targetUnits[targetUnit]))
+            partialTargets[targetUnit] = targetUnits[targetUnit]
             continue
         
         elif partial:
-            partialTargets.append(sym + str(units[sym]))
+            partialTargets[sym] = units[sym]
     
-    return quantity(converted.value * factor, target) if not partial else quantity(converted.value * factor, " ".join(partialTargets))
+    return quantity(converted.value * factor, target) if not partial else quantity(converted.value * factor, unitFromDict(partialTargets))
 
 # Unpacking function.
 def unpack(converted: quantity, targets: str = "") -> quantity:
-    unpackTable = SI_DERIVED_UNPACKING_TABLE.copy()
-    derivedTable = SI_DERIVED_TABLE.copy()
+    unpackTable: dict = SI_DERIVED_UNPACKING_TABLE.copy()
+    derivedTable: dict = SI_DERIVED_TABLE.copy()
 
     if targets == "": # Unpacks all derived units.
         targets = " ".join([unit for unit in converted.units if getFamily(unit) in derivedTable])
