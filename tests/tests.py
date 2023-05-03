@@ -1,13 +1,13 @@
 # Test suite for misura.
 
-from misura import unit, convert, unpack
+from misura import quantity, convert, unpack
 
-num0 = unit(5, "m2")
-num1 = unit(67, "km")
-num2 = unit(12, "A s")
-num3 = unit(1, "C mW")
-num4 = unit(900, "J")
-num5 = unit(15, "H TT")
+num0 = quantity(5, "m2")
+num1 = quantity(67, "km")
+num2 = quantity(12, "A s")
+num3 = quantity(1, "C mW")
+num4 = quantity(900, "J")
+num5 = quantity(15, "H TT")
 
 # Math.
 print(num0 ** .5)
