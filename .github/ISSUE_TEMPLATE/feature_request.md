@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: misura's new feature
+title: New feature
 labels: enhancement
 assignees: diantonioandrea
 ---
