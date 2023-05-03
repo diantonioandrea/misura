@@ -10,6 +10,12 @@
 
 # misura
 
+``` python
+>>> from misura import quantity
+>>> quantity(2, "m") / quantity(4, "s")
+0.5 m / s
+```
+
 Python library for easy unit handling and conversion for scientific & engineering applications.  
 
 **misura** is a Python library designed to simplify the *handling of units of measure* for scientific and engineering applications. It provides a unified interface for *dealing with different units and their conversions*, allowing for quick and accurate calculations without the need for complex manual conversions.  
