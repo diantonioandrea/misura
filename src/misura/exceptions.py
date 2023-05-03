@@ -1,10 +1,10 @@
 # Exceptions.
 
-class UnitError(TypeError):
+class UnitError(Exception):
     def __init__(self, unit: str) -> None:
         super().__init__("unknown unit: {}".format(unit) if unit != "" else "empty unit")
 
-class UnitError(Exception):
+class QuantityError(Exception):
     def __init__(self, first, second, operation: str) -> None:
         super().__init__("unsupported operand unit(s) for {0}: \'{1}\' and \'{2}\'\nraised by: \'{3}\' {0} \'{4}\'".format(operation, first.unit(), second.unit(), first, second))
         

@@ -126,7 +126,7 @@ The output is:
 	4.005 kg
 	0.4 km / s
 
-### Unpack derived quantitys
+### Unpack derived quantities
 
 ``` python
 from misura import quantity, unpack
@@ -143,7 +143,7 @@ The output is:
 	2.0 kg(2) m(4) / s(4)
 	4.0 C kg m(2) / A(2) s(2)
 
-### Pack derived quantitys
+### Pack derived quantities
 
 ``` python
 

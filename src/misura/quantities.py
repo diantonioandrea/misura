@@ -44,7 +44,7 @@ class quantity:
             if not numerator and denominator:
                 numerator = "1"
 
-            if style.unitHighlighting:
+            if style.quantityHighlighting:
                 return Style.BRIGHT + numerator + denominator + Style.RESET_ALL if numerator else ""
             
             return "[" + numerator + denominator + "]" if numerator else ""
@@ -146,7 +146,7 @@ class quantity:
                 other = convert(other, self.unit())
 
             else:
-                raise UnitError(self, other, "+")
+                raise QuantityError(self, other, "+")
         
         return quantity(self.value + other.value, self.unit())
     
@@ -160,7 +160,7 @@ class quantity:
                 other = convert(other, self.unit())
 
             else:
-                raise UnitError(self, other, "-")
+                raise QuantityError(self, other, "-")
         
         return quantity(self.value - other.value, self.unit())
     
@@ -246,7 +246,7 @@ class quantity:
                 other = convert(other, self.unit())
 
             else:
-                raise UnitError(self, other, "<")
+                raise QuantityError(self, other, "<")
         
         return self.value < other.value
     
@@ -260,7 +260,7 @@ class quantity:
                 other = convert(other, self.unit())
 
             else:
-                raise UnitError(self, other, "<=")
+                raise QuantityError(self, other, "<=")
         
         return self.value <= other.value
     
@@ -274,7 +274,7 @@ class quantity:
                 other = convert(other, self.unit())
 
             else:
-                raise UnitError(self, other, ">")
+                raise QuantityError(self, other, ">")
         
         return self.value > other.value
     
@@ -288,7 +288,7 @@ class quantity:
                 other = convert(other, self.unit())
 
             else:
-                raise UnitError(self, other, ">=")
+                raise QuantityError(self, other, ">=")
         
         return self.value >= other.value
     
