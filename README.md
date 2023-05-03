@@ -58,41 +58,41 @@ Developed by Andrea Di Antonio, more on https://github.com/diantonioandrea/misur
 Documentation on https://github.com/diantonioandrea/misura/blob/main/docs/docs.md
 Bug tracker on https://github.com/diantonioandrea/misura/issues
 
-Here's a list of available units.
+Here's the list of available units.
 
 BASE UNITS
 
-Time: s
-Length: m
-Mass: kg
-Electric current: A
-Thermodynamic temperature: K
-Amount of substance: mol
-Luminous intensity: cd
+Time: s.
+Length: m.
+Mass: kg.
+Electric current: A.
+Thermodynamic temperature: K.
+Amount of substance: mol.
+Luminous intensity: cd.
 
 DERIVED UNITS
 
-Plane angle: rad
-Solid angle: sr
-Frequency: Hz [s-1]
-Force: N [kg m s-2]
-Pressure: Pa [kg m-1 s-2]
-Energy: J [kg m2 s-2]
-Power: W [kg m2 s-3]
-Electric charge: C [A s]
-Electric potential: V [kg m2 s-3 A-1]
-Capacitance: F [kg-1 m-2 s4 A2]
-Resistance: Ω [kg m2 s-3 A-2]
-Electrical conductance: S [kg-1 m-2 s3 A2]
-Magnetic flux: Wb [kg m2 s-2 A-1]
-Magnetic flux density: T [kg s-2 A-1]
-Inductance: H [kg m2 s-2 A-2]
-Luminous flux: lm [cd sr]
-Illuminance: lx [cd sr m-2]
-Radionuclide activity: Bq [s-1]
-Absorbed dose: Gy [m2 s-2]
-Equivalent dose: Sv [m2 s-2]
-Catalyc activity: kat [mol s-1]
+Plane angle: rad.
+Solid angle: sr.
+Frequency: Hz [s-1].
+Force: N [kg m s-2].
+Pressure: Pa [kg m-1 s-2].
+Energy: J [kg m2 s-2].
+Power: W [kg m2 s-3].
+Electric charge: C [A s].
+Electric potential: V [kg m2 s-3 A-1].
+Capacitance: F [kg-1 m-2 s4 A2].
+Resistance: Ω [kg m2 s-3 A-2].
+Electrical conductance: S [kg-1 m-2 s3 A2].
+Magnetic flux: Wb [kg m2 s-2 A-1].
+Magnetic flux density: T [kg s-2 A-1].
+Inductance: H [kg m2 s-2 A-2].
+Luminous flux: lm [cd sr].
+Illuminance: lx [cd sr m-2].
+Radionuclide activity: Bq [s-1].
+Absorbed dose: Gy [m2 s-2].
+Equivalent dose: Sv [m2 s-2].
+Catalyc activity: kat [mol s-1].
 ```
 
 
