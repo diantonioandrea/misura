@@ -188,13 +188,14 @@ The function `unpack` takes a `quantity` object, converted and an optional strin
 ### packing
 
 ``` python
-misura.pack(converted: quantity, targets: str = "") -> quantity
+misura.pack(converted: quantity, targets: str, full: bool = False) -> quantity
 ```
 
-The function `unpack` takes a `quantity` object, converted and a string, `targets`.
+The function `unpack` takes a `quantity` object, converted, a string, `targets` and a flag, `full`.
 
 * `converted: quantity` is the quantity that needs to be converted.
 * `targets: str` is the string of target units, the derived units that need to be matched.
+* `full: bool = False` whether or not to fully pack a unit.
 
 Take a look at these [examples](#conversions-unpacking-and-packing-1).
 
@@ -255,17 +256,22 @@ The output is:
 ### Conversions, unpacking and packing
 
 ``` python
-from misura import quantity, convert, unpack
+from misura import quantity, convert, unpack, pack
 
 num1 = quantity(2, "m2")
 num2 = quantity(4, "kg")
 num3 = quantity(2, "J2")
 num4 = quantity(4, "C H")
+num5 = quantity(7, "N m")
+num6 = quantity(9, "J")
+num7 = quantity(45, "A2 s2")
 
 print(convert(num1, "cm2"))
 print(num2 + quantity(5, "g"))
 print(unpack(num3))
 print(unpack(num4, "H"))
+print(num5 + num6)
+print(pack(num7, "C", full=True))
 ```
 
 The output is:
@@ -274,6 +280,8 @@ The output is:
 	4.005 kg
 	2.0 kg(2) m(4) / s(4)
 	4.0 C kg m(2) / A(2) s(2)
+	16.0 J
+	45.0 C(2)
 
 ### Global options
 

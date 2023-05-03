@@ -10,6 +10,8 @@ num4 = quantity(900, "J")
 num5 = quantity(15, "H TT")
 num6 = quantity(12, "m2 s-2")
 num7 = quantity(3, "kg km2")
+num8 = quantity(13, "J")
+num9 = quantity(0.9, "mN km")
 
 # Math.
 print(num0 ** .5)
@@ -35,3 +37,7 @@ print(unpack(num5, "T"))
 # Packing.
 print(pack(num6, "Sv", full=True))
 print(pack(num7, "J"))
+
+# Automatic conversion with (un)packing.
+print(num8 + num9)
+print(num9 + num8)
