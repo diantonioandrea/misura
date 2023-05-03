@@ -143,7 +143,15 @@ class quantity:
     def __add__(self, other: quantity) -> quantity:
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
-                other = convert(other, self.unit())
+                # Chooses the one to convert.
+                first = convert(self, other.unit())
+                second = convert(other, self.unit())
+
+                if len(first.unit()) < len(second.unit()):
+                    self = first
+                
+                else:
+                    other = second
 
             else:
                 raise QuantityError(self, other, "+")
@@ -157,7 +165,15 @@ class quantity:
     def __sub__(self, other: quantity) -> quantity:
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
-                other = convert(other, self.unit())
+                # Chooses the one to convert.
+                first = convert(self, other.unit())
+                second = convert(other, self.unit())
+
+                if len(first.unit()) < len(second.unit()):
+                    self = first
+                
+                else:
+                    other = second
 
             else:
                 raise QuantityError(self, other, "-")
@@ -367,7 +383,7 @@ def convert(converted: quantity, target: str, partial: bool = False, un_pack: bo
         
         elif partial:
             partialTargets[sym] = units[sym]
-    
+
     return quantity(converted.value * factor, target) if not partial else quantity(converted.value * factor, unitFromDict(partialTargets))
 
 # Unpacking function.
