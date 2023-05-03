@@ -1,0 +1,18 @@
+# misura
+
+import pkg_resources
+
+from colorama import init, Style
+init()
+
+from .tables import SI_TABLE, SI_DERIVED_TABLE
+from .utilities import getRep
+
+print("misura v" + pkg_resources.get_distribution("misura").version)
+
+print("\nPython library for easy unit handling and conversion for scientific & engineering applications.")
+print("\nDeveloped by " + Style.BRIGHT + "Andrea Di Antonio" + Style.RESET_ALL + ", more on " + Style.BRIGHT + "https://github.com/diantonioandrea/misura" + Style.RESET_ALL)
+print("Documentation on " + Style.BRIGHT + "https://github.com/diantonioandrea/misura/blob/main/docs/docs.md" + Style.RESET_ALL)
+print("Bug tracker on " + Style.BRIGHT + "https://github.com/diantonioandrea/misura/issues" + Style.RESET_ALL)
+
+print("\nHere's a list of available units.\n\nBASE UNITS\n\n{}\n\nDERIVED UNITS\n\n{}".format("\n".join(["{}: {}".format(family[0].upper() + family[1:], getRep(family)) for family in SI_TABLE]), "\n".join(["{}: {}".format(family[0].upper() + family[1:], getRep(family)) for family in SI_DERIVED_TABLE])))
