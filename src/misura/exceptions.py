@@ -7,7 +7,7 @@ class UnitError(Exception):
 class QuantityError(Exception):
     def __init__(self, first, second, operation: str) -> None:
         super().__init__("unsupported operand unit(s) for {0}: \'{1}\' and \'{2}\'\nraised by: \'{3}\' {0} \'{4}\'".format(operation, first.unit(), second.unit(), first, second))
-        
+
 class ConversionError(Exception):
     def __init__(self, first, target: str) -> None:
         super().__init__("cannot convert from \'{0}\' to \'{1}\'\nraised by: \'{2}\' -> \'{1}\'".format(first.unit(), target, first))

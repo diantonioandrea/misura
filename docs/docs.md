@@ -6,24 +6,24 @@
 
 ## Table of Contents
 
-* [Projects built with misura](#projects-built-with-misura)
-* [Introduction](#introduction)
-* [Quantities](#quantities)
-	* [Methods](#methods)
-	* [Operations](#operations)
-* [Conversions, unpacking and packing](#conversions-unpacking-and-packing)
-	* [Conversion](#conversion)
-	* [Unpacking](#unpacking)
-	* [Packing](#packing)
-* [Global options](#global-options)
-* [Exceptions](#exceptions)
-* [Examples](#examples) 
+- [Projects built with misura](#projects-built-with-misura)
+- [Introduction](#introduction)
+- [Quantities](#quantities)
+  - [Methods](#methods)
+  - [Operations](#operations)
+- [Conversions, unpacking and packing](#conversions-unpacking-and-packing)
+  - [Conversion](#conversion)
+  - [Unpacking](#unpacking)
+  - [Packing](#packing)
+- [Global options](#global-options)
+- [Exceptions](#exceptions)
+- [Examples](#examples)
 
 ## Introduction
 
-Python library for easy unit handling and conversion for scientific & engineering applications.  
+Python library for easy unit handling and conversion for scientific & engineering applications.
 
-**misura** is a Python library designed to simplify the *handling of units of measure* for scientific and engineering applications. It provides a unified interface for *dealing with different units and their conversions*, allowing for quick and accurate calculations without the need for complex manual conversions.  
+**misura** is a Python library designed to simplify the _handling of units of measure_ for scientific and engineering applications. It provides a unified interface for _dealing with different units and their conversions_, allowing for quick and accurate calculations without the need for complex manual conversions.
 
 **misura** is written in Python and developed by [Andrea Di Antonio](https://github.com/diantonioandrea).
 
@@ -31,33 +31,33 @@ Python library for easy unit handling and conversion for scientific & engineerin
 
 [Go back to ToC](#table-of-contents)
 
-Quantities are defined as `misura.quantity(value: any, unit: str)` objects.  
+Quantities are defined as `misura.quantity(value: any, unit: str)` objects.
 
 `values` stands for the value of the quantity itself, while `unit` represents its unit of measure.  
-`quantity(2, "kg")` is a well-defined quantity.  
+`quantity(2, "kg")` is a well-defined quantity.
 
-`unit` must be a string in which the different units of measure must be *separated by a space* and *followed by their exponent*, if different from `1`.  
+`unit` must be a string in which the different units of measure must be _separated by a space_ and _followed by their exponent_, if different from `1`.  
 `quantity(3, "m s-1")` is a well-defined quantity.
 
 ### Methods
 
 `misura.quantity` objects implement the following methods:
 
-``` python
+```python
 def unit(self, print: bool = False) -> str
 def dimensionality(self) -> str
 ```
 
 which:
 
-* `unit()`: Returns the units string of the quantity. It returns it in a fancier way if `print = True`.
-* `dimensionality()`: Returns the dimensionality string of the quantity if it is convertible.
+- `unit()`: Returns the units string of the quantity. It returns it in a fancier way if `print = True`.
+- `dimensionality()`: Returns the dimensionality string of the quantity if it is convertible.
 
 ### Operations
 
 `misura.quantity` objects implement the following dunder methods:
 
-``` python
+```python
 def __str__(self) -> str
 def __repr__(self) -> str
 def __format__(self, string) -> str
@@ -100,38 +100,38 @@ Take a look at these [examples](#quantities-1).
 
 [Go back to ToC](#table-of-contents)
 
-**misura** currently supports the following *families* (physical quantities):
+**misura** currently supports the following _families_ (physical quantities):
 
-* SI base units:
-	* Time, Second, **s**.
-	* Length, Metre, **m**.
-	* Mass, Kilogram, **kg**.
-	* Electric current, Ampere, **A**.
-	* Thermodynamic temperature, Kelvin, **K**.
-	* Amount of substance, Mole, **mol**.
-	* Luminous intensity, Candela, **cd**.
-* SI derived units.
-	* Plane angle, Radian, **rad**.
-	* Solid angle, Steradian, **sr**.
-	* Frequency, Hertz, **Hz**.
-	* Force, Newton, **N**.
-	* Pressure, Pascal, **Pa**.
-	* Energy, Joule, **J**.
-	* Power, Watt, **W**.
-	* Electric charge, Coulomb, **C**.
-	* Electric potential, Volt, **V**.
-	* Capacitance, Farad, **F**.
-	* Resistance, Ohm, **Ω**.
-	* Electrical conductance, Siemens, **S**.
-	* Magnetic flux, Weber, **Wb**.
-	* Magentic flux density, Tesla, **T**.
-	* Inductance, Henry, **H**.
-	* Luminous flux, Lumen, **lm**.
-	* Illuminance, Lux, **lx**.
-	* Radionuclide activity, Becquerel, **Bq**.
-	* Absorbed dose, Gray, **Gy**.
-	* Equivalent dose, Sievert, **Sv**.
-	* Catalytic activity, Katal, **kat**.
+- SI base units:
+  - Time, Second, **s**.
+  - Length, Metre, **m**.
+  - Mass, Kilogram, **kg**.
+  - Electric current, Ampere, **A**.
+  - Thermodynamic temperature, Kelvin, **K**.
+  - Amount of substance, Mole, **mol**.
+  - Luminous intensity, Candela, **cd**.
+- SI derived units.
+  - Plane angle, Radian, **rad**.
+  - Solid angle, Steradian, **sr**.
+  - Frequency, Hertz, **Hz**.
+  - Force, Newton, **N**.
+  - Pressure, Pascal, **Pa**.
+  - Energy, Joule, **J**.
+  - Power, Watt, **W**.
+  - Electric charge, Coulomb, **C**.
+  - Electric potential, Volt, **V**.
+  - Capacitance, Farad, **F**.
+  - Resistance, Ohm, **Ω**.
+  - Electrical conductance, Siemens, **S**.
+  - Magnetic flux, Weber, **Wb**.
+  - Magentic flux density, Tesla, **T**.
+  - Inductance, Henry, **H**.
+  - Luminous flux, Lumen, **lm**.
+  - Illuminance, Lux, **lx**.
+  - Radionuclide activity, Becquerel, **Bq**.
+  - Absorbed dose, Gray, **Gy**.
+  - Equivalent dose, Sievert, **Sv**.
+  - Catalytic activity, Katal, **kat**.
 
 with the following orders of magnitude:
 
@@ -163,40 +163,40 @@ with the following orders of magnitude:
 
 ### Conversion
 
-``` python
+```python
 misura.convert(converted: quantity, target: str, partial: bool = False, un_pack: bool = False) -> quantity
 ```
 
 The function `convert` takes a `quantity` object, converted, a string, `target`, and two flags: `partial` and `un_pack`.
 
-* `converted: quantity` is the quantity that needs to be converted.
-* `target: str` is the string of target units, the units that need to be matched after conversion.
-* `partial: bool` whether or not the conversion should be partial, e.g. `"m s-1" -> "km s-1"`.
-* `un_pack: bool` whether or not to (un)pack derived units during conversion.
+- `converted: quantity` is the quantity that needs to be converted.
+- `target: str` is the string of target units, the units that need to be matched after conversion.
+- `partial: bool` whether or not the conversion should be partial, e.g. `"m s-1" -> "km s-1"`.
+- `un_pack: bool` whether or not to (un)pack derived units during conversion.
 
 ### unpacking
 
-``` python
+```python
 misura.unpack(converted: quantity, targets: str = "") -> quantity
 ```
 
 The function `unpack` takes a `quantity` object, converted and an optional string, `targets`.
 
-* `converted: quantity` is the quantity that needs to be converted.
-* `targets: str = ""` is the string of target units, the derived units that need to be unpacked. If empty, it unpacks every derived unit.
+- `converted: quantity` is the quantity that needs to be converted.
+- `targets: str = ""` is the string of target units, the derived units that need to be unpacked. If empty, it unpacks every derived unit.
 
 ### packing
 
-``` python
+```python
 misura.pack(converted: quantity, targets: str, full: bool = False) -> quantity
 ```
 
 The function `pack` takes a `quantity` object, converted, two strings, `targets` and `ignore`, and a flag, `full`.
 
-* `converted: quantity` is the quantity that needs to be converted.
-* `targets: str` is the string of target units, the derived units that need to be matched.
-* `ignore: str = ""` Due to the fact that `pack` works by first unpacking the units, some units can be manually ignored to enhance the final result.
-* `full: bool = False` whether or not to fully pack a unit.
+- `converted: quantity` is the quantity that needs to be converted.
+- `targets: str` is the string of target units, the derived units that need to be matched.
+- `ignore: str = ""` Due to the fact that `pack` works by first unpacking the units, some units can be manually ignored to enhance the final result.
+- `full: bool = False` whether or not to fully pack a unit.
 
 Take a look at these [examples](#conversions-unpacking-and-packing-1).
 
@@ -206,7 +206,7 @@ Take a look at these [examples](#conversions-unpacking-and-packing-1).
 
 **misura** implements the following global options:
 
-* `misura.style.unitHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
+- `misura.style.unitHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
 
 Take a look at these [examples](#global-options-1)
 
@@ -216,11 +216,11 @@ Take a look at these [examples](#global-options-1)
 
 **misura** implements the following exceptions:
 
-* `UnitError`: raised on invalid `unit` passed to `quantity(value, unit)`.
-* `QuantityError`: raised on operations between incompatible quantities.
-* `ConversionError`: raised on error during conversions.
-* `UnpackError`: raised on error during unpacking.
-* `PackError`: raised on error during packing.
+- `UnitError`: raised on invalid `unit` passed to `quantity(value, unit)`.
+- `QuantityError`: raised on operations between incompatible quantities.
+- `ConversionError`: raised on error during conversions.
+- `UnpackError`: raised on error during unpacking.
+- `PackError`: raised on error during packing.
 
 ## Examples
 
@@ -228,7 +228,7 @@ Take a look at these [examples](#global-options-1)
 
 ### Quantities
 
-``` python
+```python
 from misura import quantity
 import numpy
 
@@ -247,16 +247,18 @@ print(num4)
 
 The output is:
 
-	m / s
-	[length / time]
-	21 m / s
-	False
-	4002.0 m
-	[1 2 3] T
+```
+m / s
+[length / time]
+21 m / s
+False
+4002.0 m
+[1 2 3] T
+```
 
 ### Conversions, unpacking and packing
 
-``` python
+```python
 from misura import quantity, convert, unpack, pack
 
 num1 = quantity(2, "m2")
@@ -277,16 +279,18 @@ print(pack(num7, "C", full=True))
 
 The output is:
 
-	20000.0 cm(2)
-	4.005 kg
-	2.0 kg(2) m(4) / s(4)
-	4.0 C kg m(2) / A(2) s(2)
-	16.0 J
-	45.0 C(2)
+```
+20000.0 cm(2)
+4.005 kg
+2.0 kg(2) m(4) / s(4)
+4.0 C kg m(2) / A(2) s(2)
+16.0 J
+45.0 C(2)
+```
 
 ### Global options
 
-``` python
+```python
 from misura import quantity
 from misura import style
 
@@ -301,5 +305,7 @@ print(num2)
 
 The output is:
 
-	2 [m / s]
-	5 [s]
+```
+2 [m / s]
+5 [s]
+```
