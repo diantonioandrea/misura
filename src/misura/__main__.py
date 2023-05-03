@@ -5,7 +5,7 @@ import pkg_resources
 from colorama import init, Style
 init()
 
-from .tables import SI_TABLE, SI_DERIVED_TABLE
+from .tables import SI_TABLE, SI_DERIVED_TABLE, SI_DERIVED_UNPACKING_TABLE
 from .utilities import getRep
 
 print("misura v" + pkg_resources.get_distribution("misura").version)
@@ -15,4 +15,4 @@ print("\nDeveloped by " + Style.BRIGHT + "Andrea Di Antonio" + Style.RESET_ALL +
 print("Documentation on " + Style.BRIGHT + "https://github.com/diantonioandrea/misura/blob/main/docs/docs.md" + Style.RESET_ALL)
 print("Bug tracker on " + Style.BRIGHT + "https://github.com/diantonioandrea/misura/issues" + Style.RESET_ALL)
 
-print("\nHere's a list of available units.\n\nBASE UNITS\n\n{}\n\nDERIVED UNITS\n\n{}".format("\n".join(["{}: {}".format(family[0].upper() + family[1:], getRep(family)) for family in SI_TABLE]), "\n".join(["{}: {}".format(family[0].upper() + family[1:], getRep(family)) for family in SI_DERIVED_TABLE])))
+print("\nHere's a list of available units.\n\nBASE UNITS\n\n{}\n\nDERIVED UNITS\n\n{}".format("\n".join(["{}: {}.".format(family[0].upper() + family[1:], Style.BRIGHT + getRep(family) + Style.RESET_ALL) for family in SI_TABLE]), "\n".join(["{}: {}{}.".format(family[0].upper() + family[1:], Style.BRIGHT + getRep(family) + Style.RESET_ALL, (" [" + SI_DERIVED_UNPACKING_TABLE[getRep(family)] + "]") if getRep(family) in SI_DERIVED_UNPACKING_TABLE else "") for family in SI_DERIVED_TABLE])))
