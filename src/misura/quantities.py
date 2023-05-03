@@ -372,9 +372,11 @@ def unpack(converted: quantity, targets: str = "") -> quantity:
             return converted
 
     for target in dictFromUnit(targets):
-        # This shouldn't raise an IndexError as long as there's a reference quantity for every family.
+        # these shouldn't raise an IndexError as long as there's a reference quantity for every family.
         conversionTarget = [unit for unit in derivedTable[getFamily(target)] if derivedTable[getFamily(target)][unit] == 1].pop()
-        converted = convert(converted, conversionTarget, partial=True, un_pack=False)
+        conversionTargetPower = [converted.units[unit] for unit in converted.units if getFamily(unit) == getFamily(target)].pop()
+
+        converted = convert(converted, conversionTarget + str(conversionTargetPower), partial=True, un_pack=False)
         
         if conversionTarget not in unpackTable:
             raise UnpackError(converted, target)
@@ -395,7 +397,7 @@ def pack(converted: quantity, targets: str = "", full: bool = False) -> quantity
     # Simplify converted -> base unit.
     for unit in converted.units.keys():
         conversionTarget = [unit for unit in baseTable[getFamily(unit)] if baseTable[getFamily(unit)][unit] == 1].pop()
-        converted = convert(converted, conversionTarget, partial=True, un_pack=False)
+        converted = convert(converted, conversionTarget + str(converted.units[unit]), partial=True, un_pack=False)
 
     for target in dictFromUnit(targets):
         if target not in packTable:
