@@ -1,3 +1,5 @@
+from .exceptions import DefinitionError
+
 # Utilities
 
 def getRep(family: str) -> str:
@@ -32,7 +34,7 @@ def getBase() -> dict:
     table = SI_TABLE.copy()
 
     # User defined units.
-    table.update(user.BASE_TABLE)
+    table.update(define.BASE_TABLE)
 
     return table
 
@@ -41,7 +43,7 @@ def getDerived() -> dict:
     table = SI_DERIVED_TABLE.copy()
 
     # User defined derived units.
-    table.update(user.DERIVED_TABLE)
+    table.update(define.DERIVED_TABLE)
 
     return table
 
@@ -50,14 +52,14 @@ def getDerivedUnpacking() -> dict:
     table = SI_DERIVED_UNPACKING_TABLE.copy()
 
     # User defined derived units.
-    table.update(user.DERIVED_UNPACKING_TABLE)
+    table.update(define.DERIVED_UNPACKING_TABLE)
 
     return table
 
 # Conversion tables.
 
 # user defined units.
-class user:
+class define:
     BASE_TABLE = {}
     DERIVED_TABLE = {}
     DERIVED_UNPACKING_TABLE = {}
@@ -65,7 +67,13 @@ class user:
     def addBase(family: str, units: dict) -> None:
         pass
 
+    def removeBase(family: str) -> None:
+        pass
+
     def addDerived(family: str, units: dict, unpacks: str) -> None:
+        pass
+
+    def removeDerived(family: str) -> None:
         pass
 
 # Base units - SI.
