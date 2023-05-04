@@ -1,4 +1,5 @@
 from colorama import init
+
 init()
 
 # Global options.

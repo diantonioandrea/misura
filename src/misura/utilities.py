@@ -4,11 +4,12 @@ from .exceptions import UnitError
 
 # Utilities.
 
+
 def dictFromUnit(unit: str) -> dict:
     """
     Returns the dictionary of units from a properly formatted string..
     """
-        
+
     units = dict()
 
     for sym in unit.split(" "):
@@ -26,14 +27,23 @@ def dictFromUnit(unit: str) -> dict:
         try:
             units[sym.replace(power, "")] = int(power)
 
-        except(ValueError):
+        except ValueError:
             units[sym.replace(power, "")] = float(power)
 
     return units
+
 
 def unitFromDict(units: dict) -> str:
     """
     Returns a properly formatted unit string from a dictionary.
     """
-    
-    return " ".join(sorted([sym + ("{}".format(units[sym]) if units[sym] != 1 else "") for sym in units if units[sym] != 0]))
+
+    return " ".join(
+        sorted(
+            [
+                sym + ("{}".format(units[sym]) if units[sym] != 1 else "")
+                for sym in units
+                if units[sym] != 0
+            ]
+        )
+    )

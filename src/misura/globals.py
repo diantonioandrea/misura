@@ -1,5 +1,6 @@
 # Global options.
 
+
 class style:
     """
     Styling global options for misura.
@@ -9,6 +10,7 @@ class style:
     """
     Enables unit highlighting using colorama.
     """
+
 
 class defined:
     BASE_TABLE = {}
