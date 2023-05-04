@@ -1,15 +1,15 @@
 from re import findall
 
 from .exceptions import UnitError
-from .tables import SI_TABLE, SI_DERIVED_TABLE
 
 # Utilities.
+
 
 def dictFromUnit(unit: str) -> dict:
     """
     Returns the dictionary of units from a properly formatted string..
     """
-        
+
     units = dict()
 
     for sym in unit.split(" "):
@@ -27,39 +27,23 @@ def dictFromUnit(unit: str) -> dict:
         try:
             units[sym.replace(power, "")] = int(power)
 
-        except(ValueError):
+        except ValueError:
             units[sym.replace(power, "")] = float(power)
 
     return units
+
 
 def unitFromDict(units: dict) -> str:
     """
     Returns a properly formatted unit string from a dictionary.
     """
-    
-    return " ".join(sorted([sym + ("{}".format(units[sym]) if units[sym] != 1 else "") for sym in units if units[sym] != 0]))
 
-def getRep(family: str) -> str:
-    """
-    Returns a reference unit given its family.
-    """
-
-    table = SI_TABLE.copy()
-    table.update(SI_DERIVED_TABLE)
-
-    if family in table:
-        return [unit for unit in table[family] if table[family][unit] == 1].pop()
-
-def getFamily(unit: str) -> str:
-    """
-    Returns the family of a convertible unit.
-    """
-
-    table = SI_TABLE.copy()
-    table.update(SI_DERIVED_TABLE)
-
-    for family in table:
-        if unit in table[family]:
-            return family
-
-    return ""
+    return " ".join(
+        sorted(
+            [
+                sym + ("{}".format(units[sym]) if units[sym] != 1 else "")
+                for sym in units
+                if units[sym] != 0
+            ]
+        )
+    )
