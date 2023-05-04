@@ -9,7 +9,7 @@ from .exceptions import (
     UnpackError,
     PackError,
 )
-from .tables import getBase, getDerived, getDerivedUnpacking, getFamily
+from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
 from .utilities import dictFromUnit, unitFromDict
 
 # QUANTITIES
@@ -66,14 +66,14 @@ class quantity:
             numerator = " ".join(
                 sorted(
                     [
-                        sym
+                        unit
                         + (
-                            "({})".format(self.units[sym])
-                            if self.units[sym] != 1
+                            "({})".format(self.units[unit])
+                            if self.units[unit] != 1
                             else ""
                         )
-                        for sym in self.units
-                        if self.units[sym] > 0
+                        for unit in self.units
+                        if self.units[unit] > 0
                     ]
                 )
             )
@@ -83,19 +83,19 @@ class quantity:
                     + " ".join(
                         sorted(
                             [
-                                sym
+                                unit
                                 + (
-                                    "({})".format(-1 * self.units[sym])
-                                    if self.units[sym] != -1
+                                    "({})".format(-1 * self.units[unit])
+                                    if self.units[unit] != -1
                                     else ""
                                 )
-                                for sym in self.units
-                                if self.units[sym] < 0
+                                for unit in self.units
+                                if self.units[unit] < 0
                             ]
                         )
                     )
                 )
-                if len([sym for sym in self.units if self.units[sym] < 0])
+                if len([unit for unit in self.units if self.units[unit] < 0])
                 else ""
             )
 
@@ -127,14 +127,14 @@ class quantity:
         numerator = " * ".join(
             sorted(
                 [
-                    sym
+                    dim
                     + (
-                        "({})".format(self.dimensionalities[sym])
-                        if self.dimensionalities[sym] != 1
+                        "({})".format(self.dimensionalities[dim])
+                        if self.dimensionalities[dim] != 1
                         else ""
                     )
-                    for sym in self.dimensionalities
-                    if self.dimensionalities[sym] > 0
+                    for dim in self.dimensionalities
+                    if self.dimensionalities[dim] > 0
                 ]
             )
         )
@@ -144,20 +144,20 @@ class quantity:
                 + " * ".join(
                     sorted(
                         [
-                            sym
+                            dim
                             + (
-                                "({})".format(-1 * self.dimensionalities[sym])
-                                if self.dimensionalities[sym] != -1
+                                "({})".format(-1 * self.dimensionalities[dim])
+                                if self.dimensionalities[dim] != -1
                                 else ""
                             )
-                            for sym in self.dimensionalities
-                            if self.dimensionalities[sym] < 0
+                            for dim in self.dimensionalities
+                            if self.dimensionalities[dim] < 0
                         ]
                     )
                 )
             )
             if len(
-                [sym for sym in self.dimensionalities if self.dimensionalities[sym] < 0]
+                [dim for dim in self.dimensionalities if self.dimensionalities[dim] < 0]
             )
             else ""
         )
@@ -180,7 +180,7 @@ class quantity:
         return str(self)
 
     def __format__(self, string) -> str:  # Unit highlighting works for print only.
-        # This works with units only.
+        # This works with print only.
         return self.value.__format__(string) + (
             " " + self.unit(print=True) if self.unit() else ""
         )
@@ -297,13 +297,13 @@ class quantity:
         if self.convertible and other.convertible:
             other = convert(other, self.unit(), partial=True)
 
-        for sym in newUnits:
-            if sym in other.units:
-                newUnits[sym] += other.units[sym]
+        for unit in newUnits:
+            if unit in other.units:
+                newUnits[unit] += other.units[unit]
 
-        for sym in other.units:
-            if sym not in newUnits:
-                newUnits[sym] = other.units[sym]
+        for unit in other.units:
+            if unit not in newUnits:
+                newUnits[unit] = other.units[unit]
 
         return (
             quantity(self.value * other.value, unitFromDict(newUnits))
@@ -324,13 +324,13 @@ class quantity:
         if self.convertible and other.convertible:
             other = convert(other, self.unit(), partial=True)
 
-        for sym in newUnits:
-            if sym in other.units:
-                newUnits[sym] -= other.units[sym]
+        for unit in newUnits:
+            if unit in other.units:
+                newUnits[unit] -= other.units[unit]
 
-        for sym in other.units:
-            if sym not in newUnits:
-                newUnits[sym] = -other.units[sym]
+        for unit in other.units:
+            if unit not in newUnits:
+                newUnits[unit] = -other.units[unit]
 
         return (
             quantity(self.value / other.value, unitFromDict(newUnits))
@@ -351,8 +351,8 @@ class quantity:
 
         newUnits = self.units.copy()
 
-        for sym in newUnits:
-            newUnits[sym] *= other
+        for unit in newUnits:
+            newUnits[unit] *= other
 
         return quantity(self.value**other, unitFromDict(newUnits))
 
@@ -460,7 +460,7 @@ def convert(
     # Version 1.
     if un_pack and not partial:
         try:
-            return convert(pack(qnt, targets), targets, partial=False, un_pack=False)
+            return convert(pack(qnt, targets), targets, un_pack=False)
 
         except ConversionError:
             pass
@@ -468,7 +468,6 @@ def convert(
         return convert(
             unpack(qnt),
             unpack(quantity(1, targets)).unit(),
-            partial=False,
             un_pack=False,
         )
 
@@ -481,8 +480,8 @@ def convert(
     table: dict = getBase()
     table.update(getDerived())
 
-    for sym in units.keys():
-        family = getFamily(sym)
+    for unit in units.keys():
+        family = getFamily(unit)
         familyCounter = 0
 
         for targetSym in targetUnits:
@@ -494,22 +493,22 @@ def convert(
             if not partial:
                 raise ConversionError(qnt, targets)
 
-            partialTargets[sym] = units[sym]
+            partialTargets[unit] = units[unit]
             continue
 
         elif familyCounter > 1:
             raise ConversionError(qnt, targets)
 
-        elif sym != targetUnit:
-            if units[sym] != targetUnits[targetUnit]:
+        elif unit != targetUnit:
+            if units[unit] != targetUnits[targetUnit]:
                 raise ConversionError(qnt, targets)
 
-            factor *= (table[family][sym] / table[family][targetUnit]) ** units[sym]
+            factor *= (table[family][unit] / table[family][targetUnit]) ** units[unit]
             partialTargets[targetUnit] = targetUnits[targetUnit]
             continue
 
         elif partial:
-            partialTargets[sym] = units[sym]
+            partialTargets[unit] = units[unit]
 
     return (
         quantity(qnt.value * factor, targets)
@@ -537,12 +536,10 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
             return qnt
 
     for target in dictFromUnit(targets):
-        # these shouldn't raise an IndexError as long as there's a reference quantity for every family.
-        conversionTarget = [
-            unit
-            for unit in derivedTable[getFamily(target)]
-            if derivedTable[getFamily(target)][unit] == 1
-        ].pop()
+        if getFamily(target) not in [getFamily(unit) for unit in qnt.units]:
+            raise UnpackError(qnt, target)
+
+        conversionTarget = getRep(getFamily(target))
         conversionTargetPower = [
             qnt.units[unit]
             for unit in qnt.units
@@ -584,7 +581,7 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         raise PackError(qnt, "")
 
     # Simplify qnt -> base unit.
-    for unit in qnt.units.keys():
+    for unit in qnt.units:
         conversionTarget = [
             unit
             for unit in unitsTable[getFamily(unit)]
@@ -595,6 +592,11 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         )
 
     # Unpack only relevant units.
+    if ignore:
+        for ignored in dictFromUnit(ignore):
+            if getFamily(ignored) not in [getFamily(unit) for unit in qnt.units]:
+                raise PackError(qnt, targets, ignore)
+
     qnt = (
         quantity(
             qnt.value,
@@ -630,7 +632,8 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
         # Packing powers.
         powers = {
-            qnt.units[targetUnit] // targetUnits[targetUnit]
+            # Updated from // to / to account for fractional powers.
+            qnt.units[targetUnit] / targetUnits[targetUnit]
             for targetUnit in targetUnits
             if targetUnit in qnt.units
         }
@@ -638,17 +641,17 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         if not len(powers):
             raise PackError(qnt, targets)
 
-        if full:  # The packability check can be skipped
+        if full:
             # Packability check.
             for targetUnit in targetUnits:
                 if targetUnit not in qnt.units:
-                    raise PackError(qnt, targets, True)
+                    raise PackError(qnt, targets, full=True)
 
                 if qnt.units[targetUnit] % targetUnits[targetUnit]:
-                    raise PackError(qnt, targets, True)
+                    raise PackError(qnt, targets, full=True)
 
             if min(powers) < max(powers) or max(powers) < 0:
-                raise PackError(qnt, targets, True)
+                raise PackError(qnt, targets, full=True)
 
         qnt *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(
             powers

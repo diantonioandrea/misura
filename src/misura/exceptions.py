@@ -56,14 +56,28 @@ class PackError(Exception):
     Raised on errors during conversions.
     """
 
-    def __init__(self, qnt, target: str, full: bool = False) -> None:
-        super().__init__(
-            "cannot {3}pack '{0}' to '{1}'\nraised by: '{2}'".format(
-                qnt.unit(), target, qnt, "fully " if full else ""
+    def __init__(self, qnt, target: str, ignore: str = "", full: bool = False) -> None:
+        if ignore:  # Error on ignore.
+            super().__init__(
+                "cannot ignore '{1}'\nraised by: '{0}'".format(qnt, ignore)
             )
-            if target != ""
-            else "cannot automatically pack"
-        )
+
+        elif not target:  # Missing target.
+            super().__init__("cannot automatically pack\nraised by: '{0}'".format(qnt))
+
+        elif full:
+            super().__init__(
+                "cannot fully pack '{2}' to '{1}'\nraised by: '{0}'".format(
+                    qnt, target, qnt.unit()
+                )
+            )
+
+        else:
+            super().__init__(
+                "cannot pack '{2}' to '{1}'\nraised by: '{0}'".format(
+                    qnt, target, qnt.unit()
+                )
+            )
 
 
 class DefinitionError(Exception):
