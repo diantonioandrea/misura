@@ -632,7 +632,8 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
         # Packing powers.
         powers = {
-            qnt.units[targetUnit] // targetUnits[targetUnit]
+            # Updated from // to / to account for fractional powers.
+            qnt.units[targetUnit] / targetUnits[targetUnit]
             for targetUnit in targetUnits
             if targetUnit in qnt.units
         }
@@ -640,17 +641,17 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         if not len(powers):
             raise PackError(qnt, targets)
 
-        if full:  # The packability check can be skipped
+        if full:
             # Packability check.
             for targetUnit in targetUnits:
                 if targetUnit not in qnt.units:
-                    raise PackError(qnt, targets, True)
+                    raise PackError(qnt, targets, full=True)
 
                 if qnt.units[targetUnit] % targetUnits[targetUnit]:
-                    raise PackError(qnt, targets, True)
+                    raise PackError(qnt, targets, full=True)
 
             if min(powers) < max(powers) or max(powers) < 0:
-                raise PackError(qnt, targets, True)
+                raise PackError(qnt, targets, full=True)
 
         qnt *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(
             powers
