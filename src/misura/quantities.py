@@ -9,7 +9,7 @@ from .exceptions import (
     UnpackError,
     PackError,
 )
-from .tables import getBase, getDerived, getDerivedUnpacking, getFamily
+from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
 from .utilities import dictFromUnit, unitFromDict
 
 # QUANTITIES
@@ -536,12 +536,10 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
             return qnt
 
     for target in dictFromUnit(targets):
-        # these shouldn't raise an IndexError as long as there's a reference quantity for every family.
-        conversionTarget = [
-            unit
-            for unit in derivedTable[getFamily(target)]
-            if derivedTable[getFamily(target)][unit] == 1
-        ].pop()
+        if getFamily(target) not in [getFamily(unit) for unit in qnt.units]:
+            raise UnpackError(qnt, target)
+
+        conversionTarget = getRep(getFamily(target))
         conversionTargetPower = [
             qnt.units[unit]
             for unit in qnt.units
@@ -594,6 +592,11 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         )
 
     # Unpack only relevant units.
+    if ignore:
+        for ignored in dictFromUnit(ignore):
+            if getFamily(ignored) not in [getFamily(unit) for unit in qnt.units]:
+                raise PackError(qnt, targets, ignore)
+
     qnt = (
         quantity(
             qnt.value,

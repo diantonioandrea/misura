@@ -14,6 +14,7 @@ def getRep(family: str) -> str:
     table.update(getDerived())
 
     if family in table:
+        # This shouldn't raise an IndexError as long as there's a reference unit for every family.
         return [unit for unit in table[family] if table[family][unit] == 1].pop()
 
 
