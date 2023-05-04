@@ -5,8 +5,7 @@ from colorama import Style, init
 
 init()
 
-from .tables import SI_DERIVED_TABLE, SI_DERIVED_UNPACKING_TABLE, SI_TABLE
-from .utilities import getRep
+from .tables import SI_DERIVED_TABLE, SI_DERIVED_UNPACKING_TABLE, SI_TABLE, getRep
 
 print("misura v" + pkg_resources.get_distribution("misura").version)
 

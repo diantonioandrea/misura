@@ -3,8 +3,8 @@ from __future__ import annotations
 from colorama import Style
 
 from .exceptions import UnitError, QuantityError, ConversionError, UnpackError, PackError
-from .tables import SI_TABLE, SI_DERIVED_TABLE, SI_DERIVED_UNPACKING_TABLE
-from .utilities import dictFromUnit, unitFromDict, getFamily
+from .tables import getBase, getDerived, getDerivedUnpacking, getFamily
+from .utilities import dictFromUnit, unitFromDict
 
 # QUANTITIES
 
@@ -28,8 +28,8 @@ class quantity:
 
         self.value: any = value
 
-        table: dict = SI_TABLE.copy()
-        table.update(SI_DERIVED_TABLE)
+        table: dict = getBase()
+        table.update(getDerived())
 
         # From unit: str to self.units: dict.
         self.units: dict = dictFromUnit(unit)
@@ -363,8 +363,8 @@ def convert(qnt: quantity, targets: str, partial: bool = False, un_pack: bool = 
 
     partialTargets: dict = dict()
 
-    table: dict = SI_TABLE.copy()
-    table.update(SI_DERIVED_TABLE)
+    table: dict = getBase()
+    table.update(getDerived())
 
     for sym in units.keys():
         family = getFamily(sym)
@@ -405,8 +405,8 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
     'targets = ""' completely unpacks the quantity.
     """
 
-    unpackTable: dict = SI_DERIVED_UNPACKING_TABLE.copy()
-    derivedTable: dict = SI_DERIVED_TABLE.copy()
+    unpackTable: dict = getDerivedUnpacking()
+    derivedTable: dict = getDerived()
 
     if targets == "": # Unpacks all derived units.
         targets = " ".join([unit for unit in qnt.units if getFamily(unit) in derivedTable])
@@ -437,10 +437,10 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
     'full = True' fully pack a unit.
     """
     
-    packTable: dict = SI_DERIVED_UNPACKING_TABLE.copy()
+    packTable: dict = getDerivedUnpacking()
 
-    unitsTable: dict = SI_TABLE.copy()
-    unitsTable.update(SI_DERIVED_TABLE)
+    unitsTable: dict = getBase()
+    unitsTable.update(getDerived())
 
     if targets == "":
         raise PackError(qnt, "")

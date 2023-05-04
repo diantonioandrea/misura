@@ -1,4 +1,72 @@
+# Utilities
+
+def getRep(family: str) -> str:
+    """
+    Returns a reference unit given its family.
+    """
+
+    table = SI_TABLE.copy()
+    table.update(SI_DERIVED_TABLE)
+
+    if family in table:
+        return [unit for unit in table[family] if table[family][unit] == 1].pop()
+
+def getFamily(unit: str) -> str:
+    """
+    Returns the family of a convertible unit.
+    """
+
+    table = SI_TABLE.copy()
+    table.update(SI_DERIVED_TABLE)
+
+    for family in table:
+        if unit in table[family]:
+            return family
+
+    return ""
+
+# Tables functions.
+
+def getBase() -> dict:
+    # SI units.
+    table = SI_TABLE.copy()
+
+    # User defined units.
+    table.update(user.BASE_TABLE)
+
+    return table
+
+def getDerived() -> dict:
+    # SI derived units.
+    table = SI_DERIVED_TABLE.copy()
+
+    # User defined derived units.
+    table.update(user.DERIVED_TABLE)
+
+    return table
+
+def getDerivedUnpacking() -> dict:
+    # SI derived units.
+    table = SI_DERIVED_UNPACKING_TABLE.copy()
+
+    # User defined derived units.
+    table.update(user.DERIVED_UNPACKING_TABLE)
+
+    return table
+
 # Conversion tables.
+
+# user defined units.
+class user:
+    BASE_TABLE = {}
+    DERIVED_TABLE = {}
+    DERIVED_UNPACKING_TABLE = {}
+
+    def addBase(family: str, units: dict) -> None:
+        pass
+
+    def addDerived(family: str, units: dict, unpacks: str) -> None:
+        pass
 
 # Base units - SI.
 SI_TABLE = {

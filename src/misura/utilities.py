@@ -1,7 +1,6 @@
 from re import findall
 
 from .exceptions import UnitError
-from .tables import SI_TABLE, SI_DERIVED_TABLE
 
 # Utilities.
 
@@ -38,28 +37,3 @@ def unitFromDict(units: dict) -> str:
     """
     
     return " ".join(sorted([sym + ("{}".format(units[sym]) if units[sym] != 1 else "") for sym in units if units[sym] != 0]))
-
-def getRep(family: str) -> str:
-    """
-    Returns a reference unit given its family.
-    """
-
-    table = SI_TABLE.copy()
-    table.update(SI_DERIVED_TABLE)
-
-    if family in table:
-        return [unit for unit in table[family] if table[family][unit] == 1].pop()
-
-def getFamily(unit: str) -> str:
-    """
-    Returns the family of a convertible unit.
-    """
-
-    table = SI_TABLE.copy()
-    table.update(SI_DERIVED_TABLE)
-
-    for family in table:
-        if unit in table[family]:
-            return family
-
-    return ""
