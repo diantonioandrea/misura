@@ -11,6 +11,7 @@
 - [Quantities](#quantities)
 	- [Methods](#methods)
 	- [Operations](#operations)
+- [Units of measure](#units-of-measure)
 - [Conversions, unpacking and packing](#conversions-unpacking-and-packing)
 	- [Conversion](#conversion)
 	- [Unpacking](#unpacking)
@@ -96,9 +97,11 @@ For a quantity to be well-defined, `value` should implement all of the methods i
 
 Take a look at these [examples](#quantities-1).
 
-## Conversions, unpacking and packing
+## Units of measure
 
 [Go back to ToC](#table-of-contents)
+
+### Defaults
 
 **misura** currently supports the following _families_ (physical quantities):
 
@@ -161,11 +164,29 @@ with the following orders of magnitude:
 		R  =  1e+27
 		Q  =  1e+30
 
+### User defined units of measure
+
+``` python
+misura.addUnit(family: str, units: dict, unpacks: str = "") -> None
+```
+
+The function `addUnit` takes a string `family`, a dictionary `units` and an optional string `unpacks`.
+
+- `family: str` is the family (physical quantity) of the to-be-defined unit of measure.
+- `units: dict` is the dictionary of the available symbols for the specified family and it is structured as `{"symbol1": factor1, ..., "symbol": 1, ..., "symbolN": factorN}`.
+- `unpacks: str` is the string of the units to which the new unit unpacks, if it does. In this case the new unit becomes a derived unit.
+
+Take a look at these [examples](#units-of-measure-1)
+
+## Conversions, unpacking and packing
+
+[Go back to ToC](#table-of-contents)
+
 ### Conversion
 
 ```python
 misura.convert(converted: quantity, target: str, partial: bool = False, un_pack: bool = False) -> quantity
-```qnt
+```
 
 The function `convert` takes a `quantity` object, converted, a string, `targets`, and two flags: `partial` and `un_pack`.
 
@@ -221,6 +242,7 @@ Take a look at these [examples](#global-options-1)
 - `ConversionError`: raised on errors during conversions.
 - `UnpackError`: raised on errors during unpacking.
 - `PackError`: raised on errors during packing.
+- `DefinitionError`: raised on errors during unit definition.
 
 ## Examples
 
@@ -254,6 +276,24 @@ m / s
 False
 4002.0 m
 [1 2 3] T
+```
+
+### Units of measure
+
+```python
+from misura import quantity, convert, addUnit
+
+addUnit("volume", {"L": 1, "daL": 10, "hL": 100, "kL": 1000, "dL": 0.1, "cL": 0.01, "mL": 0.001}, "dm3")
+
+num1 = quantity(3, "L")
+
+print(convert(num1, "cm3"))
+```
+
+The output is:
+
+```
+3000.0 cm(3)
 ```
 
 ### Conversions, unpacking and packing

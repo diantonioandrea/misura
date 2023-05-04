@@ -110,7 +110,7 @@ def addUnit(family: str, units: dict, unpacks: str = ""):
 
     # Derived units checks.
     if unpacks:
-        rep = [unit.lower() for unit in units if units[unit] == 1].pop()
+        rep = [unit for unit in units if units[unit] == 1].pop()
 
         if rep in getDerivedUnpacking():
             raise DefinitionError(

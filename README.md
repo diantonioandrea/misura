@@ -30,6 +30,7 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 - Manual conversions: [Example](#manual-and-automatic-conversion).
 - Automatic conversions on operations: [Example](#manual-and-automatic-conversion).
 - Unpack and pack derived units: [Example](#unpack-derived-units), [example](#pack-units).
+- User defined base and derived units: [Example](#user-defined-units-of-measure).
 - Large compatibility with other libraries: [Example](#working-with-other-libraries).
 - Custom exceptions: [Example](#comparisons).
 
@@ -166,7 +167,25 @@ The output is:
 2.236067977499789696409173668731276235441 kg
 ```
 
-Quantity highlighting helps distinguish between different numbers.
+Unit highlighting helps distinguish between different numbers.
+
+### User defined units of measure
+
+```python
+from misura import quantity, convert, addUnit
+
+addUnit("volume", {"L": 1, "daL": 10, "hL": 100, "kL": 1000, "dL": 0.1, "cL": 0.01, "mL": 0.001}, "dm3")
+
+num1 = quantity(3, "L")
+
+print(convert(num1, "cm3"))
+```
+
+The output is:
+
+```
+3000.0 cm(3)
+```
 
 ### Manual and automatic conversion
 
