@@ -9,3 +9,8 @@ class style:
     """
     Enables unit highlighting using colorama.
     """
+
+class defined:
+    BASE_TABLE = {}
+    DERIVED_TABLE = {}
+    DERIVED_UNPACKING_TABLE = {}

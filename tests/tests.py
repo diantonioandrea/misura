@@ -1,6 +1,9 @@
 # Test suite for misura.
 
 from misura import quantity, convert, unpack, pack
+from misura import addUnit
+
+addUnit("bananas", {"bnn": 1, "dabnn": 10, "hbnn": 100, "kbnn": 1000})
 
 num0  = quantity(5, "m2")
 num1  = quantity(67, "km")
@@ -13,6 +16,7 @@ num7  = quantity(3, "kg km2")
 num8  = quantity(13, "J")
 num9  = quantity(0.9, "mN km")
 num10 = quantity(3, "N m T")
+num11 = quantity(12, "kbnn")
 
 # Math.
 print(num0 ** .5)
@@ -43,3 +47,6 @@ print(pack(num7, "J"))
 print(num8 + num9)
 print(num9 + num8)
 print(pack(num10, "J", ignore="T"))
+
+# Custom units conversions.
+print(convert(num11, "bnn"))

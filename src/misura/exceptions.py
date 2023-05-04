@@ -45,5 +45,6 @@ class DefinitionError(Exception):
     Raised on errors during unit definition.
     """
 
-    def __init__(self) -> None:
-        super().__init__("")
+    # Custom error defined in tables.py.
+    def __init__(self, error: str = "") -> None:
+        super().__init__(error)

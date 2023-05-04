@@ -1,4 +1,6 @@
 from .exceptions import DefinitionError
+from .utilities import dictFromUnit
+from .globals import defined
 
 # Utilities
 
@@ -7,8 +9,8 @@ def getRep(family: str) -> str:
     Returns a reference unit given its family.
     """
 
-    table = SI_TABLE.copy()
-    table.update(SI_DERIVED_TABLE)
+    table = getBase()
+    table.update(getDerived())
 
     if family in table:
         return [unit for unit in table[family] if table[family][unit] == 1].pop()
@@ -18,8 +20,8 @@ def getFamily(unit: str) -> str:
     Returns the family of a convertible unit.
     """
 
-    table = SI_TABLE.copy()
-    table.update(SI_DERIVED_TABLE)
+    table = getBase()
+    table.update(getDerived())
 
     for family in table:
         if unit in table[family]:
@@ -34,7 +36,7 @@ def getBase() -> dict:
     table = SI_TABLE.copy()
 
     # User defined units.
-    table.update(define.BASE_TABLE)
+    table.update(defined.BASE_TABLE)
 
     return table
 
@@ -43,7 +45,7 @@ def getDerived() -> dict:
     table = SI_DERIVED_TABLE.copy()
 
     # User defined derived units.
-    table.update(define.DERIVED_TABLE)
+    table.update(defined.DERIVED_TABLE)
 
     return table
 
@@ -52,29 +54,65 @@ def getDerivedUnpacking() -> dict:
     table = SI_DERIVED_UNPACKING_TABLE.copy()
 
     # User defined derived units.
-    table.update(define.DERIVED_UNPACKING_TABLE)
+    table.update(defined.DERIVED_UNPACKING_TABLE)
 
     return table
 
 # Conversion tables.
 
-# user defined units.
-class define:
-    BASE_TABLE = {}
-    DERIVED_TABLE = {}
-    DERIVED_UNPACKING_TABLE = {}
+def addUnit(family: str, units: dict, unpacks: str = ""):
+    table = getBase()
+    table.update(getDerived())
 
-    def addBase(family: str, units: dict) -> None:
-        pass
+    try:
+        assert isinstance(family, str)
+        assert isinstance(units, dict)
+        assert family != ""
+        assert len(units)
 
-    def removeBase(family: str) -> None:
-        pass
+        assert isinstance(unpacks, str) if unpacks else True
 
-    def addDerived(family: str, units: dict, unpacks: str) -> None:
-        pass
+    except(AssertionError):
+        raise DefinitionError("invalid options")
+    
+    family = family.lower()
 
-    def removeDerived(family: str) -> None:
-        pass
+    # Checks family.
+    if family in table:
+        raise DefinitionError("\'{}\' already exixts".format(family))
+    
+    # Checks rep.
+    if len([unit for unit in units if units[unit] == 1]) != 1:
+        raise DefinitionError("missing or invalid rep for family {}".format(family))
+    
+    # Checks units.
+    for unit in units:
+        if not isinstance(unit, str):
+            raise DefinitionError("invalid unit \'{}\'".format(unit))
+        
+        if not isinstance(units[unit], (int, float)):
+            raise DefinitionError("invalid unit factor for \'{}: {}\'".format(unit, units[unit]))
+        
+        if any([unit in table[family] for family in table]):
+            raise DefinitionError("unit already defined in family \'{}\'".format(getFamily(unit)))
+
+    # Derived units checks.
+    if unpacks:
+        rep = [unit.lower() for unit in units if units[unit] == 1].pop()
+
+        if rep in getDerivedUnpacking():
+            raise DefinitionError("unit already defined in the unpacking table \'{}\'".format(rep))
+        
+        for unit in dictFromUnit(unpacks):
+            if not getFamily(unit):
+                raise DefinitionError("invalid unit \'{}\'".format(unit))
+
+    if not unpacks:
+        defined.BASE_TABLE[family] = {unit: units[unit] for unit in units}
+    
+    else:
+        defined.DERIVED_TABLE[family] = {unit: units[unit] for unit in units}
+        defined.DERIVED_UNPACKING_TABLE[rep] = unpacks
 
 # Base units - SI.
 SI_TABLE = {
