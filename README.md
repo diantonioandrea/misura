@@ -11,8 +11,8 @@
 # misura
 
 ```python
->>> from misura import quantity
->>> (quantity(2, "m") + quantity(50, "cm")) / quantity(4, "s")
+>>> from misura import quantity as qnt
+>>> (qnt(2, "m") + qnt(50, "cm")) / qnt(4, "s")
 0.625 m / s
 ```
 
