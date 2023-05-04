@@ -10,6 +10,10 @@ class style:
 
 
 class defined:
+    """
+    User defined units.
+    """
+
     BASE_TABLE = {}
     DERIVED_TABLE = {}
     DERIVED_UNPACKING_TABLE = {}
