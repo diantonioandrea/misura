@@ -122,6 +122,7 @@ num2 = quantity(4, "m s-1")
 num3 = quantity(2, "s")
 
 print(num1 + num2)
+print((num1 + num2).dimensionality())
 print(num1 * num2)
 print(num1 / num3)
 print(num3 ** 2)
@@ -131,6 +132,7 @@ The output is:
 
 ```
 6 m / s
+[length / time]
 8 m(2) / s(2)
 1.0 m / s(2)
 4 s(2)
