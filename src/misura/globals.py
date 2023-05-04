@@ -7,9 +7,6 @@ class style:
     """
 
     quantityHighlighting = True
-    """
-    Enables unit highlighting using colorama.
-    """
 
 
 class defined:
