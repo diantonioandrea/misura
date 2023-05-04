@@ -12,6 +12,8 @@
 	- [Methods](#methods)
 	- [Operations](#operations)
 - [Units of measure](#units-of-measure)
+	- [Defaults](#defaults)
+	- [User defined units of measure](#user-defined-units-of-measure)
 - [Conversions, unpacking and packing](#conversions-unpacking-and-packing)
 	- [Conversion](#conversion)
 	- [Unpacking](#unpacking)
@@ -175,6 +177,8 @@ The function `addUnit` takes a string `family`, a dictionary `units` and an opti
 - `family: str` is the family (physical quantity) of the to-be-defined unit of measure.
 - `units: dict` is the dictionary of the available symbols for the specified family and it is structured as `{"symbol1": factor1, ..., "symbol": 1, ..., "symbolN": factorN}`.
 - `unpacks: str` is the string of the units to which the new unit unpacks, if it does. In this case the new unit becomes a derived unit.
+
+Note that the `units` dictionary must have a **reference unit**, a defining unit for that family, for which its factor is equal to `1`.
 
 Take a look at these [examples](#units-of-measure-1)
 
