@@ -1,11 +1,11 @@
 # misura
 
 import pkg_resources
+from colorama import Style, init
 
-from colorama import init, Style
 init()
 
-from .tables import SI_TABLE, SI_DERIVED_TABLE, SI_DERIVED_UNPACKING_TABLE
+from .tables import SI_DERIVED_TABLE, SI_DERIVED_UNPACKING_TABLE, SI_TABLE
 from .utilities import getRep
 
 print("misura v" + pkg_resources.get_distribution("misura").version)

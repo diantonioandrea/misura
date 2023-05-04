@@ -9,7 +9,16 @@ from .utilities import dictFromUnit, unitFromDict, getFamily
 # QUANTITIES
 
 class quantity:
+    """
+    The main class of misura, the class of quantities.
+    """
+
     def __init__(self, value: any, unit: str) -> None:
+        """
+        value: Can be anything that can be somewhat treated as a number.
+        unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
+        """
+
         try:
             assert isinstance(unit, str)
             assert unit != ""
@@ -31,8 +40,11 @@ class quantity:
         # Define quantity's dimentsionality based on self.units.
         self.dimensionalities: dict = {getFamily(unit): self.units[unit] for unit in self.units} if self.convertible else dict()
 
-    # Returns a readable unit.
     def unit(self, print: bool = False) -> str:
+        """
+        Returns a readable version of the quantity's unit.
+        print = True makes the output fancier.
+        """
         from .globals import style # Unit highlighting.
 
         # Fancy version.
@@ -52,9 +64,12 @@ class quantity:
         # {"m": 1, "s": -1} -> "m s-1".
         return unitFromDict(self.units)
 
-    # Returns a readable dimensionality.
-    # No fancy style.
     def dimensionality(self) -> str:
+        """
+        Returns a readable version of the quantity's dimensionality.
+        No fancy style.
+        """
+
         if not len(self.dimensionalities):
             return ""
 
@@ -316,30 +331,35 @@ class quantity:
 
 # CONVERSION, UNPACKING AND PACKING
 
-# Conversion function.
-def convert(converted: quantity, target: str, partial: bool = False, un_pack: bool = True) -> quantity:
-    if not converted.convertible:
-        raise ConversionError(converted, target)
+def convert(qnt: quantity, targets: str, partial: bool = False, un_pack: bool = True) -> quantity:
+    """
+    Conversion function; converts the passed quantity object to the specified target units.
+
+    "partial = True" converts only the specified units and "un_pack = True" enables automatic (un)packing.
+    """
+
+    if not qnt.convertible:
+        raise ConversionError(qnt, targets)
 
     # Check dimensionality.
     if not partial:
-        if unpack(converted).dimensionality() != unpack(quantity(1, target)).dimensionality():
-            raise ConversionError(converted, target)
+        if unpack(qnt).dimensionality() != unpack(quantity(1, targets)).dimensionality():
+            raise ConversionError(qnt, targets)
 
     # Automatic (un)packing.
     # Version 1.
     if un_pack and not partial:
         try:
-            return convert(pack(converted, target), target, partial=False, un_pack=False)
+            return convert(pack(qnt, targets), targets, partial=False, un_pack=False)
 
         except(ConversionError):
             pass
 
-        return convert(unpack(converted), unpack(quantity(1, target)).unit(), partial=False, un_pack=False)
+        return convert(unpack(qnt), unpack(quantity(1, targets)).unit(), partial=False, un_pack=False)
 
     factor: float = 1.0
-    units: dict = converted.units.copy()
-    targetUnits: dict = dictFromUnit(target)
+    units: dict = qnt.units.copy()
+    targetUnits: dict = dictFromUnit(targets)
 
     partialTargets: dict = dict()
 
@@ -357,17 +377,17 @@ def convert(converted: quantity, target: str, partial: bool = False, un_pack: bo
 
         if familyCounter == 0:
             if not partial:
-                raise ConversionError(converted, target)
+                raise ConversionError(qnt, targets)
 
             partialTargets[sym] = units[sym]
             continue
 
         elif familyCounter > 1:
-            raise ConversionError(converted, target)
+            raise ConversionError(qnt, targets)
 
         elif sym != targetUnit:
             if units[sym] != targetUnits[targetUnit]:
-                raise ConversionError(converted, target)
+                raise ConversionError(qnt, targets)
 
             factor *= (table[family][sym] / table[family][targetUnit]) ** units[sym]
             partialTargets[targetUnit] = targetUnits[targetUnit]
@@ -376,51 +396,62 @@ def convert(converted: quantity, target: str, partial: bool = False, un_pack: bo
         elif partial:
             partialTargets[sym] = units[sym]
 
-    return quantity(converted.value * factor, target) if not partial else quantity(converted.value * factor, unitFromDict(partialTargets))
+    return quantity(qnt.value * factor, targets) if not partial else quantity(qnt.value * factor, unitFromDict(partialTargets))
 
-# Unpacking function.
-def unpack(converted: quantity, targets: str = "") -> quantity:
+def unpack(qnt: quantity, targets: str = "") -> quantity:
+    """
+    Unpacking function; unpacks the passed targets units form the quantity object.
+
+    'targets = ""' completely unpacks the quantity.
+    """
+
     unpackTable: dict = SI_DERIVED_UNPACKING_TABLE.copy()
     derivedTable: dict = SI_DERIVED_TABLE.copy()
 
     if targets == "": # Unpacks all derived units.
-        targets = " ".join([unit for unit in converted.units if getFamily(unit) in derivedTable])
+        targets = " ".join([unit for unit in qnt.units if getFamily(unit) in derivedTable])
 
         if targets == "":
-            return converted
+            return qnt
 
     for target in dictFromUnit(targets):
         # these shouldn't raise an IndexError as long as there's a reference quantity for every family.
         conversionTarget = [unit for unit in derivedTable[getFamily(target)] if derivedTable[getFamily(target)][unit] == 1].pop()
-        conversionTargetPower = [converted.units[unit] for unit in converted.units if getFamily(unit) == getFamily(target)].pop()
+        conversionTargetPower = [qnt.units[unit] for unit in qnt.units if getFamily(unit) == getFamily(target)].pop()
 
-        converted = convert(converted, conversionTarget + str(conversionTargetPower), partial=True, un_pack=False)
+        qnt = convert(qnt, conversionTarget + str(conversionTargetPower), partial=True, un_pack=False)
 
         if conversionTarget not in unpackTable:
-            raise UnpackError(converted, target)
+            raise UnpackError(qnt, target)
 
-        newUnits = {key: converted.units[key] for key in converted.units if key != conversionTarget}
-        converted = (quantity(converted.value, unitFromDict(newUnits)) if len(newUnits) else converted.value) * (quantity(1, unpackTable[conversionTarget]) ** converted.units[conversionTarget])
+        newUnits = {key: qnt.units[key] for key in qnt.units if key != conversionTarget}
+        qnt = (quantity(qnt.value, unitFromDict(newUnits)) if len(newUnits) else qnt.value) * (quantity(1, unpackTable[conversionTarget]) ** qnt.units[conversionTarget])
 
-    return converted
+    return qnt
 
 # Packing function.
-def pack(converted: quantity, targets: str, ignore: str = "", full: bool = False) -> quantity:
+def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> quantity:
+    """
+    Packing function; packs the passed quantity object's unit according to the targets and the ones to ignore.
+
+    'full = True' fully pack a unit.
+    """
+    
     packTable: dict = SI_DERIVED_UNPACKING_TABLE.copy()
 
     unitsTable: dict = SI_TABLE.copy()
     unitsTable.update(SI_DERIVED_TABLE)
 
     if targets == "":
-        raise PackError(converted, "")
+        raise PackError(qnt, "")
 
-    # Simplify converted -> base unit.
-    for unit in converted.units.keys():
+    # Simplify qnt -> base unit.
+    for unit in qnt.units.keys():
         conversionTarget = [unit for unit in unitsTable[getFamily(unit)] if unitsTable[getFamily(unit)][unit] == 1].pop()
-        converted = convert(converted, conversionTarget + str(converted.units[unit]), partial=True, un_pack=False)
+        qnt = convert(qnt, conversionTarget + str(qnt.units[unit]), partial=True, un_pack=False)
 
     # Unpack only relevant units.
-    converted = quantity(converted.value, unitFromDict({unit: converted.units[unit] for unit in converted.units if unit in dictFromUnit(ignore)})) * unpack(quantity(1, unitFromDict({unit: converted.units[unit] for unit in converted.units if unit not in dictFromUnit(ignore)}))) if ignore else unpack(converted)
+    qnt = quantity(qnt.value, unitFromDict({unit: qnt.units[unit] for unit in qnt.units if unit in dictFromUnit(ignore)})) * unpack(quantity(1, unitFromDict({unit: qnt.units[unit] for unit in qnt.units if unit not in dictFromUnit(ignore)}))) if ignore else unpack(qnt)
 
     for target in dictFromUnit(targets):
         if target not in packTable:
@@ -429,23 +460,23 @@ def pack(converted: quantity, targets: str, ignore: str = "", full: bool = False
         targetUnits = dictFromUnit(packTable[target])
 
         # Packing powers.
-        powers = {converted.units[targetUnit] // targetUnits[targetUnit] for targetUnit in targetUnits if targetUnit in converted.units}
+        powers = {qnt.units[targetUnit] // targetUnits[targetUnit] for targetUnit in targetUnits if targetUnit in qnt.units}
 
         if not len(powers):
-            raise PackError(converted, targets)
+            raise PackError(qnt, targets)
 
         if full: # The packability check can be skipped
             # Packability check.
             for targetUnit in targetUnits:
-                if targetUnit not in converted.units:
-                    raise PackError(converted, targets, True)
+                if targetUnit not in qnt.units:
+                    raise PackError(qnt, targets, True)
 
-                if converted.units[targetUnit] % targetUnits[targetUnit]:
-                    raise PackError(converted, targets, True)
+                if qnt.units[targetUnit] % targetUnits[targetUnit]:
+                    raise PackError(qnt, targets, True)
 
             if min(powers) < max(powers) or max(powers) < 0:
-                raise PackError(converted, targets, True)
+                raise PackError(qnt, targets, True)
 
-        converted *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(powers)
+        qnt *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(powers)
 
-    return converted
+    return qnt

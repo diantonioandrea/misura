@@ -9,12 +9,12 @@
 - [Projects built with misura](#projects-built-with-misura)
 - [Introduction](#introduction)
 - [Quantities](#quantities)
-  - [Methods](#methods)
-  - [Operations](#operations)
+	- [Methods](#methods)
+	- [Operations](#operations)
 - [Conversions, unpacking and packing](#conversions-unpacking-and-packing)
-  - [Conversion](#conversion)
-  - [Unpacking](#unpacking)
-  - [Packing](#packing)
+	- [Conversion](#conversion)
+	- [Unpacking](#unpacking)
+	- [Packing](#packing)
 - [Global options](#global-options)
 - [Exceptions](#exceptions)
 - [Examples](#examples)
@@ -103,97 +103,97 @@ Take a look at these [examples](#quantities-1).
 **misura** currently supports the following _families_ (physical quantities):
 
 - SI base units:
-  - Time, Second, **s**.
-  - Length, Metre, **m**.
-  - Mass, Kilogram, **kg**.
-  - Electric current, Ampere, **A**.
-  - Thermodynamic temperature, Kelvin, **K**.
-  - Amount of substance, Mole, **mol**.
-  - Luminous intensity, Candela, **cd**.
+	- Time, Second, **s**.
+	- Length, Metre, **m**.
+	- Mass, Kilogram, **kg**.
+	- Electric current, Ampere, **A**.
+	- Thermodynamic temperature, Kelvin, **K**.
+	- Amount of substance, Mole, **mol**.
+	- Luminous intensity, Candela, **cd**.
 - SI derived units.
-  - Plane angle, Radian, **rad**.
-  - Solid angle, Steradian, **sr**.
-  - Frequency, Hertz, **Hz**.
-  - Force, Newton, **N**.
-  - Pressure, Pascal, **Pa**.
-  - Energy, Joule, **J**.
-  - Power, Watt, **W**.
-  - Electric charge, Coulomb, **C**.
-  - Electric potential, Volt, **V**.
-  - Capacitance, Farad, **F**.
-  - Resistance, Ohm, **Ω**.
-  - Electrical conductance, Siemens, **S**.
-  - Magnetic flux, Weber, **Wb**.
-  - Magentic flux density, Tesla, **T**.
-  - Inductance, Henry, **H**.
-  - Luminous flux, Lumen, **lm**.
-  - Illuminance, Lux, **lx**.
-  - Radionuclide activity, Becquerel, **Bq**.
-  - Absorbed dose, Gray, **Gy**.
-  - Equivalent dose, Sievert, **Sv**.
-  - Catalytic activity, Katal, **kat**.
+	- Plane angle, Radian, **rad**.
+	- Solid angle, Steradian, **sr**.
+	- Frequency, Hertz, **Hz**.
+	- Force, Newton, **N**.
+	- Pressure, Pascal, **Pa**.
+	- Energy, Joule, **J**.
+	- Power, Watt, **W**.
+	- Electric charge, Coulomb, **C**.
+	- Electric potential, Volt, **V**.
+	- Capacitance, Farad, **F**.
+	- Resistance, Ohm, **Ω**.
+	- Electrical conductance, Siemens, **S**.
+	- Magnetic flux, Weber, **Wb**.
+	- Magentic flux density, Tesla, **T**.
+	- Inductance, Henry, **H**.
+	- Luminous flux, Lumen, **lm**.
+	- Illuminance, Lux, **lx**.
+	- Radionuclide activity, Becquerel, **Bq**.
+	- Absorbed dose, Gray, **Gy**.
+	- Equivalent dose, Sievert, **Sv**.
+	- Catalytic activity, Katal, **kat**.
 
 with the following orders of magnitude:
 
-	q  =  1e-30
-	r  =  1e-27
-	y  =  1e-24
-	z  =  1e-21
-	a  =  1e-18
-	f  =  1e-15
-	p  =  1e-12
-	n  =  1e-09
-	µ  =  1e-06
-	m  =  1e-03
-	c  =  1e-02
-	d  =  1e-01
-	------------
-	da =  1e+01
-	h  =  1e+02
-	k  =  1e+03
-	M  =  1e+06
-	G  =  1e+09
-	T  =  1e+12
-	P  =  1e+15
-	E  =  1e+18
-	Z  =  1e+21
-	Y  =  1e+24
-	R  =  1e+27
-	Q  =  1e+30
+		q  =  1e-30
+		r  =  1e-27
+		y  =  1e-24
+		z  =  1e-21
+		a  =  1e-18
+		f  =  1e-15
+		p  =  1e-12
+		n  =  1e-09
+		µ  =  1e-06
+		m  =  1e-03
+		c  =  1e-02
+		d  =  1e-01
+		------------
+		da =  1e+01
+		h  =  1e+02
+		k  =  1e+03
+		M  =  1e+06
+		G  =  1e+09
+		T  =  1e+12
+		P  =  1e+15
+		E  =  1e+18
+		Z  =  1e+21
+		Y  =  1e+24
+		R  =  1e+27
+		Q  =  1e+30
 
 ### Conversion
 
 ```python
 misura.convert(converted: quantity, target: str, partial: bool = False, un_pack: bool = False) -> quantity
-```
+```qnt
 
-The function `convert` takes a `quantity` object, converted, a string, `target`, and two flags: `partial` and `un_pack`.
+The function `convert` takes a `quantity` object, converted, a string, `targets`, and two flags: `partial` and `un_pack`.
 
-- `converted: quantity` is the quantity that needs to be converted.
-- `target: str` is the string of target units, the units that need to be matched after conversion.
+- `qnt: quantity` is the quantity that needs to be converted.
+- `targets: str` is the string of target units, the units that need to be matched after conversion.
 - `partial: bool` whether or not the conversion should be partial, e.g. `"m s-1" -> "km s-1"`.
 - `un_pack: bool` whether or not to (un)pack derived units during conversion.
 
 ### unpacking
 
 ```python
-misura.unpack(converted: quantity, targets: str = "") -> quantity
+misura.unpack(qnt: quantity, targets: str = "") -> quantity
 ```
 
-The function `unpack` takes a `quantity` object, converted and an optional string, `targets`.
+The function `unpack` takes a `quantity` object, qnt and an optional string, `targets`.
 
-- `converted: quantity` is the quantity that needs to be converted.
+- `qnt: quantity` is the quantity that needs to be converted.
 - `targets: str = ""` is the string of target units, the derived units that need to be unpacked. If empty, it unpacks every derived unit.
 
 ### packing
 
 ```python
-misura.pack(converted: quantity, targets: str, full: bool = False) -> quantity
+misura.pack(qnt: quantity, targets: str, full: bool = False) -> quantity
 ```
 
-The function `pack` takes a `quantity` object, converted, two strings, `targets` and `ignore`, and a flag, `full`.
+The function `pack` takes a `quantity` object, qnt, two strings, `targets` and `ignore`, and a flag, `full`.
 
-- `converted: quantity` is the quantity that needs to be converted.
+- `qnt: quantity` is the quantity that needs to be converted.
 - `targets: str` is the string of target units, the derived units that need to be matched.
 - `ignore: str = ""` Due to the fact that `pack` works by first unpacking the units, some units can be manually ignored to enhance the final result.
 - `full: bool = False` whether or not to fully pack a unit.
@@ -218,9 +218,9 @@ Take a look at these [examples](#global-options-1)
 
 - `UnitError`: raised on invalid `unit` passed to `quantity(value, unit)`.
 - `QuantityError`: raised on operations between incompatible quantities.
-- `ConversionError`: raised on error during conversions.
-- `UnpackError`: raised on error during unpacking.
-- `PackError`: raised on error during packing.
+- `ConversionError`: raised on errors during conversions.
+- `UnpackError`: raised on errors during unpacking.
+- `PackError`: raised on errors during packing.
 
 ## Examples
 

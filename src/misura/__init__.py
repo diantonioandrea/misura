@@ -1,8 +1,9 @@
 from colorama import init
-init()
 
-# Units of measure.
-from .quantities import quantity, convert, unpack, pack
+init()
 
 # Global options.
 from .globals import *
+
+# Units of measure.
+from .quantities import convert, pack, quantity, unpack
