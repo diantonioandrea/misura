@@ -402,7 +402,7 @@ class quantity:
     # Power.
     def __pow__(self, other: any) -> quantity:
         if other == 0:
-            return quantity(1 * self.value, "", 1 * self.uncertainty)
+            return quantity(1 * bool(self.value), "", 1 * bool(self.uncertainty))
 
         if other == 1:
             return self
