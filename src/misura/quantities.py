@@ -573,9 +573,11 @@ def convert(
             partialTargets[unit] = units[unit]
 
     return (
-        quantity(qnt.value * factor, targets)
+        quantity(qnt.value * factor, targets, qnt.uncertainty * factor)
         if not partial
-        else quantity(qnt.value * factor, unitFromDict(partialTargets))
+        else quantity(
+            qnt.value * factor, unitFromDict(partialTargets), qnt.uncertainty * factor
+        )
     )
 
 
@@ -619,9 +621,11 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
             raise UnpackError(qnt, target)
 
         newUnits = {key: qnt.units[key] for key in qnt.units if key != conversionTarget}
+        uncertainty = qnt.uncertainty
         qnt = (
             quantity(qnt.value, unitFromDict(newUnits)) if len(newUnits) else qnt.value
         ) * (quantity(1, unpackTable[conversionTarget]) ** qnt.units[conversionTarget])
+        qnt.uncertainty = uncertainty
 
     return qnt
 
@@ -715,8 +719,10 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
             if min(powers) < max(powers) or max(powers) < 0:
                 raise PackError(qnt, targets, full=True)
 
+        uncertainty = qnt.uncertainty
         qnt *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(
             powers
         )
+        qnt.uncertainty = uncertainty
 
     return qnt
