@@ -27,13 +27,10 @@ class quantity:
         unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
         """
 
+        # Does not check whether type(value) == type(uncertainty).
         try:
             assert isinstance(unit, str)
-            assert (
-                (isinstance(uncertainty, type(value)) and uncertainty > 0)
-                if uncertainty
-                else True
-            )
+            assert (uncertainty > 0) if uncertainty else True
 
         except AssertionError:
             raise UnitError(unit)  # Needs a better exception.
@@ -252,7 +249,7 @@ class quantity:
     # Round.
     def __round__(self, number: int) -> quantity:
         return quantity(
-            round(self.value, number), self.unit(), round(self.value, number + 1)
+            round(self.value, number), self.unit(), round(self.uncertainty, number + 1)
         )
 
     # Floor.
@@ -405,8 +402,8 @@ class quantity:
     # Power.
     def __pow__(self, other: any) -> quantity:
         if other == 0:
-            return quantity(1, "", 1 * self.uncertainty)
-        
+            return quantity(1 * self.value, "", 1 * self.uncertainty)
+
         if other == 1:
             return self
 
@@ -415,7 +412,11 @@ class quantity:
         for unit in newUnits:
             newUnits[unit] *= other
 
-        return quantity(self.value**other, unitFromDict(newUnits), abs(other) * (self.value ** (other - 1)) * self.uncertainty)
+        return quantity(
+            self.value**other,
+            unitFromDict(newUnits),
+            abs(other) * (self.value ** (other - 1)) * self.uncertainty,
+        )
 
     # Modulo.
     # def __mod__(self, other: any) -> quantity:
