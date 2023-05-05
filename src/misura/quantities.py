@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from colorama import Style
+from math import sqrt
 
 from .exceptions import (
     UnitError,
@@ -28,10 +29,21 @@ class quantity:
 
         try:
             assert isinstance(unit, str)
-            assert isinstance(uncertainty, type(value)) if uncertainty else True
+            assert (
+                (isinstance(uncertainty, type(value)) and uncertainty > 0)
+                if uncertainty
+                else True
+            )
 
         except AssertionError:
-            raise UnitError(unit) # To be corrected
+            raise UnitError(unit)  # Needs a better exception.
+
+        except TypeError:
+            try:
+                assert all(uncertainty > 0)
+
+            except AssertionError:
+                raise UnitError(unit)  # Needs a better exception.
 
         self.value: any = value
         self.uncertainty = uncertainty
@@ -171,8 +183,10 @@ class quantity:
     # STRINGS.
 
     def __str__(self) -> str:
-        return (
-            "{}{}{}".format(self.value, " {} {} ".format("\u00b1", self.uncertainty) if self.uncertainty else " ", self.unit(print=True) if self.units else "")
+        return "{}{}{}".format(
+            self.value,
+            " {} {} ".format("\u00b1", self.uncertainty) if self.uncertainty else " ",
+            self.unit(print=True) if self.units else "",
         )
 
     def __repr__(self) -> str:
@@ -180,11 +194,21 @@ class quantity:
 
     def __format__(self, string) -> str:  # Unit highlighting works for print only.
         # This works with print only.
-        return self.value.__format__(string) + (
-            " " + self.unit(print=True) if self.unit() else ""
+        return (
+            self.value.__format__(string)
+            + (
+                (" \u00b1 " + self.uncertainty.__format__(string))
+                if self.uncertainty
+                else ""
+            )
+            + (" " + self.unit(print=True) if self.unit() else "")
         )
 
     # PYTHON TYPES CONVERSION.
+
+    """
+    int, float and complex don't care about uncertainty.
+    """
 
     # Int.
     def __int__(self) -> int:
@@ -200,50 +224,63 @@ class quantity:
 
     # Bool.
     def __bool__(self) -> bool:
-        return bool(self.value)
+        return bool(self.value or self.uncertainty)
 
     # MATH.
 
     # Abs.
     def __abs__(self) -> quantity:
-        return quantity(abs(self.value), self.unit())
+        # Since abs(number) cannot be negative, the uncertainty on this value gets modified.
+        return quantity(
+            abs(self.value),
+            self.unit(),
+            self.uncertainty if self.uncertainty < self.value else self.value,
+        )
 
     # Positive.
     def __pos__(self) -> quantity:
-        return quantity(+self.value, self.unit())
+        return quantity(+self.value, self.unit(), self.uncertainty)
 
     # Negative.
     def __neg__(self) -> quantity:
-        return quantity(-self.value, self.unit())
+        return quantity(-self.value, self.unit(), self.uncertainty)
 
     # Invert.
-    def __invert__(self) -> quantity:
-        return quantity(~self.value, self.unit())
+    # def __invert__(self) -> quantity:
+    #     return quantity(~self.value, self.unit())
 
     # Round.
     def __round__(self, number: int) -> quantity:
-        return quantity(round(self.value, number), self.unit())
+        return quantity(
+            round(self.value, number), self.unit(), round(self.value, number + 1)
+        )
 
     # Floor.
     def __floor__(self) -> quantity:
         from math import floor
 
-        return quantity(floor(self.value), self.unit())
+        return quantity(floor(self.value), self.unit(), floor(self.uncertainty))
 
     # Ceil.
     def __ceil__(self) -> quantity:
         from math import ceil
 
-        return quantity(ceil(self.value), self.unit())
+        return quantity(ceil(self.value), self.unit(), ceil(self.uncertainty))
 
     # Trunc.
     def __trunc__(self) -> quantity:
         from math import trunc
 
-        return quantity(trunc(self.value), self.unit())
+        return quantity(trunc(self.value), self.unit(), trunc(self.value))
 
     # Addition.
-    def __add__(self, other: quantity) -> quantity:
+    def __add__(self, other: any) -> quantity:
+        if not isinstance(other, quantity):
+            if self.unit():
+                raise QuantityError(self, quantity(other, ""), "+")
+
+            return quantity(self.value + other, "", self.uncertainty)
+
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
                 # Chooses the one to convert.
@@ -259,13 +296,23 @@ class quantity:
             else:
                 raise QuantityError(self, other, "+")
 
-        return quantity(self.value + other.value, self.unit())
+        return quantity(
+            self.value + other.value,
+            self.unit(),
+            sqrt(self.uncertainty**2 + other.uncertainty**2),
+        )
 
     def __radd__(self, other: quantity) -> quantity:
         return self.__add__(other)
 
     # Subtraction.
-    def __sub__(self, other: quantity) -> quantity:
+    def __sub__(self, other: any) -> quantity:
+        if not isinstance(other, quantity):
+            if self.unit():
+                raise QuantityError(self, quantity(other, ""), "-")
+
+            return quantity(self.value - other, "", self.uncertainty)
+
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
                 # Chooses the one to convert.
@@ -281,7 +328,11 @@ class quantity:
             else:
                 raise QuantityError(self, other, "-")
 
-        return quantity(self.value - other.value, self.unit())
+        return quantity(
+            self.value - other.value,
+            self.unit(),
+            sqrt(self.uncertainty**2 + other.uncertainty**2),
+        )
 
     def __rsub__(self, other: quantity) -> quantity:
         return self.__sub__(other)
@@ -289,7 +340,7 @@ class quantity:
     # Multiplication.
     def __mul__(self, other: any) -> any:
         if not isinstance(other, quantity):
-            return quantity(self.value * other, self.unit())
+            return quantity(self.value * other, self.unit(), self.uncertainty * other)
 
         newUnits = self.units.copy()
 
@@ -304,10 +355,13 @@ class quantity:
             if unit not in newUnits:
                 newUnits[unit] = other.units[unit]
 
-        return (
-            quantity(self.value * other.value, unitFromDict(newUnits))
-            if unitFromDict(newUnits)
-            else self.value * other.value
+        return quantity(
+            self.value * other.value,
+            unitFromDict(newUnits),
+            sqrt(
+                (other.value * self.uncertainty) ** 2
+                + (self.value * other.uncertainty) ** 2
+            ),
         )
 
     def __rmul__(self, other: any) -> any:
@@ -316,7 +370,7 @@ class quantity:
     # Division.
     def __truediv__(self, other: any) -> any:
         if not isinstance(other, quantity):
-            return quantity(self.value / other, self.unit())
+            return quantity(self.value / other, self.unit(), self.uncertainty / other)
 
         newUnits = self.units.copy()
 
@@ -331,14 +385,19 @@ class quantity:
             if unit not in newUnits:
                 newUnits[unit] = -other.units[unit]
 
-        return (
-            quantity(self.value / other.value, unitFromDict(newUnits))
-            if unitFromDict(newUnits)
-            else self.value / other.value
+        return quantity(
+            self.value / other.value,
+            unitFromDict(newUnits),
+            sqrt(
+                (self.uncertainty / other.value) ** 2
+                + (self.value * other.uncertainty / (other.value**2)) ** 2
+            ),
         )
 
     def __floordiv__(self, other: any) -> quantity:
-        return quantity(self.value // other, self.unit())
+        return quantity(
+            self.value // other, self.unit(), self.uncertainty // other
+        )  # Check uncertainty.
 
     def __rtruediv__(self, other: any) -> any:
         return self**-1 * other
@@ -346,18 +405,21 @@ class quantity:
     # Power.
     def __pow__(self, other: any) -> quantity:
         if other == 0:
-            return 1
+            return quantity(1, "", 1 * self.uncertainty)
+        
+        if other == 1:
+            return self
 
         newUnits = self.units.copy()
 
         for unit in newUnits:
             newUnits[unit] *= other
 
-        return quantity(self.value**other, unitFromDict(newUnits))
+        return quantity(self.value**other, unitFromDict(newUnits), abs(other) * (self.value ** (other - 1)) * self.uncertainty)
 
     # Modulo.
-    def __mod__(self, other: any) -> quantity:
-        return quantity(self.value % other, self.unit())
+    # def __mod__(self, other: any) -> quantity:
+    #     return quantity(self.value % other, self.unit())
 
     # COMPARISONS.
 
