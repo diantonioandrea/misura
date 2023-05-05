@@ -20,7 +20,7 @@ class quantity:
     The main class of misura, the class of quantities.
     """
 
-    def __init__(self, value: any, unit: str) -> None:
+    def __init__(self, value: any, unit: str = "", uncertainty: any = 0.0) -> None:
         """
         value: Can be anything that can be somewhat treated as a number.
         unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
@@ -28,12 +28,13 @@ class quantity:
 
         try:
             assert isinstance(unit, str)
-            assert unit != ""
+            assert isinstance(uncertainty, type(value)) if uncertainty else True
 
         except AssertionError:
-            raise UnitError(unit)
+            raise UnitError(unit) # To be corrected
 
         self.value: any = value
+        self.uncertainty = uncertainty
 
         table: dict = getBase()
         table.update(getDerived())
@@ -171,9 +172,7 @@ class quantity:
 
     def __str__(self) -> str:
         return (
-            "{} {}".format(self.value, self.unit(print=True))
-            if self.unit()
-            else str(self.value)
+            "{}{}{}".format(self.value, " {} {} ".format("\u00b1", self.uncertainty) if self.uncertainty else " ", self.unit(print=True) if self.units else "")
         )
 
     def __repr__(self) -> str:
