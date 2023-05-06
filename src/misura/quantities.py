@@ -11,7 +11,7 @@ from .exceptions import (
     PackError,
 )
 from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
-from .utilities import dictFromUnit, unitFromDict
+from .utilities import dictFromUnit, unitFromDict, checkIter, uAll, uAny
 
 
 class quantity:
@@ -19,26 +19,23 @@ class quantity:
     The main class of misura, the class of quantities.
     """
 
-    def __init__(self, value: any, unit: str = "", uncertainty: any = 0.0) -> None:
+    def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
         """
         value: Can be anything that can be somewhat treated as a number.
         unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
         """
 
-        # Does not check whether type(value) == type(uncertainty).
         try:
             assert isinstance(unit, str)
-            assert (uncertainty > 0) if uncertainty else True
+            assert uAll(uncertainty >= 0) if uAny(uncertainty) else True
+            assert (
+                (checkIter(value) == checkIter(uncertainty))
+                if uAny(uncertainty)
+                else True
+            )
 
         except AssertionError:
             raise UnitError(unit)  # Needs a better exception.
-
-        except TypeError:
-            try:
-                assert all(uncertainty > 0)
-
-            except AssertionError:
-                raise UnitError(unit)  # Needs a better exception.
 
         self.value: any = value
         self.uncertainty = uncertainty
@@ -178,7 +175,9 @@ class quantity:
     def __str__(self) -> str:
         return "{}{}{}".format(
             self.value,
-            " {} {} ".format("\u00b1", self.uncertainty) if self.uncertainty else " ",
+            " {} {} ".format("\u00b1", self.uncertainty)
+            if uAny(self.uncertainty)
+            else " ",
             self.unit(print=True) if self.units else "",
         )
 
@@ -191,7 +190,7 @@ class quantity:
             self.value.__format__(string)
             + (
                 (" \u00b1 " + self.uncertainty.__format__(string))
-                if self.uncertainty
+                if uAny(self.uncertainty)
                 else ""
             )
             + (" " + self.unit(print=True) if self.unit() else "")
@@ -227,7 +226,7 @@ class quantity:
         return quantity(
             abs(self.value),
             self.unit(),
-            self.uncertainty if self.uncertainty < self.value else self.value,
+            self.uncertainty if uAny(self.uncertainty) < self.value else self.value,
         )
 
     # Positive.
@@ -397,8 +396,11 @@ class quantity:
 
     # Power.
     def __pow__(self, other: any) -> quantity:
+        if isinstance(other, quantity):
+            raise QuantityError(self, other, "**")
+
         if other == 0:
-            return quantity(1 * bool(self.value), "", 1 * bool(self.uncertainty))
+            return quantity(1 * bool(self.value), "", 1 * self.uncertainty != 0)
 
         if other == 1:
             return self
@@ -413,6 +415,10 @@ class quantity:
             unitFromDict(newUnits),
             abs(other) * (self.value ** (other - 1)) * self.uncertainty,
         )
+
+    def __rpow__(self, other: any) -> quantity:
+        if isinstance(other, quantity):
+            raise QuantityError(self, other, "**")
 
     # Modulo.
     # def __mod__(self, other: any) -> quantity:
@@ -580,6 +586,7 @@ def convert(
             qnt.value * factor, unitFromDict(pTargets), qnt.uncertainty * factor
         )
     )
+
 
 # Unpacking function.
 def unpack(qnt: quantity, targets: str = "") -> quantity:
