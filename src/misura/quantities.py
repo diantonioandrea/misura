@@ -13,8 +13,6 @@ from .exceptions import (
 from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
 from .utilities import dictFromUnit, unitFromDict
 
-# QUANTITIES
-
 
 class quantity:
     """
@@ -166,9 +164,7 @@ class quantity:
                     )
                 )
             )
-            if len(
-                [dim for dim in self.dimesions if self.dimesions[dim] < 0]
-            )
+            if len([dim for dim in self.dimesions if self.dimesions[dim] < 0])
             else ""
         )
 
@@ -507,26 +503,25 @@ def convert(
     "partial = True" converts only the specified units and "un_pack = True" enables automatic (un)packing.
     """
 
+    # Cannot convert non-convertible units.
     if not qnt.convertible:
         raise ConversionError(qnt, targets)
 
     # Check dimesion.
     if not partial:
-        if (
-            unpack(qnt).dimesion()
-            != unpack(quantity(1, targets)).dimesion()
-        ):
+        if unpack(qnt).dimesion() != unpack(quantity(1, targets)).dimesion():
             raise ConversionError(qnt, targets)
 
-    # Automatic (un)packing.
-    # Version 1.
+    # Automatic (un)packing, version 1.
     if un_pack and not partial:
         try:
+            # Tries to pack qnt.
             return convert(pack(qnt, targets), targets, un_pack=False)
 
-        except ConversionError:
+        except (PackError, ConversionError):
             pass
 
+        # Completely unpacks units.
         return convert(
             unpack(qnt),
             unpack(quantity(1, targets)).unit(),
@@ -534,49 +529,54 @@ def convert(
         )
 
     factor: float = 1.0
-    units: dict = qnt.units.copy()
-    targetUnits: dict = dictFromUnit(targets)
+    tUnits: dict = dictFromUnit(targets)  # Target units.
 
-    partialTargets: dict = dict()
+    pTargets: dict = dict()  # Partial targets.
 
     table: dict = getBase()
     table.update(getDerived())
 
-    for unit in units.keys():
+    for unit in qnt.units.keys():
         family = getFamily(unit)
-        familyCounter = 0
 
-        for targetSym in targetUnits:
-            if targetSym in table[family]:
-                targetUnit = targetSym
-                familyCounter += 1
+        # Number of corresponding families.
+        families = len([tgt for tgt in tUnits if tgt in table[family]])
 
-        if familyCounter == 0:
-            if not partial:
-                raise ConversionError(qnt, targets)
-
-            partialTargets[unit] = units[unit]
-            continue
-
-        elif familyCounter > 1:
+        # Check target presence if not partial.
+        if families == 0 and not partial:
             raise ConversionError(qnt, targets)
 
-        elif unit != targetUnit:
-            if units[unit] != targetUnits[targetUnit]:
-                raise ConversionError(qnt, targets)
-
-            factor *= (table[family][unit] / table[family][targetUnit]) ** units[unit]
-            partialTargets[targetUnit] = targetUnits[targetUnit]
+        # Partial conversion.
+        elif families == 0 and partial:
+            pTargets[unit] = qnt.units[unit]
             continue
 
+        # Target.
+        target = [tgt for tgt in tUnits if tgt in table[family]].pop()
+
+        # Too many units: errror.
+        if families > 1:
+            raise ConversionError(qnt, targets)
+
+        # Wrong power.
+        if unit != target and qnt.units[unit] != tUnits[target]:
+            raise ConversionError(qnt, targets)
+
+        # Conversion.
+        elif unit != target and qnt.units[unit] == tUnits[target]:
+            factor *= (table[family][unit] / table[family][target]) ** qnt.units[unit]
+            pTargets[target] = tUnits[target]
+            continue
+
+        # Partial conversion.
         elif partial:
-            partialTargets[unit] = units[unit]
+            pTargets[unit] = qnt.units[unit]
 
     return (
         quantity(qnt.value * factor, targets, qnt.uncertainty * factor)
         if not partial
         else quantity(
-            qnt.value * factor, unitFromDict(partialTargets), qnt.uncertainty * factor
+            qnt.value * factor, unitFromDict(pTargets), qnt.uncertainty * factor
         )
     )
 
