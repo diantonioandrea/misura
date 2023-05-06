@@ -494,6 +494,7 @@ class quantity:
 # CONVERSION, UNPACKING AND PACKING
 
 
+# Conversion function.
 def convert(
     qnt: quantity, targets: str, partial: bool = False, un_pack: bool = True
 ) -> quantity:
@@ -580,7 +581,7 @@ def convert(
         )
     )
 
-
+# Unpacking function.
 def unpack(qnt: quantity, targets: str = "") -> quantity:
     """
     Unpacking function; unpacks the passed targets units form the quantity object.
@@ -600,31 +601,37 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
             return qnt
 
     for target in dictFromUnit(targets):
+        # Checks target.
         if getFamily(target) not in [getFamily(unit) for unit in qnt.units]:
             raise UnpackError(qnt, target)
 
-        conversionTarget = getRep(getFamily(target))
-        conversionTargetPower = [
+        cTarget = getRep(getFamily(target))  # Conversion target.
+        cTargetPower = [  # Conversion target's power.
             qnt.units[unit]
             for unit in qnt.units
             if getFamily(unit) == getFamily(target)
         ].pop()
 
+        # Raises an error if the program does not know how to unpack a unit.
+        if cTarget not in unpackTable:
+            raise UnpackError(qnt, target)
+
+        # Converts the quantity to an unpackable one.
         qnt = convert(
             qnt,
-            conversionTarget + str(conversionTargetPower),
+            cTarget + str(cTargetPower),
             partial=True,
             un_pack=False,
         )
 
-        if conversionTarget not in unpackTable:
-            raise UnpackError(qnt, target)
+        # Units that werent't involved in the previous conversion.
+        newUnits = {key: qnt.units[key] for key in qnt.units if key != cTarget}
 
-        newUnits = {key: qnt.units[key] for key in qnt.units if key != conversionTarget}
+        # Uncertainty should not vary on packing.
         uncertainty = qnt.uncertainty
         qnt = (
             quantity(qnt.value, unitFromDict(newUnits)) if len(newUnits) else qnt.value
-        ) * (quantity(1, unpackTable[conversionTarget]) ** qnt.units[conversionTarget])
+        ) * (quantity(1, unpackTable[cTarget]) ** qnt.units[cTarget])
         qnt.uncertainty = uncertainty
 
     return qnt
@@ -648,14 +655,12 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
     # Simplify qnt -> base unit.
     for unit in qnt.units:
-        conversionTarget = [
+        cTarget = [
             unit
             for unit in unitsTable[getFamily(unit)]
             if unitsTable[getFamily(unit)][unit] == 1
         ].pop()
-        qnt = convert(
-            qnt, conversionTarget + str(qnt.units[unit]), partial=True, un_pack=False
-        )
+        qnt = convert(qnt, cTarget + str(qnt.units[unit]), partial=True, un_pack=False)
 
     # Unpack only relevant units.
     if ignore:
@@ -707,6 +712,8 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         if not len(powers):
             raise PackError(qnt, targets)
 
+        # Full packing is a stricter form of packing which
+        # requires that "no other units are produced from the packing process".
         if full:
             # Packability check.
             for targetUnit in targetUnits:
@@ -719,6 +726,7 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
             if min(powers) < max(powers) or max(powers) < 0:
                 raise PackError(qnt, targets, full=True)
 
+        # Uncertainty should not vary on packing.
         uncertainty = qnt.uncertainty
         qnt *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(
             powers
