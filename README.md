@@ -27,6 +27,7 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 ### Features
 
 - Mathematical and logical operations between quantities: [Example](#mathematical-operations), [example](#comparisons).
+- Uncertainty handling: [Example](#mathematical-operations). ![New feature](https://img.shields.io/badge/new-green)
 - Manual conversions: [Example](#manual-and-automatic-conversion).
 - Automatic conversions on operations: [Example](#manual-and-automatic-conversion).
 - Unpack and pack derived units: [Example](#unpack-derived-units), [example](#pack-units).
@@ -122,7 +123,7 @@ from misura import quantity
 
 num1 = quantity(2, "m s-1")
 num2 = quantity(4, "m s-1")
-num3 = quantity(2, "s")
+num3 = quantity(2, "s", .5)
 
 print(num1 + num2)
 print((num1 + num2).dimesion())
@@ -137,8 +138,8 @@ The output is:
 6 m / s
 [length / time]
 8 m(2) / s(2)
-1.0 m / s(2)
-4 s(2)
+1.0 ± 0.25 m / s(2)
+4 ± 2.0 s(2)
 ```
 
 ### Working with other libraries
