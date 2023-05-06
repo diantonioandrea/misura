@@ -29,13 +29,13 @@ class InitError(Exception):
 
 class QuantityError(Exception):
     """
-    Raised on operations between incompatible quantities.
+    Raised on operators between incompatible quantities.
     """
 
-    def __init__(self, first, second, operation: str) -> None:
+    def __init__(self, first, second, operator: str) -> None:
         super().__init__(
             "unsupported operand unit(s) for {0}: '{1}' and '{2}'\nraised by: '{3}' {0} '{4}'".format(
-                operation, first.unit(), second.unit(), first, second
+                operator, first.unit(), second.unit(), first, second
             )
         )
 
@@ -93,6 +93,19 @@ class PackError(Exception):
                     qnt, target, qnt.unit()
                 )
             )
+
+
+class UncertaintyComparisonError(Exception):
+    """
+    Raised on comparing quantities with uncertainty.
+    """
+
+    def __init__(self, first, second, operator: str) -> None:
+        super().__init__(
+            "cannot compare uncertain quantities\nraised by: '{}' {} '{}'".format(
+                first, operator, second
+            )
+        )
 
 
 class DefinitionError(Exception):

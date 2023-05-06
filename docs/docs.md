@@ -251,6 +251,7 @@ Take a look at these [examples](#global-options-1)
 - `ConversionError`: raised on errors during conversions.
 - `UnpackError`: raised on errors during unpacking.
 - `PackError`: raised on errors during packing.
+- `UncertaintyComparisonError`: raised on comparing quantities with uncertainty.
 - `DefinitionError`: raised on errors during unit definition.
 
 ## Examples

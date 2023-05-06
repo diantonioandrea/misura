@@ -26,14 +26,14 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 
 ### Features
 
-- Mathematical and logical operations between quantities: [Example](#mathematical-operations), [example](#comparisons).
-- Uncertainty handling: [Example](#mathematical-operations). ![New feature](https://img.shields.io/badge/new-green)
-- Manual conversions: [Example](#manual-and-automatic-conversion).
-- Automatic conversions on operations: [Example](#manual-and-automatic-conversion).
-- Unpack and pack derived units: [Example](#unpack-derived-units), [example](#pack-units).
-- User defined base and derived units: [Example](#user-defined-units-of-measure). ![New feature](https://img.shields.io/badge/new-green)
-- Large compatibility with other libraries: [Example](#working-with-other-libraries).
-- Custom exceptions: [Example](#comparisons).
+- Mathematical and logical operations between quantities: [Example](#mathematical-operations), [example](#comparisons)
+- Uncertainty handling: [Example](#mathematical-operations) ![New feature](https://img.shields.io/badge/new-green)
+- Manual conversions: [Example](#manual-and-automatic-conversion)
+- Automatic conversions on operations: [Example](#manual-and-automatic-conversion)
+- Unpack and pack derived units: [Example](#unpack-derived-units), [example](#pack-units)
+- User defined base and derived units: [Example](#user-defined-units-of-measure) ![New feature](https://img.shields.io/badge/new-green)
+- Large compatibility with other libraries: [Example](#working-with-other-libraries)
+- Custom exceptions: [Example](#comparisons)
 
 ## Installation
 

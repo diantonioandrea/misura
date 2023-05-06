@@ -10,6 +10,7 @@ from .exceptions import (
     ConversionError,
     UnpackError,
     PackError,
+    UncertaintyComparisonError,
 )
 from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
 from .utilities import dictFromUnit, unitFromDict, checkIter, uAll, uAny
@@ -443,6 +444,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, "<")
 
+        if uAny(self.uncertainty) or uAny(self.uncertainty):
+            raise UncertaintyComparisonError(self, other, "<")
+
         return self.value < other.value
 
     # Less or equal.
@@ -456,6 +460,9 @@ class quantity:
 
             else:
                 raise QuantityError(self, other, "<=")
+
+        if uAny(self.uncertainty) or uAny(self.uncertainty):
+            raise UncertaintyComparisonError(self, other, "<=")
 
         return self.value <= other.value
 
@@ -471,6 +478,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, ">")
 
+        if uAny(self.uncertainty) or uAny(self.uncertainty):
+            raise UncertaintyComparisonError(self, other, ">")
+
         return self.value > other.value
 
     # Greater or equal.
@@ -485,6 +495,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, ">=")
 
+        if uAny(self.uncertainty) or uAny(self.uncertainty):
+            raise UncertaintyComparisonError(self, other, ">=")
+
         return self.value >= other.value
 
     # Equal.
@@ -492,12 +505,18 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value == other
 
+        if uAny(self.uncertainty) or uAny(self.uncertainty):
+            raise UncertaintyComparisonError(self, other, "==")
+
         return self.value == other.value and self.unit() == other.unit()
 
     # Not equal.
     def __ne__(self, other: any) -> quantity:
         if not isinstance(other, quantity):
             return self.value != other
+
+        if uAny(self.uncertainty) or uAny(self.uncertainty):
+            raise UncertaintyComparisonError(self, other, "!=")
 
         return self.value != other.value or self.unit() != other.unit()
 
