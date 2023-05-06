@@ -1,4 +1,4 @@
-# Global options.
+# Globals.
 
 
 class style:

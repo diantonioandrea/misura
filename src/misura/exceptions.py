@@ -3,12 +3,27 @@
 
 class UnitError(Exception):
     """
-    Raised on invalid unit passed to quantity(value: any, unit: str).
+    Raised on invalid units.
     """
 
     def __init__(self, unit: str) -> None:
+        super().__init__("invalid unit '{}'".format(unit))
+
+
+class InitError(Exception):
+    """
+    Raised on invalid parameters passed to quantity.__init__().
+    """
+
+    def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
+        from .utilities import uAny
+
         super().__init__(
-            "unknown unit: {}".format(unit) if unit != "" else "empty unit"
+            "wrong parameters on quantity definition\nraised by: quantity({}{}{})".format(
+                value,
+                ", {}".format(unit) if unit else "",
+                ", {}".format(uncertainty) if uAny(uncertainty) else "",
+            )
         )
 
 

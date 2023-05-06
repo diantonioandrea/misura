@@ -1,8 +1,5 @@
-from re import findall
-
-from .exceptions import UnitError
-
 # Utilities.
+from re import findall
 
 
 def checkIter(obj: any) -> bool:
@@ -31,8 +28,10 @@ def uAny(obj: any) -> bool:
 
 
 def dictFromUnit(unit: str) -> dict:
+    from .exceptions import UnitError
+
     """
-    Returns the dictionary of units from a properly formatted string..
+    Returns the dictionary of units from a properly formatted string.
     """
 
     units = dict()

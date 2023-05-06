@@ -1,3 +1,4 @@
+# Quantities.
 from __future__ import annotations
 
 from colorama import Style
@@ -35,7 +36,7 @@ class quantity:
             )
 
         except AssertionError:
-            raise UnitError(unit)  # Needs a better exception.
+            raise UnitError(value, unit, uncertainty)  # Needs a better exception.
 
         self.value: any = value
         self.uncertainty = uncertainty
