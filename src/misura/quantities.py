@@ -64,7 +64,7 @@ class quantity:
         Returns a readable version of the quantity's unit.
         print = True makes the output fancier.
         """
-        from .globals import style  # Unit highlighting.
+        from .globals import style
 
         # Fancy version.
         if print:
@@ -174,9 +174,11 @@ class quantity:
     # STRINGS.
 
     def __str__(self) -> str:
+        from .globals import style
+
         return "{}{}{}".format(
             self.value,
-            " {} {} ".format("\u00b1", self.uncertainty)
+            "{}{} ".format(style.quantityPlusMinus, self.uncertainty)
             if uAny(self.uncertainty)
             else " ",
             self.unit(print=True) if self.units else "",
@@ -186,11 +188,13 @@ class quantity:
         return str(self)
 
     def __format__(self, string) -> str:  # Unit highlighting works for print only.
+        from .globals import style
+
         # This works with print only.
         return (
             self.value.__format__(string)
             + (
-                (" \u00b1 " + self.uncertainty.__format__(string))
+                (style.quantityPlusMinus + self.uncertainty.__format__(string))
                 if uAny(self.uncertainty)
                 else ""
             )

@@ -234,7 +234,8 @@ Take a look at these [examples](#conversions-unpacking-and-packing-1).
 
 **misura** implements the following global options:
 
-- `misura.style.unitHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
+- `misura.style.quantityHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
+- `misura.style.quantityPlusMinus`, string: "+-" symbol. Dafault: `" \u00b1 "`.
 
 Take a look at these [examples](#global-options-1)
 
@@ -344,9 +345,10 @@ from misura import quantity
 from misura import style
 
 style.quantityHighlighting = False
+style.quantityPlusMinus = " +- "
 
 num1 = quantity(2, "m s-1")
-num2 = quantity(5, "s")
+num2 = quantity(5, "s", 1)
 
 print(num1)
 print(num2)
@@ -356,5 +358,5 @@ The output is:
 
 ```
 2 [m / s]
-5 [s]
+5 +- 1 [s]
 ```
