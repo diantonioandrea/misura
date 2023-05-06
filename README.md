@@ -13,9 +13,9 @@
 # misura
 
 ```python
->>> from misura import quantity as qnt
->>> (qnt(2, "m") + qnt(50, "cm")) / qnt(4, "s")
-0.625 m / s
+>>> from misura import quantity
+>>> quantity(7, "m", 1.5) / quantity(2, "s")
+3.5 ± 0.75 m / s
 ```
 
 Python library for easy unit handling and conversion for scientific & engineering applications.
