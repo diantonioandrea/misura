@@ -57,7 +57,7 @@ class quantity:
         )
 
         # Define quantity's dimentsionality based on self.units.
-        self.dimensionalities: dict = (
+        self.dimesions: dict = (
             {getFamily(unit): self.units[unit] for unit in self.units}
             if self.convertible
             else dict()
@@ -124,13 +124,13 @@ class quantity:
         # {"m": 1, "s": -1} -> "m s-1".
         return unitFromDict(self.units)
 
-    def dimensionality(self) -> str:
+    def dimesion(self) -> str:
         """
-        Returns a readable version of the quantity's dimensionality.
+        Returns a readable version of the quantity's dimesion.
         No fancy style.
         """
 
-        if not len(self.dimensionalities):
+        if not len(self.dimesions):
             return ""
 
         # {"length": 2, "time": -1} -> "[length(2) / time]".
@@ -139,12 +139,12 @@ class quantity:
                 [
                     dim
                     + (
-                        "({})".format(self.dimensionalities[dim])
-                        if self.dimensionalities[dim] != 1
+                        "({})".format(self.dimesions[dim])
+                        if self.dimesions[dim] != 1
                         else ""
                     )
-                    for dim in self.dimensionalities
-                    if self.dimensionalities[dim] > 0
+                    for dim in self.dimesions
+                    if self.dimesions[dim] > 0
                 ]
             )
         )
@@ -156,18 +156,18 @@ class quantity:
                         [
                             dim
                             + (
-                                "({})".format(-1 * self.dimensionalities[dim])
-                                if self.dimensionalities[dim] != -1
+                                "({})".format(-1 * self.dimesions[dim])
+                                if self.dimesions[dim] != -1
                                 else ""
                             )
-                            for dim in self.dimensionalities
-                            if self.dimensionalities[dim] < 0
+                            for dim in self.dimesions
+                            if self.dimesions[dim] < 0
                         ]
                     )
                 )
             )
             if len(
-                [dim for dim in self.dimensionalities if self.dimensionalities[dim] < 0]
+                [dim for dim in self.dimesions if self.dimesions[dim] < 0]
             )
             else ""
         )
@@ -510,11 +510,11 @@ def convert(
     if not qnt.convertible:
         raise ConversionError(qnt, targets)
 
-    # Check dimensionality.
+    # Check dimesion.
     if not partial:
         if (
-            unpack(qnt).dimensionality()
-            != unpack(quantity(1, targets)).dimensionality()
+            unpack(qnt).dimesion()
+            != unpack(quantity(1, targets)).dimesion()
         ):
             raise ConversionError(qnt, targets)
 

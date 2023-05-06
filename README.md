@@ -125,7 +125,7 @@ num2 = quantity(4, "m s-1")
 num3 = quantity(2, "s")
 
 print(num1 + num2)
-print((num1 + num2).dimensionality())
+print((num1 + num2).dimesion())
 print(num1 * num2)
 print(num1 / num3)
 print(num3 ** 2)

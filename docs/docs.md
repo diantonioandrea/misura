@@ -48,13 +48,13 @@ Quantities are defined as `misura.quantity(value: any, unit: str)` objects.
 
 ```python
 def unit(self, print: bool = False) -> str
-def dimensionality(self) -> str
+def dimesion(self) -> str
 ```
 
 which:
 
 - `unit()`: Returns the units string of the quantity. It returns it in a fancier way if `print = True`.
-- `dimensionality()`: Returns the dimensionality string of the quantity if it is convertible.
+- `dimesion()`: Returns the dimesion string of the quantity if it is convertible.
 
 ### Operations
 
@@ -264,7 +264,7 @@ num3 = numpy.array([quantity(2, "m"), quantity(4, "km")])
 num4 = quantity(numpy.array([1, 2, 3]), "T")
 
 print(num1.unit(print=True))
-print(num1.dimensionality())
+print(num1.dimesion())
 print(num1 * 3)
 print(num2 ** 2 < 16)
 print(numpy.sum(num3))
