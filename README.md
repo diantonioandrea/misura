@@ -20,7 +20,7 @@
 
 Python library for easy unit handling and conversion for scientific & engineering applications.
 
-**misura** is a Python library designed to simplify the _handling of units of measure_ for scientific and engineering applications. It provides a unified interface for _dealing with different units and their conversions_, allowing for quick and accurate calculations without the need for complex manual conversions.
+**misura** is a powerful Python library designed to streamline the *handling of units of measure for scientific and engineering applications*. It offers a unified interface for dealing with *different units and their conversions*, so you can quickly and accurately *perform calculations without the need for complex manual conversions*. Additionally, **misura** provides *uncertainty hadnling*, so *you can work with physical quantities and their associated uncertainties in a consistent and intuitive way*. On top of that, **misura** enables you to *define your own custom units of measure*, giving you the flexibility to work in your preferred units.
 
 Make sure to take a look at the [documentation](https://github.com/diantonioandrea/misura/blob/main/docs/docs.md), at the [contributing guidelines](https://github.com/diantonioandrea/.github/blob/main/CONTRIBUTING.md) and at the [examples](#examples).
 
