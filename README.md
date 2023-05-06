@@ -13,24 +13,25 @@
 # misura
 
 ```python
->>> from misura import quantity as qnt
->>> (qnt(2, "m") + qnt(50, "cm")) / qnt(4, "s")
-0.625 m / s
+>>> from misura import quantity
+>>> quantity(7, "m", 1.5) / quantity(2, "s")
+3.5 ± 0.75 m / s
 ```
 
 Python library for easy unit handling and conversion for scientific & engineering applications.
 
-**misura** is a Python library designed to simplify the _handling of units of measure_ for scientific and engineering applications. It provides a unified interface for _dealing with different units and their conversions_, allowing for quick and accurate calculations without the need for complex manual conversions.
+**misura** is a powerful Python library designed to streamline the *handling of units of measure for scientific and engineering applications*. It offers a unified interface for dealing with *different units and their conversions*, so you can quickly and accurately *perform calculations without the need for complex manual conversions*. Additionally, **misura** provides *uncertainty hadnling*, so *you can work with physical quantities and their associated uncertainties in a consistent and intuitive way*. On top of that, **misura** enables you to *define your own custom units of measure*, giving you the flexibility to work in your preferred units.
 
 Make sure to take a look at the [documentation](https://github.com/diantonioandrea/misura/blob/main/docs/docs.md), at the [contributing guidelines](https://github.com/diantonioandrea/.github/blob/main/CONTRIBUTING.md) and at the [examples](#examples).
 
 ### Features
 
 - Mathematical and logical operations between quantities: [Example](#mathematical-operations), [example](#comparisons).
+- Uncertainty handling: [Example](#mathematical-operations). ![New feature](https://img.shields.io/badge/new-green)
 - Manual conversions: [Example](#manual-and-automatic-conversion).
 - Automatic conversions on operations: [Example](#manual-and-automatic-conversion).
 - Unpack and pack derived units: [Example](#unpack-derived-units), [example](#pack-units).
-- User defined base and derived units: [Example](#user-defined-units-of-measure).
+- User defined base and derived units: [Example](#user-defined-units-of-measure). ![New feature](https://img.shields.io/badge/new-green)
 - Large compatibility with other libraries: [Example](#working-with-other-libraries).
 - Custom exceptions: [Example](#comparisons).
 
@@ -122,10 +123,10 @@ from misura import quantity
 
 num1 = quantity(2, "m s-1")
 num2 = quantity(4, "m s-1")
-num3 = quantity(2, "s")
+num3 = quantity(2, "s", .5)
 
 print(num1 + num2)
-print((num1 + num2).dimensionality())
+print((num1 + num2).dimesion())
 print(num1 * num2)
 print(num1 / num3)
 print(num3 ** 2)
@@ -137,8 +138,8 @@ The output is:
 6 m / s
 [length / time]
 8 m(2) / s(2)
-1.0 m / s(2)
-4 s(2)
+1.0 ± 0.25 m / s(2)
+4 ± 2.0 s(2)
 ```
 
 ### Working with other libraries

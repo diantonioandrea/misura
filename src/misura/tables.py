@@ -1,8 +1,9 @@
+# Tables.
 from .exceptions import DefinitionError
 from .utilities import dictFromUnit
 from .globals import defined
 
-# Utilities
+# Tables utilities
 
 
 def getRep(family: str) -> str:
@@ -70,6 +71,10 @@ def getDerivedUnpacking() -> dict:
 
 
 def addUnit(family: str, units: dict, unpacks: str = ""):
+    """
+    addUnit function, allows users to define new units.
+    """
+
     table = getBase()
     table.update(getDerived())
 

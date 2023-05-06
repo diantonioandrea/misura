@@ -1,4 +1,4 @@
-# Global options.
+# Globals.
 
 
 class style:
@@ -7,6 +7,7 @@ class style:
     """
 
     quantityHighlighting = True
+    quantityPlusMinus = " \u00b1 "
 
 
 class defined:

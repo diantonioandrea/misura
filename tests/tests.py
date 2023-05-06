@@ -17,6 +17,8 @@ num8 = quantity(13, "J")
 num9 = quantity(0.9, "mN km")
 num10 = quantity(3, "N m T")
 num11 = quantity(12, "kbnn")
+num12 = quantity(2, "kg", 0.5)
+num13 = quantity(0.7, "m3", 0.15)
 
 # Math.
 print(num0**0.5)
@@ -28,7 +30,7 @@ print(num0 < 0.02 * num1**2)
 print(num1 == num2)
 print(num1 != num2)
 
-# Conversions
+# Conversions.
 print(num0**0.5 + num1)
 print(convert(num0, "dm2"))
 print(convert(num1, "m"))
@@ -48,5 +50,9 @@ print(num8 + num9)
 print(num9 + num8)
 print(pack(num10, "J", ignore="T"))
 
-# Custom units conversions.
+# Custom units of measure.
 print(convert(num11, "bnn"))
+
+# Uncertainty.
+print(num12**2)
+print(num12 / num13)

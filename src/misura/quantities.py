@@ -1,6 +1,8 @@
+# Quantities.
 from __future__ import annotations
 
 from colorama import Style
+from math import sqrt
 
 from .exceptions import (
     UnitError,
@@ -10,9 +12,7 @@ from .exceptions import (
     PackError,
 )
 from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
-from .utilities import dictFromUnit, unitFromDict
-
-# QUANTITIES
+from .utilities import dictFromUnit, unitFromDict, checkIter, uAll, uAny
 
 
 class quantity:
@@ -20,7 +20,7 @@ class quantity:
     The main class of misura, the class of quantities.
     """
 
-    def __init__(self, value: any, unit: str) -> None:
+    def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
         """
         value: Can be anything that can be somewhat treated as a number.
         unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
@@ -28,12 +28,18 @@ class quantity:
 
         try:
             assert isinstance(unit, str)
-            assert unit != ""
+            assert uAll(uncertainty >= 0) if uAny(uncertainty) else True
+            assert (
+                (checkIter(value) == checkIter(uncertainty))
+                if uAny(uncertainty)
+                else True
+            )
 
         except AssertionError:
-            raise UnitError(unit)
+            raise UnitError(value, unit, uncertainty)  # Needs a better exception.
 
         self.value: any = value
+        self.uncertainty = uncertainty
 
         table: dict = getBase()
         table.update(getDerived())
@@ -47,7 +53,7 @@ class quantity:
         )
 
         # Define quantity's dimentsionality based on self.units.
-        self.dimensionalities: dict = (
+        self.dimesions: dict = (
             {getFamily(unit): self.units[unit] for unit in self.units}
             if self.convertible
             else dict()
@@ -58,7 +64,7 @@ class quantity:
         Returns a readable version of the quantity's unit.
         print = True makes the output fancier.
         """
-        from .globals import style  # Unit highlighting.
+        from .globals import style
 
         # Fancy version.
         if print:
@@ -114,13 +120,13 @@ class quantity:
         # {"m": 1, "s": -1} -> "m s-1".
         return unitFromDict(self.units)
 
-    def dimensionality(self) -> str:
+    def dimesion(self) -> str:
         """
-        Returns a readable version of the quantity's dimensionality.
+        Returns a readable version of the quantity's dimesion.
         No fancy style.
         """
 
-        if not len(self.dimensionalities):
+        if not len(self.dimesions):
             return ""
 
         # {"length": 2, "time": -1} -> "[length(2) / time]".
@@ -129,12 +135,12 @@ class quantity:
                 [
                     dim
                     + (
-                        "({})".format(self.dimensionalities[dim])
-                        if self.dimensionalities[dim] != 1
+                        "({})".format(self.dimesions[dim])
+                        if self.dimesions[dim] != 1
                         else ""
                     )
-                    for dim in self.dimensionalities
-                    if self.dimensionalities[dim] > 0
+                    for dim in self.dimesions
+                    if self.dimesions[dim] > 0
                 ]
             )
         )
@@ -146,19 +152,17 @@ class quantity:
                         [
                             dim
                             + (
-                                "({})".format(-1 * self.dimensionalities[dim])
-                                if self.dimensionalities[dim] != -1
+                                "({})".format(-1 * self.dimesions[dim])
+                                if self.dimesions[dim] != -1
                                 else ""
                             )
-                            for dim in self.dimensionalities
-                            if self.dimensionalities[dim] < 0
+                            for dim in self.dimesions
+                            if self.dimesions[dim] < 0
                         ]
                     )
                 )
             )
-            if len(
-                [dim for dim in self.dimensionalities if self.dimensionalities[dim] < 0]
-            )
+            if len([dim for dim in self.dimesions if self.dimesions[dim] < 0])
             else ""
         )
 
@@ -170,22 +174,38 @@ class quantity:
     # STRINGS.
 
     def __str__(self) -> str:
-        return (
-            "{} {}".format(self.value, self.unit(print=True))
-            if self.unit()
-            else str(self.value)
+        from .globals import style
+
+        return "{}{}{}".format(
+            self.value,
+            "{}{} ".format(style.quantityPlusMinus, self.uncertainty)
+            if uAny(self.uncertainty)
+            else " ",
+            self.unit(print=True) if self.units else "",
         )
 
     def __repr__(self) -> str:
         return str(self)
 
     def __format__(self, string) -> str:  # Unit highlighting works for print only.
+        from .globals import style
+
         # This works with print only.
-        return self.value.__format__(string) + (
-            " " + self.unit(print=True) if self.unit() else ""
+        return (
+            self.value.__format__(string)
+            + (
+                (style.quantityPlusMinus + self.uncertainty.__format__(string))
+                if uAny(self.uncertainty)
+                else ""
+            )
+            + (" " + self.unit(print=True) if self.unit() else "")
         )
 
     # PYTHON TYPES CONVERSION.
+
+    """
+    int, float and complex don't care about uncertainty.
+    """
 
     # Int.
     def __int__(self) -> int:
@@ -201,50 +221,63 @@ class quantity:
 
     # Bool.
     def __bool__(self) -> bool:
-        return bool(self.value)
+        return bool(self.value or self.uncertainty)
 
     # MATH.
 
     # Abs.
     def __abs__(self) -> quantity:
-        return quantity(abs(self.value), self.unit())
+        # Since abs(number) cannot be negative, the uncertainty on this value gets modified.
+        return quantity(
+            abs(self.value),
+            self.unit(),
+            self.uncertainty if uAny(self.uncertainty) < self.value else self.value,
+        )
 
     # Positive.
     def __pos__(self) -> quantity:
-        return quantity(+self.value, self.unit())
+        return quantity(+self.value, self.unit(), self.uncertainty)
 
     # Negative.
     def __neg__(self) -> quantity:
-        return quantity(-self.value, self.unit())
+        return quantity(-self.value, self.unit(), self.uncertainty)
 
     # Invert.
-    def __invert__(self) -> quantity:
-        return quantity(~self.value, self.unit())
+    # def __invert__(self) -> quantity:
+    #     return quantity(~self.value, self.unit())
 
     # Round.
     def __round__(self, number: int) -> quantity:
-        return quantity(round(self.value, number), self.unit())
+        return quantity(
+            round(self.value, number), self.unit(), round(self.uncertainty, number + 1)
+        )
 
     # Floor.
     def __floor__(self) -> quantity:
         from math import floor
 
-        return quantity(floor(self.value), self.unit())
+        return quantity(floor(self.value), self.unit(), floor(self.uncertainty))
 
     # Ceil.
     def __ceil__(self) -> quantity:
         from math import ceil
 
-        return quantity(ceil(self.value), self.unit())
+        return quantity(ceil(self.value), self.unit(), ceil(self.uncertainty))
 
     # Trunc.
     def __trunc__(self) -> quantity:
         from math import trunc
 
-        return quantity(trunc(self.value), self.unit())
+        return quantity(trunc(self.value), self.unit(), trunc(self.uncertainty))
 
     # Addition.
-    def __add__(self, other: quantity) -> quantity:
+    def __add__(self, other: any) -> quantity:
+        if not isinstance(other, quantity):
+            if self.unit():
+                raise QuantityError(self, quantity(other, ""), "+")
+
+            return quantity(self.value + other, "", self.uncertainty)
+
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
                 # Chooses the one to convert.
@@ -260,13 +293,23 @@ class quantity:
             else:
                 raise QuantityError(self, other, "+")
 
-        return quantity(self.value + other.value, self.unit())
+        return quantity(
+            self.value + other.value,
+            self.unit(),
+            sqrt(self.uncertainty**2 + other.uncertainty**2),
+        )
 
     def __radd__(self, other: quantity) -> quantity:
         return self.__add__(other)
 
     # Subtraction.
-    def __sub__(self, other: quantity) -> quantity:
+    def __sub__(self, other: any) -> quantity:
+        if not isinstance(other, quantity):
+            if self.unit():
+                raise QuantityError(self, quantity(other, ""), "-")
+
+            return quantity(self.value - other, "", self.uncertainty)
+
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
                 # Chooses the one to convert.
@@ -282,7 +325,11 @@ class quantity:
             else:
                 raise QuantityError(self, other, "-")
 
-        return quantity(self.value - other.value, self.unit())
+        return quantity(
+            self.value - other.value,
+            self.unit(),
+            sqrt(self.uncertainty**2 + other.uncertainty**2),
+        )
 
     def __rsub__(self, other: quantity) -> quantity:
         return self.__sub__(other)
@@ -290,7 +337,7 @@ class quantity:
     # Multiplication.
     def __mul__(self, other: any) -> any:
         if not isinstance(other, quantity):
-            return quantity(self.value * other, self.unit())
+            return quantity(self.value * other, self.unit(), self.uncertainty * other)
 
         newUnits = self.units.copy()
 
@@ -305,10 +352,13 @@ class quantity:
             if unit not in newUnits:
                 newUnits[unit] = other.units[unit]
 
-        return (
-            quantity(self.value * other.value, unitFromDict(newUnits))
-            if unitFromDict(newUnits)
-            else self.value * other.value
+        return quantity(
+            self.value * other.value,
+            unitFromDict(newUnits),
+            sqrt(
+                (other.value * self.uncertainty) ** 2
+                + (self.value * other.uncertainty) ** 2
+            ),
         )
 
     def __rmul__(self, other: any) -> any:
@@ -317,7 +367,7 @@ class quantity:
     # Division.
     def __truediv__(self, other: any) -> any:
         if not isinstance(other, quantity):
-            return quantity(self.value / other, self.unit())
+            return quantity(self.value / other, self.unit(), self.uncertainty / other)
 
         newUnits = self.units.copy()
 
@@ -332,33 +382,52 @@ class quantity:
             if unit not in newUnits:
                 newUnits[unit] = -other.units[unit]
 
-        return (
-            quantity(self.value / other.value, unitFromDict(newUnits))
-            if unitFromDict(newUnits)
-            else self.value / other.value
+        return quantity(
+            self.value / other.value,
+            unitFromDict(newUnits),
+            sqrt(
+                (self.uncertainty / other.value) ** 2
+                + (self.value * other.uncertainty / (other.value**2)) ** 2
+            ),
         )
 
     def __floordiv__(self, other: any) -> quantity:
-        return quantity(self.value // other, self.unit())
+        return quantity(
+            self.value // other, self.unit(), self.uncertainty // other
+        )  # Check uncertainty.
 
     def __rtruediv__(self, other: any) -> any:
         return self**-1 * other
 
     # Power.
     def __pow__(self, other: any) -> quantity:
+        if isinstance(other, quantity):
+            raise QuantityError(self, other, "**")
+
         if other == 0:
-            return 1
+            return quantity(1 * bool(self.value), "", 1 * self.uncertainty != 0)
+
+        if other == 1:
+            return self
 
         newUnits = self.units.copy()
 
         for unit in newUnits:
             newUnits[unit] *= other
 
-        return quantity(self.value**other, unitFromDict(newUnits))
+        return quantity(
+            self.value**other,
+            unitFromDict(newUnits),
+            abs(other) * (self.value ** (other - 1)) * self.uncertainty,
+        )
+
+    def __rpow__(self, other: any) -> quantity:
+        if isinstance(other, quantity):
+            raise QuantityError(self, other, "**")
 
     # Modulo.
-    def __mod__(self, other: any) -> quantity:
-        return quantity(self.value % other, self.unit())
+    # def __mod__(self, other: any) -> quantity:
+    #     return quantity(self.value % other, self.unit())
 
     # COMPARISONS.
 
@@ -436,6 +505,7 @@ class quantity:
 # CONVERSION, UNPACKING AND PACKING
 
 
+# Conversion function.
 def convert(
     qnt: quantity, targets: str, partial: bool = False, un_pack: bool = True
 ) -> quantity:
@@ -445,26 +515,25 @@ def convert(
     "partial = True" converts only the specified units and "un_pack = True" enables automatic (un)packing.
     """
 
+    # Cannot convert non-convertible units.
     if not qnt.convertible:
         raise ConversionError(qnt, targets)
 
-    # Check dimensionality.
+    # Check dimesion.
     if not partial:
-        if (
-            unpack(qnt).dimensionality()
-            != unpack(quantity(1, targets)).dimensionality()
-        ):
+        if unpack(qnt).dimesion() != unpack(quantity(1, targets)).dimesion():
             raise ConversionError(qnt, targets)
 
-    # Automatic (un)packing.
-    # Version 1.
+    # Automatic (un)packing, version 1.
     if un_pack and not partial:
         try:
+            # Tries to pack qnt.
             return convert(pack(qnt, targets), targets, un_pack=False)
 
-        except ConversionError:
+        except (PackError, ConversionError):
             pass
 
+        # Completely unpacks units.
         return convert(
             unpack(qnt),
             unpack(quantity(1, targets)).unit(),
@@ -472,51 +541,59 @@ def convert(
         )
 
     factor: float = 1.0
-    units: dict = qnt.units.copy()
-    targetUnits: dict = dictFromUnit(targets)
+    tUnits: dict = dictFromUnit(targets)  # Target units.
 
-    partialTargets: dict = dict()
+    pTargets: dict = dict()  # Partial targets.
 
     table: dict = getBase()
     table.update(getDerived())
 
-    for unit in units.keys():
+    for unit in qnt.units.keys():
         family = getFamily(unit)
-        familyCounter = 0
 
-        for targetSym in targetUnits:
-            if targetSym in table[family]:
-                targetUnit = targetSym
-                familyCounter += 1
+        # Number of corresponding families.
+        families = len([tgt for tgt in tUnits if tgt in table[family]])
 
-        if familyCounter == 0:
-            if not partial:
-                raise ConversionError(qnt, targets)
-
-            partialTargets[unit] = units[unit]
-            continue
-
-        elif familyCounter > 1:
+        # Check target presence if not partial.
+        if families == 0 and not partial:
             raise ConversionError(qnt, targets)
 
-        elif unit != targetUnit:
-            if units[unit] != targetUnits[targetUnit]:
-                raise ConversionError(qnt, targets)
-
-            factor *= (table[family][unit] / table[family][targetUnit]) ** units[unit]
-            partialTargets[targetUnit] = targetUnits[targetUnit]
+        # Partial conversion.
+        elif families == 0 and partial:
+            pTargets[unit] = qnt.units[unit]
             continue
 
+        # Target.
+        target = [tgt for tgt in tUnits if tgt in table[family]].pop()
+
+        # Too many units: errror.
+        if families > 1:
+            raise ConversionError(qnt, targets)
+
+        # Wrong power.
+        if unit != target and qnt.units[unit] != tUnits[target]:
+            raise ConversionError(qnt, targets)
+
+        # Conversion.
+        elif unit != target and qnt.units[unit] == tUnits[target]:
+            factor *= (table[family][unit] / table[family][target]) ** qnt.units[unit]
+            pTargets[target] = tUnits[target]
+            continue
+
+        # Partial conversion.
         elif partial:
-            partialTargets[unit] = units[unit]
+            pTargets[unit] = qnt.units[unit]
 
     return (
-        quantity(qnt.value * factor, targets)
+        quantity(qnt.value * factor, targets, qnt.uncertainty * factor)
         if not partial
-        else quantity(qnt.value * factor, unitFromDict(partialTargets))
+        else quantity(
+            qnt.value * factor, unitFromDict(pTargets), qnt.uncertainty * factor
+        )
     )
 
 
+# Unpacking function.
 def unpack(qnt: quantity, targets: str = "") -> quantity:
     """
     Unpacking function; unpacks the passed targets units form the quantity object.
@@ -536,30 +613,38 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
             return qnt
 
     for target in dictFromUnit(targets):
+        # Checks target.
         if getFamily(target) not in [getFamily(unit) for unit in qnt.units]:
             raise UnpackError(qnt, target)
 
-        conversionTarget = getRep(getFamily(target))
-        conversionTargetPower = [
+        cTarget = getRep(getFamily(target))  # Conversion target.
+        cTargetPower = [  # Conversion target's power.
             qnt.units[unit]
             for unit in qnt.units
             if getFamily(unit) == getFamily(target)
         ].pop()
 
+        # Raises an error if the program does not know how to unpack a unit.
+        if cTarget not in unpackTable:
+            raise UnpackError(qnt, target)
+
+        # Converts the quantity to an unpackable one.
         qnt = convert(
             qnt,
-            conversionTarget + str(conversionTargetPower),
+            cTarget + str(cTargetPower),
             partial=True,
             un_pack=False,
         )
 
-        if conversionTarget not in unpackTable:
-            raise UnpackError(qnt, target)
+        # Units that werent't involved in the previous conversion.
+        newUnits = {key: qnt.units[key] for key in qnt.units if key != cTarget}
 
-        newUnits = {key: qnt.units[key] for key in qnt.units if key != conversionTarget}
+        # Uncertainty should not vary on packing.
+        uncertainty = qnt.uncertainty
         qnt = (
             quantity(qnt.value, unitFromDict(newUnits)) if len(newUnits) else qnt.value
-        ) * (quantity(1, unpackTable[conversionTarget]) ** qnt.units[conversionTarget])
+        ) * (quantity(1, unpackTable[cTarget]) ** qnt.units[cTarget])
+        qnt.uncertainty = uncertainty
 
     return qnt
 
@@ -582,14 +667,12 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
     # Simplify qnt -> base unit.
     for unit in qnt.units:
-        conversionTarget = [
+        cTarget = [
             unit
             for unit in unitsTable[getFamily(unit)]
             if unitsTable[getFamily(unit)][unit] == 1
         ].pop()
-        qnt = convert(
-            qnt, conversionTarget + str(qnt.units[unit]), partial=True, un_pack=False
-        )
+        qnt = convert(qnt, cTarget + str(qnt.units[unit]), partial=True, un_pack=False)
 
     # Unpack only relevant units.
     if ignore:
@@ -641,6 +724,8 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         if not len(powers):
             raise PackError(qnt, targets)
 
+        # Full packing is a stricter form of packing which
+        # requires that "no other units are produced from the packing process".
         if full:
             # Packability check.
             for targetUnit in targetUnits:
@@ -653,8 +738,11 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
             if min(powers) < max(powers) or max(powers) < 0:
                 raise PackError(qnt, targets, full=True)
 
+        # Uncertainty should not vary on packing.
+        uncertainty = qnt.uncertainty
         qnt *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(
             powers
         )
+        qnt.uncertainty = uncertainty
 
     return qnt

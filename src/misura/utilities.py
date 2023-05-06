@@ -1,13 +1,37 @@
+# Utilities.
 from re import findall
 
-from .exceptions import UnitError
 
-# Utilities.
+def checkIter(obj: any) -> bool:
+    try:
+        _ = iter(obj)
+        return True
+
+    except TypeError:
+        return False
+
+
+def uAll(obj: any) -> bool:
+    """
+    Python's 'all' for (non)iterable objects.
+    """
+
+    return all(obj) if checkIter(obj) else bool(obj)
+
+
+def uAny(obj: any) -> bool:
+    """
+    Python's 'any' for (non)iterable objects.
+    """
+
+    return any(obj) if checkIter(obj) else bool(obj)
 
 
 def dictFromUnit(unit: str) -> dict:
+    from .exceptions import UnitError
+
     """
-    Returns the dictionary of units from a properly formatted string..
+    Returns the dictionary of units from a properly formatted string.
     """
 
     units = dict()
