@@ -264,7 +264,7 @@ class quantity:
     def __trunc__(self) -> quantity:
         from math import trunc
 
-        return quantity(trunc(self.value), self.unit(), trunc(self.value))
+        return quantity(trunc(self.value), self.unit(), trunc(self.uncertainty))
 
     # Addition.
     def __add__(self, other: any) -> quantity:
