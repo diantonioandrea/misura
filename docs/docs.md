@@ -34,13 +34,16 @@ Python library for easy unit handling and conversion for scientific & engineerin
 
 [Go back to ToC](#table-of-contents)
 
-Quantities are defined as `misura.quantity(value: any, unit: str)` objects.
+Quantities are defined as `misura.quantity(value: any, unit: str = "", uncertainty: any = 0)` objects.
 
 `values` stands for the value of the quantity itself, while `unit` represents its unit of measure.  
 `quantity(2, "kg")` is a well-defined quantity.
 
-`unit` must be a string in which the different units of measure must be _separated by a space_ and _followed by their exponent_, if different from `1`.  
+`unit` is a string in which the different units of measure must be _separated by a space_ and _followed by their exponent_, if different from `1`.  
 `quantity(3, "m s-1")` is a well-defined quantity.
+
+`uncertainty` stands for the quantity's uncertainty.  
+`quantity(3, "s", 0.5)` is a well-defined quantity.
 
 ### Methods
 
@@ -73,7 +76,7 @@ def __bool__(self) -> bool
 def __abs__(self) -> any
 def __pos__(self) -> any
 def __neg__(self) -> any
-def __invert__(self) -> any
+# def __invert__(self) -> any
 def __round__(self, number: int) -> any
 def __floor__(self, number: int) -> any
 def __ceil__(self, number: int) -> any
@@ -85,7 +88,7 @@ def __mul__(self, other: any) -> any
 def __truediv__(self, other: any) -> any
 def __floordiv__(self, other: any) -> any
 def __pow__(self, other: any) -> any
-def __mod__(self, other: any) -> any
+# def __mod__(self, other: any) -> any
 
 def __lt__(self, other: any) -> any
 def __le__(self, other: any) -> any
@@ -241,7 +244,8 @@ Take a look at these [examples](#global-options-1)
 
 **misura** implements the following exceptions:
 
-- `UnitError`: raised on invalid `unit` passed to `quantity(value, unit)`.
+- `InitError`: raised on invalid quantity definition.
+- `UnitError`: raised on invalid `unit`.
 - `QuantityError`: raised on operations between incompatible quantities.
 - `ConversionError`: raised on errors during conversions.
 - `UnpackError`: raised on errors during unpacking.
@@ -256,18 +260,19 @@ Take a look at these [examples](#global-options-1)
 
 ```python
 from misura import quantity
+import math
 import numpy
 
-num1 = quantity(7, "m s-1")
+num1 = quantity(7, "m s-1", 1)
 num2 = quantity(4, "km")
-num3 = numpy.array([quantity(2, "m"), quantity(4, "km")])
+num3 = numpy.array([quantity(2, "m", .5), quantity(4, "km", .1)])
 num4 = quantity(numpy.array([1, 2, 3]), "T")
 
 print(num1.unit(print=True))
 print(num1.dimesion())
 print(num1 * 3)
 print(num2 ** 2 < 16)
-print(numpy.sum(num3))
+print(math.trunc(numpy.sum(num3)))
 print(num4)
 ```
 
@@ -276,9 +281,9 @@ The output is:
 ```
 m / s
 [length / time]
-21 m / s
+21 ± 3 m / s
 False
-4002.0 m
+4002 ± 100 m
 [1 2 3] T
 ```
 
