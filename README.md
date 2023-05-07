@@ -55,7 +55,7 @@ python -m misura
 
 you'll be able to verify the installation of **misura** along getting some informations about the library and on the available units of measure[^1]:
 
-[^1]: Examle referring to version 1.3.1
+[^1]: Example referring to version 1.3.1
 
 ```
 misura v1.3.1
