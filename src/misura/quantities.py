@@ -428,9 +428,9 @@ class quantity:
         if isinstance(other, quantity):
             raise QuantityError(self, other, "**")
 
-    # Modulo.
-    # def __mod__(self, other: any) -> quantity:
-    #     return quantity(self.value % other, self.unit())
+    # Modulo.
+    def __mod__(self, other: any) -> quantity:
+        return quantity(self.value % other, self.unit(), self.uncertainty % other)
 
     # COMPARISONS.
 
