@@ -21,10 +21,13 @@ num12 = quantity(2, "kg", 0.5)
 num13 = quantity(0.7, "m3", 0.15)
 num14 = quantity(3, "", 1)
 
+# Dimensions.
+print(num0.dimension())
+
 # Math.
 print(num0**0.5)
 print(7 - num14)
-print(2 ** num14)
+print(2**num14)
 
 # Logical.
 print(num0 > 10)
