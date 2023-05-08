@@ -1,7 +1,7 @@
 # Test suite for misura.
 
-from misura import quantity, convert, unpack, pack
-from misura import addUnit
+from misura.quantities import quantity, convert, unpack, pack
+from misura.tables import addUnit
 
 addUnit("bananas", {"bnn": 1, "dabnn": 10, "hbnn": 100, "kbnn": 1000})
 

@@ -13,7 +13,7 @@
 # misura
 
 ```python
->>> from misura import quantity
+>>> from misura.quantities import quantity
 >>> quantity(7, "m", 1.5) / quantity(2, "s")
 3.5 ± 0.75 m / s
 ```
@@ -114,12 +114,12 @@ import misura
 ## Examples
 
 These are some examples of operations between quantities.  
-Note that, by enabling `misura.style.unitHighlighting`, **misura** uses colorama to highlight units of measure. by disabling it, the output is in the form of `num [unit]`
+Note that, by enabling `globals.style.unitHighlighting`, **misura** uses colorama to highlight units of measure. by disabling it, the output is in the form of `num [unit]`
 
 ### Mathematical operations
 
 ```python
-from misura import quantity
+from misura.quantities import quantity
 
 num1 = quantity(2, "m s-1")
 num2 = quantity(4, "m s-1")
@@ -145,7 +145,7 @@ The output is:
 ### Working with other libraries
 
 ```python
-from misura import quantity, convert
+from misura.quantities import quantity, convert
 from decimal import Decimal, getcontext
 import numpy
 
@@ -173,7 +173,8 @@ Unit highlighting helps distinguish between different numbers.
 ### User defined units of measure
 
 ```python
-from misura import quantity, convert, addUnit
+from misura.quantities import quantity, convert
+from misura.tables import addUnit
 
 addUnit("volume", {"L": 1, "daL": 10, "hL": 100, "kL": 1000, "dL": 0.1, "cL": 0.01, "mL": 0.001}, "dm3")
 
@@ -191,7 +192,7 @@ The output is:
 ### Manual and automatic conversion
 
 ```python
-from misura import quantity, convert
+from misura.quantities import quantity, convert
 
 num1 = quantity(2, "m2")
 num2 = quantity(4, "kg")
@@ -213,7 +214,7 @@ The output is:
 ### Unpack derived quantities
 
 ```python
-from misura import quantity, unpack
+from misura.quantities import quantity, unpack
 
 num1 = quantity(2, "J2")
 num2 = quantity(4, "C H")
@@ -232,7 +233,7 @@ The output is:
 ### Pack derived quantities
 
 ```python
-from misura import quantity, pack
+from misura.quantities import quantity, pack
 
 num1 = quantity(3, "N m T")
 num2 = quantity(45, "A2 s2")
@@ -251,7 +252,7 @@ The output is:
 ### Comparisons
 
 ```python
-from misura import quantity
+from misura.quantities import quantity
 
 num1 = quantity(2, "m s-1")
 num2 = quantity(4, "m s-1")
@@ -275,8 +276,8 @@ raised by: '2 s' -> 'm s-1'
 ### Unary operators and functions
 
 ```python
-from misura import quantity
-from misura import style
+from misura.quantities import quantity
+from misura.globals import style
 from math import trunc
 
 style.quantityHighlighting = False
@@ -301,7 +302,7 @@ The output is:
 ### Formatting
 
 ```python
-from misura import quantity
+from misura.quantities import quantity
 
 num1 = quantity(2000, "m s-1")
 

@@ -34,7 +34,7 @@ Python library for easy unit handling and conversion for scientific & engineerin
 
 [Go back to ToC](#table-of-contents)
 
-Quantities are defined as `misura.quantity(value: any, unit: str = "", uncertainty: any = 0)` objects.
+Quantities are defined as `quantities.quantity(value: any, unit: str = "", uncertainty: any = 0)` objects.
 
 `values` stands for the value of the quantity itself, while `unit` represents its unit of measure.  
 `quantity(2, "kg")` is a well-defined quantity.
@@ -47,7 +47,7 @@ Quantities are defined as `misura.quantity(value: any, unit: str = "", uncertain
 
 ### Methods
 
-`misura.quantity` objects implement the following methods:
+`quantities.quantity` objects implement the following methods:
 
 ```python
 def unit(self, print: bool = False) -> str
@@ -61,7 +61,7 @@ which:
 
 ### Operations
 
-`misura.quantity` objects implement the following dunder methods:
+`quantities.quantity` objects implement the following dunder methods:
 
 ```python
 def __str__(self) -> str
@@ -88,7 +88,7 @@ def __mul__(self, other: any) -> any
 def __truediv__(self, other: any) -> any
 def __floordiv__(self, other: any) -> any
 def __pow__(self, other: any) -> any
-# def __mod__(self, other: any) -> any
+def __mod__(self, other: any) -> any
 
 def __lt__(self, other: any) -> any
 def __le__(self, other: any) -> any
@@ -234,9 +234,9 @@ Take a look at these [examples](#conversions-unpacking-and-packing-1).
 
 **misura** implements the following global options:
 
-- `misura.style.quantityHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
-- `misura.style.quantityPlusMinus`, string: "+-" symbol. Dafault: `" \u00b1 "`.
-- `misura.logic.ignoreUncertainty`, bool: Whether to ignore uncertainty during comparisons. Dafault: `False`.
+- `globals.style.quantityHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
+- `globals.style.quantityPlusMinus`, string: "+-" symbol. Dafault: `" \u00b1 "`.
+- `globals.logic.ignoreUncertainty`, bool: Whether to ignore uncertainty during comparisons. Dafault: `False`.
 
 Take a look at these [examples](#global-options-1)
 
@@ -262,7 +262,7 @@ Take a look at these [examples](#global-options-1)
 ### Quantities
 
 ```python
-from misura import quantity
+from misura.quantities import quantity
 import math
 import numpy
 
@@ -293,7 +293,8 @@ False
 ### Units of measure
 
 ```python
-from misura import quantity, convert, addUnit
+from misura.quantities import quantity, convert
+fromm misura.tables import addUnit
 
 addUnit("volume", {"L": 1, "daL": 10, "hL": 100, "kL": 1000, "dL": 0.1, "cL": 0.01, "mL": 0.001}, "dm3")
 
@@ -311,7 +312,7 @@ The output is:
 ### Conversions, unpacking and packing
 
 ```python
-from misura import quantity, convert, unpack, pack
+from misura.quantities import quantity, convert, unpack, pack
 
 num1 = quantity(2, "m2")
 num2 = quantity(4, "kg")
@@ -343,8 +344,8 @@ The output is:
 ### Global options
 
 ```python
-from misura import quantity
-from misura import style
+from misura.quantities import quantity
+from misura.globals import style
 
 style.quantityHighlighting = False
 style.quantityPlusMinus = " +- "
