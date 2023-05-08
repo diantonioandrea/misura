@@ -228,12 +228,8 @@ class quantity:
 
     # Abs.
     def __abs__(self) -> quantity:
-        # Since abs(number) cannot be negative, the uncertainty on this value gets modified.
-        return quantity(
-            abs(self.value),
-            self.unit(),
-            self.uncertainty if uAny(self.uncertainty) < self.value else self.value,
-        )
+        # Ignores the case in which abs(uncertainty) > abs(value).
+        return quantity(abs(self.value), self.unit(), self.uncertainty)
 
     # Positive.
     def __pos__(self) -> quantity:
@@ -274,6 +270,7 @@ class quantity:
     # Addition.
     def __add__(self, other: any) -> quantity:
         if not isinstance(other, quantity):
+            # Addition between pure numbers.
             if self.unit():
                 raise QuantityError(self, quantity(other, ""), "+")
 
@@ -281,7 +278,7 @@ class quantity:
 
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
-                # Chooses the one to convert.
+                # Chooses the one to convert based on unit length.
                 first = convert(self, other.unit())
                 second = convert(other, self.unit())
 
@@ -306,6 +303,7 @@ class quantity:
     # Subtraction.
     def __sub__(self, other: any) -> quantity:
         if not isinstance(other, quantity):
+            # Subtraction between pure numbers.
             if self.unit():
                 raise QuantityError(self, quantity(other, ""), "-")
 
@@ -313,7 +311,7 @@ class quantity:
 
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
-                # Chooses the one to convert.
+                # Chooses the one to convert based on unit length.
                 first = convert(self, other.unit())
                 second = convert(other, self.unit())
 
@@ -333,12 +331,14 @@ class quantity:
         )
 
     def __rsub__(self, other: quantity) -> quantity:
-        return self.__sub__(other)
+        return self.__sub__(other) * (-1)
 
     # Multiplication.
     def __mul__(self, other: any) -> any:
         if not isinstance(other, quantity):
-            return quantity(self.value * other, self.unit(), self.uncertainty * other)
+            return quantity(
+                self.value * other, self.unit(), abs(self.uncertainty * other)
+            )
 
         newUnits = self.units.copy()
 
@@ -368,7 +368,9 @@ class quantity:
     # Division.
     def __truediv__(self, other: any) -> any:
         if not isinstance(other, quantity):
-            return quantity(self.value / other, self.unit(), self.uncertainty / other)
+            return quantity(
+                self.value / other, self.unit(), abs(self.uncertainty / other)
+            )
 
         newUnits = self.units.copy()
 
@@ -394,7 +396,7 @@ class quantity:
 
     def __floordiv__(self, other: any) -> quantity:
         return quantity(
-            self.value // other, self.unit(), self.uncertainty // other
+            self.value // other, self.unit(), abs(self.uncertainty // other)
         )  # Check uncertainty.
 
     def __rtruediv__(self, other: any) -> any:
