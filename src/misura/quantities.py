@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from colorama import Style
-from math import sqrt
+from math import sqrt, log
 
 from .exceptions import (
     UnitError,
@@ -19,13 +19,16 @@ from .globals import style, logic
 
 class quantity:
     """
-    The main class of misura, the class of quantities.
+    misura's quantity class.
     """
 
     def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
         """
-        value: Can be anything that can be somewhat treated as a number.
-        unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
+        Quantity initialization.
+
+        - value: Can be anything that can be somewhat treated as a number.
+        - unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
+        - uncertainty: Value's uncertainty.
         """
 
         try:
@@ -64,7 +67,8 @@ class quantity:
     def unit(self, print: bool = False) -> str:
         """
         Returns a readable version of the quantity's unit.
-        print = True makes the output fancier.
+
+        'print = True' makes the output fancier.
         """
 
         # Fancy version.
@@ -124,7 +128,6 @@ class quantity:
     def dimesion(self) -> str:
         """
         Returns a readable version of the quantity's dimesion.
-        No fancy style.
         """
 
         if not len(self.dimesions):
@@ -203,10 +206,7 @@ class quantity:
         )
 
     # PYTHON TYPES CONVERSION.
-
-    """
-    int, float and complex don't care about uncertainty.
-    """
+    # int, float and complex don't care about uncertainty.
 
     # Int.
     def __int__(self) -> int:
@@ -222,7 +222,7 @@ class quantity:
 
     # Bool.
     def __bool__(self) -> bool:
-        return bool(self.value or self.uncertainty)
+        return bool(uAny(self.value) or uAny(self.uncertainty))
 
     # MATH.
 
@@ -397,7 +397,7 @@ class quantity:
     def __floordiv__(self, other: any) -> quantity:
         return quantity(
             self.value // other, self.unit(), abs(self.uncertainty // other)
-        )  # Check uncertainty.
+        )
 
     def __rtruediv__(self, other: any) -> any:
         return self**-1 * other
@@ -426,7 +426,18 @@ class quantity:
 
     def __rpow__(self, other: any) -> quantity:
         if isinstance(other, quantity):
-            raise QuantityError(self, other, "**")
+            raise QuantityError(other, self, "**")
+
+        if uAny(other) <= 0:
+            raise ValueError(
+                "math domain error\nraised on '{}' ** '{}'".format(other, self)
+            )
+
+        return quantity(
+            other**self.value,
+            "",
+            abs(log(other) * (other**self) * self.uncertainty),
+        ) * (other != 1) + self * (other == 1)
 
     # Modulo.
     def __mod__(self, other: any) -> quantity:
