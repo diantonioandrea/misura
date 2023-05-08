@@ -10,6 +10,14 @@ class style:
     quantityPlusMinus = " \u00b1 "
 
 
+class logic:
+    """
+    Logical global options for misura.
+    """
+
+    ignoreUncertainty = False
+
+
 class defined:
     """
     User defined units.

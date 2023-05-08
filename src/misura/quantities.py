@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from colorama import Style
-from math import sqrt
+from math import sqrt, log
 
 from .exceptions import (
     UnitError,
@@ -14,17 +14,21 @@ from .exceptions import (
 )
 from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
 from .utilities import dictFromUnit, unitFromDict, checkIter, uAll, uAny
+from .globals import style, logic
 
 
 class quantity:
     """
-    The main class of misura, the class of quantities.
+    misura's quantity class.
     """
 
     def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
         """
-        value: Can be anything that can be somewhat treated as a number.
-        unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
+        Quantity initialization.
+
+        - value: Can be anything that can be somewhat treated as a number.
+        - unit: A properly formatted string including all the units with their exponents. e.g. "m s-1".
+        - uncertainty: Value's uncertainty.
         """
 
         try:
@@ -63,9 +67,9 @@ class quantity:
     def unit(self, print: bool = False) -> str:
         """
         Returns a readable version of the quantity's unit.
-        print = True makes the output fancier.
+
+        'print = True' makes the output fancier.
         """
-        from .globals import style
 
         # Fancy version.
         if print:
@@ -124,7 +128,6 @@ class quantity:
     def dimesion(self) -> str:
         """
         Returns a readable version of the quantity's dimesion.
-        No fancy style.
         """
 
         if not len(self.dimesions):
@@ -203,10 +206,7 @@ class quantity:
         )
 
     # PYTHON TYPES CONVERSION.
-
-    """
-    int, float and complex don't care about uncertainty.
-    """
+    # int, float and complex don't care about uncertainty.
 
     # Int.
     def __int__(self) -> int:
@@ -222,18 +222,14 @@ class quantity:
 
     # Bool.
     def __bool__(self) -> bool:
-        return bool(self.value or self.uncertainty)
+        return bool(uAny(self.value) or uAny(self.uncertainty))
 
     # MATH.
 
     # Abs.
     def __abs__(self) -> quantity:
-        # Since abs(number) cannot be negative, the uncertainty on this value gets modified.
-        return quantity(
-            abs(self.value),
-            self.unit(),
-            self.uncertainty if uAny(self.uncertainty) < self.value else self.value,
-        )
+        # Ignores the case in which abs(uncertainty) > abs(value).
+        return quantity(abs(self.value), self.unit(), self.uncertainty)
 
     # Positive.
     def __pos__(self) -> quantity:
@@ -274,6 +270,7 @@ class quantity:
     # Addition.
     def __add__(self, other: any) -> quantity:
         if not isinstance(other, quantity):
+            # Addition between pure numbers.
             if self.unit():
                 raise QuantityError(self, quantity(other, ""), "+")
 
@@ -281,7 +278,7 @@ class quantity:
 
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
-                # Chooses the one to convert.
+                # Chooses the one to convert based on unit length.
                 first = convert(self, other.unit())
                 second = convert(other, self.unit())
 
@@ -306,6 +303,7 @@ class quantity:
     # Subtraction.
     def __sub__(self, other: any) -> quantity:
         if not isinstance(other, quantity):
+            # Subtraction between pure numbers.
             if self.unit():
                 raise QuantityError(self, quantity(other, ""), "-")
 
@@ -313,7 +311,7 @@ class quantity:
 
         if self.unit() != other.unit():
             if self.convertible and other.convertible:
-                # Chooses the one to convert.
+                # Chooses the one to convert based on unit length.
                 first = convert(self, other.unit())
                 second = convert(other, self.unit())
 
@@ -333,12 +331,14 @@ class quantity:
         )
 
     def __rsub__(self, other: quantity) -> quantity:
-        return self.__sub__(other)
+        return self.__sub__(other) * (-1)
 
     # Multiplication.
     def __mul__(self, other: any) -> any:
         if not isinstance(other, quantity):
-            return quantity(self.value * other, self.unit(), self.uncertainty * other)
+            return quantity(
+                self.value * other, self.unit(), abs(self.uncertainty * other)
+            )
 
         newUnits = self.units.copy()
 
@@ -368,7 +368,9 @@ class quantity:
     # Division.
     def __truediv__(self, other: any) -> any:
         if not isinstance(other, quantity):
-            return quantity(self.value / other, self.unit(), self.uncertainty / other)
+            return quantity(
+                self.value / other, self.unit(), abs(self.uncertainty / other)
+            )
 
         newUnits = self.units.copy()
 
@@ -394,8 +396,8 @@ class quantity:
 
     def __floordiv__(self, other: any) -> quantity:
         return quantity(
-            self.value // other, self.unit(), self.uncertainty // other
-        )  # Check uncertainty.
+            self.value // other, self.unit(), abs(self.uncertainty // other)
+        )
 
     def __rtruediv__(self, other: any) -> any:
         return self**-1 * other
@@ -424,11 +426,22 @@ class quantity:
 
     def __rpow__(self, other: any) -> quantity:
         if isinstance(other, quantity):
-            raise QuantityError(self, other, "**")
+            raise QuantityError(other, self, "**")
+
+        if uAny(other <= 0):
+            raise ValueError(
+                "math domain error\nraised on '{}' ** '{}'".format(other, self)
+            )
+
+        return quantity(
+            other**self.value,
+            "",
+            abs(log(other) * (other**self.value) * self.uncertainty),
+        ) * (other != 1) + self * (other == 1)
 
     # Modulo.
-    # def __mod__(self, other: any) -> quantity:
-    #     return quantity(self.value % other, self.unit())
+    def __mod__(self, other: any) -> quantity:
+        return quantity(self.value % other, self.unit(), self.uncertainty % other)
 
     # COMPARISONS.
 
@@ -444,7 +457,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, "<")
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "<")
 
         return self.value < other.value
@@ -461,7 +476,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, "<=")
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "<=")
 
         return self.value <= other.value
@@ -478,7 +495,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, ">")
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, ">")
 
         return self.value > other.value
@@ -495,7 +514,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, ">=")
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, ">=")
 
         return self.value >= other.value
@@ -505,7 +526,9 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value == other
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "==")
 
         return self.value == other.value and self.unit() == other.unit()
@@ -515,7 +538,9 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value != other
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "!=")
 
         return self.value != other.value or self.unit() != other.unit()
