@@ -58,7 +58,7 @@ class quantity:
         )
 
         # Define quantity's dimentsionality based on self.units.
-        self.dimesions: dict = (
+        self.dimensions: dict = (
             {getFamily(unit): self.units[unit] for unit in self.units}
             if self.convertible
             else dict()
@@ -71,121 +71,104 @@ class quantity:
         'print = True' makes the output fancier.
         """
 
+        if not len(self.units):
+            return ""
+
         # Fancy version.
         if print:
             # {"m": 1, "s": -1} -> "[m / s]".
-            numerator = " ".join(
-                sorted(
-                    [
-                        unit
-                        + (
-                            "({})".format(self.units[unit])
-                            if self.units[unit] != 1
-                            else ""
-                        )
-                        for unit in self.units
-                        if self.units[unit] > 0
-                    ]
-                )
-            )
-            denominator = (
-                (
-                    " / "
-                    + " ".join(
-                        sorted(
-                            [
-                                unit
-                                + (
-                                    "({})".format(-1 * self.units[unit])
-                                    if self.units[unit] != -1
-                                    else ""
-                                )
-                                for unit in self.units
-                                if self.units[unit] < 0
-                            ]
-                        )
-                    )
-                )
-                if len([unit for unit in self.units if self.units[unit] < 0])
-                else ""
-            )
+
+            uts = self.units.copy()
+            # ut: short for unit.
+
+            # Numerator with exponent
+            numeratorWE = [
+                "{}({})".format(ut, uts[ut])
+                for ut in uts
+                if uts[ut] > 0 and uts[ut] != 1
+            ]
+
+            # Denominator with exponent
+            denominatorWE = [
+                "{}({})".format(ut, -uts[ut])
+                for ut in uts
+                if uts[ut] < 0 and uts[ut] != 1
+            ]
+
+            # Numerator without exponent
+            numeratorWOE = [ut for ut in uts if uts[ut] > 0 and uts[ut] == 1]
+
+            # Denominator without exponent
+            denominatorWOE = [ut for ut in uts if uts[ut] < 0 and uts[ut] == 1]
+
+            numerator = " ".join(sorted(numeratorWE + numeratorWOE))
+            denominator = " ".join(sorted(denominatorWE + denominatorWOE))
 
             if not numerator and denominator:
                 numerator = "1"
 
-            if style.quantityHighlighting:
-                return (
-                    Style.BRIGHT + numerator + denominator + Style.RESET_ALL
-                    if numerator
-                    else ""
-                )
+            fraction = numerator + " / " + denominator if denominator else numerator
 
-            return "[" + numerator + denominator + "]" if numerator else ""
+            if style.quantityHighlighting:
+                return Style.BRIGHT + fraction + Style.RESET_ALL if numerator else ""
+
+            return "[" + fraction + "]" if numerator else ""
 
         # {"m": 1, "s": -1} -> "m s-1".
         return unitFromDict(self.units)
 
-    def dimesion(self) -> str:
+    def dimension(self) -> str:
         """
-        Returns a readable version of the quantity's dimesion.
+        Returns a readable version of the quantity's dimension.
         """
 
-        if not len(self.dimesions):
+        if not len(self.dimensions):
             return ""
 
-        # {"length": 2, "time": -1} -> "[length(2) / time]".
-        numerator = " * ".join(
-            sorted(
-                [
-                    dim
-                    + (
-                        "({})".format(self.dimesions[dim])
-                        if self.dimesions[dim] != 1
-                        else ""
-                    )
-                    for dim in self.dimesions
-                    if self.dimesions[dim] > 0
-                ]
-            )
-        )
-        denominator = (
-            (
-                " / "
-                + " * ".join(
-                    sorted(
-                        [
-                            dim
-                            + (
-                                "({})".format(-1 * self.dimesions[dim])
-                                if self.dimesions[dim] != -1
-                                else ""
-                            )
-                            for dim in self.dimesions
-                            if self.dimesions[dim] < 0
-                        ]
-                    )
-                )
-            )
-            if len([dim for dim in self.dimesions if self.dimesions[dim] < 0])
-            else ""
-        )
+        uts = self.units.copy()
+        # ut: short for unit.
+
+        # Numerator with exponent
+        numeratorWE = [
+            "{}({})".format(getFamily(ut), uts[ut])
+            for ut in uts
+            if uts[ut] > 0 and uts[ut] != 1
+        ]
+
+        # Denominator with exponent
+        denominatorWE = [
+            "{}({})".format(getFamily(ut), -uts[ut])
+            for ut in uts
+            if uts[ut] < 0 and uts[ut] != 1
+        ]
+
+        # Numerator without exponent
+        numeratorWOE = [getFamily(ut) for ut in uts if uts[ut] > 0 and uts[ut] == 1]
+
+        # Denominator without exponent
+        denominatorWOE = [getFamily(ut) for ut in uts if uts[ut] < 0 and uts[ut] == 1]
+
+        numerator = " ".join(sorted(numeratorWE + numeratorWOE))
+        denominator = " ".join(sorted(denominatorWE + denominatorWOE))
 
         if not numerator and denominator:
             numerator = "1"
 
-        return "[" + numerator + denominator + "]" if numerator else ""
+        fraction = numerator + " / " + denominator if denominator else numerator
+
+        return "[" + fraction + "]" if numerator else ""
 
     # STRINGS.
 
     def __str__(self) -> str:
         from .globals import style
 
+        pm = style.quantityPlusMinus
+        unit = self.unit(print=True)
+        uncert = self.uncertainty
+
         return "{}{}{}".format(
-            self.value,
-            "{}{} ".format(style.quantityPlusMinus, self.uncertainty)
-            if uAny(self.uncertainty)
-            else " ",
-            self.unit(print=True) if self.units else "",
+            self.value, "{}{} ".format(pm, uncert) if uAny(uncert) else " ", unit
         )
 
     def __repr__(self) -> str:
@@ -194,15 +177,15 @@ class quantity:
     def __format__(self, string) -> str:  # Unit highlighting works for print only.
         from .globals import style
 
-        # This works with print only.
+        pm = style.quantityPlusMinus
+        unit = self.unit(print=True)
+        uncert = self.uncertainty
+
+        # This works best with print.
         return (
             self.value.__format__(string)
-            + (
-                (style.quantityPlusMinus + self.uncertainty.__format__(string))
-                if uAny(self.uncertainty)
-                else ""
-            )
-            + (" " + self.unit(print=True) if self.unit() else "")
+            + ((pm + uncert.__format__(string)) if uAny(uncert) else "")
+            + (" " + unit)
         )
 
     # PYTHON TYPES CONVERSION.
@@ -563,9 +546,9 @@ def convert(
     if not qnt.convertible:
         raise ConversionError(qnt, targets)
 
-    # Check dimesion.
+    # Check dimension.
     if not partial:
-        if unpack(qnt).dimesion() != unpack(quantity(1, targets)).dimesion():
+        if unpack(qnt).dimension() != unpack(quantity(1, targets)).dimension():
             raise ConversionError(qnt, targets)
 
     # Automatic (un)packing, version 1.

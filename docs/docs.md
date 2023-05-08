@@ -51,13 +51,13 @@ Quantities are defined as `quantities.quantity(value: any, unit: str = "", uncer
 
 ```python
 def unit(self, print: bool = False) -> str
-def dimesion(self) -> str
+def dimension(self) -> str
 ```
 
 which:
 
 - `unit()`: Returns the units string of the quantity. It returns it in a fancier way if `print = True`.
-- `dimesion()`: Returns the dimesion string of the quantity if it is convertible.
+- `dimension()`: Returns the dimension string of the quantity if it is convertible.
 
 ### Operations
 
@@ -272,7 +272,7 @@ num3 = numpy.array([quantity(2, "m", .5), quantity(4, "km", .1)])
 num4 = quantity(numpy.array([1, 2, 3]), "T")
 
 print(num1.unit(print=True))
-print(num1.dimesion())
+print(num1.dimension())
 print(num1 * 3)
 print(num2 ** 2 < 16)
 print(math.trunc(numpy.sum(num3)))
