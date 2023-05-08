@@ -428,7 +428,7 @@ class quantity:
         if isinstance(other, quantity):
             raise QuantityError(other, self, "**")
 
-        if uAny(other) <= 0:
+        if uAny(other <= 0):
             raise ValueError(
                 "math domain error\nraised on '{}' ** '{}'".format(other, self)
             )
@@ -436,7 +436,7 @@ class quantity:
         return quantity(
             other**self.value,
             "",
-            abs(log(other) * (other**self) * self.uncertainty),
+            abs(log(other) * (other**self.value) * self.uncertainty),
         ) * (other != 1) + self * (other == 1)
 
     # Modulo.
