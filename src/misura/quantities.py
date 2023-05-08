@@ -14,6 +14,7 @@ from .exceptions import (
 )
 from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
 from .utilities import dictFromUnit, unitFromDict, checkIter, uAll, uAny
+from .globals import style, logic
 
 
 class quantity:
@@ -65,7 +66,6 @@ class quantity:
         Returns a readable version of the quantity's unit.
         print = True makes the output fancier.
         """
-        from .globals import style
 
         # Fancy version.
         if print:
@@ -428,7 +428,7 @@ class quantity:
         if isinstance(other, quantity):
             raise QuantityError(self, other, "**")
 
-    # Modulo.
+    # Modulo.
     def __mod__(self, other: any) -> quantity:
         return quantity(self.value % other, self.unit(), self.uncertainty % other)
 
@@ -446,7 +446,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, "<")
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "<")
 
         return self.value < other.value
@@ -463,7 +465,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, "<=")
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "<=")
 
         return self.value <= other.value
@@ -480,7 +484,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, ">")
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, ">")
 
         return self.value > other.value
@@ -497,7 +503,9 @@ class quantity:
             else:
                 raise QuantityError(self, other, ">=")
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, ">=")
 
         return self.value >= other.value
@@ -507,7 +515,9 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value == other
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "==")
 
         return self.value == other.value and self.unit() == other.unit()
@@ -517,7 +527,9 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value != other
 
-        if uAny(self.uncertainty) or uAny(self.uncertainty):
+        if (
+            uAny(self.uncertainty) or uAny(self.uncertainty)
+        ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "!=")
 
         return self.value != other.value or self.unit() != other.unit()

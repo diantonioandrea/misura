@@ -3,7 +3,7 @@ from colorama import init
 init()
 
 # Global options.
-from .globals import style
+from .globals import style, logic
 
 # Quantities.
 from .quantities import quantity, convert, pack, unpack

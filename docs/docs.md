@@ -236,6 +236,7 @@ Take a look at these [examples](#conversions-unpacking-and-packing-1).
 
 - `misura.style.quantityHighlighting`, bool: Enables units of measure highlighting. Dafault: `True`.
 - `misura.style.quantityPlusMinus`, string: "+-" symbol. Dafault: `" \u00b1 "`.
+- `misura.logic.ignoreUncertainty`, bool: Whether to ignore uncertainty during comparisons. Dafault: `False`.
 
 Take a look at these [examples](#global-options-1)
 
