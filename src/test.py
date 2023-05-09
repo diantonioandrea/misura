@@ -1,5 +1,6 @@
 # Test suite for misura.
 
+from colorama import Style
 from misura.quantities import quantity, convert, unpack, pack
 from misura.tables import addUnit
 
@@ -17,48 +18,60 @@ num8 = quantity(13, "J")
 num9 = quantity(0.9, "mN km")
 num10 = quantity(3, "N m T")
 num11 = quantity(12, "kbnn")
-num12 = quantity(2, "kg", 0.5)
-num13 = quantity(0.7, "m3", 0.15)
+num12 = quantity(2, "kg", 0.04)
+num13 = quantity(0.8, "m3", 0.16)
 num14 = quantity(3, "", 1)
 
 # Dimensions.
-print(num10.dimension())
+print(
+    "Tests for {}.\n\nDIMENSIONS TESTS.\n".format(
+        Style.BRIGHT + "misura" + Style.RESET_ALL
+    )
+)
+print("{}: {}".format(num10, num10.dimension()))
 
 # Math.
-print(num0**0.5)
-print(7 - num14)
-print(2**num14)
+print("\nMATH TESTS.\n")
+print("({}) ** 0.5: {}".format(num0, num0**0.5))
+print("7 - ({}): {}".format(num14, 7 - num14))
+print("2 ** ({}): {}".format(num14, 2**num14))
 
 # Logical.
-print(num0 > 10)
-print(num0**0.5 < num1)
-print(num0 < 0.02 * num1**2)
-print(num1 == num2)
-print(num1 != num2)
+print("\nLOGICAL TESTS.\n")
+print("{} > 10: {}".format(num0, num0 > 10))
+print("({}) ** 0.5 < {}: {}".format(num0, num1, num0**0.5 < num1))
+print("{} < 0.02 * {}**2: {}".format(num0, num1, num0 < 0.02 * num1**2))
+print("{} == {}: {}".format(num1, num2, num1 == num2))
+print("{} != {}: {}".format(num1, num2, num1 != num2))
 
 # Conversions.
-print(num0**0.5 + num1)
-print(num0.cto("dm2"), num0)  # num0 does not change.
-print(convert(num1, "m"))
-print(convert(num2, "mA", partial=True))
+print("\nCONVERSIONS.\n")
+print("({}) ** 0.5 + {}: {}".format(num0, num1, num0**0.5 + num1))
+print("{} converted to meters: {}".format(num1, convert(num1, "m")))
+print("{} converted to \'mA\' with partial conversion: {}".format(num2, convert(num2, "mA", partial=True)))
 
 # Unpacking.
-print(unpack(num3))
-print(unpack(num4**3))
-print(unpack(num5, "T"))
+print("\nUNPACKING.\n")
+print("{}: {}".format(num3, unpack(num3)))
+print("({}) ** 3: {}".format(num4, unpack(num4**3)))
+print("{} unpacking \'T\': {}".format(num5, unpack(num5, "T")))
 
 # Packing.
-print(pack(num6, "Sv", full=True))
-print(pack(num7, "J"))
+print("\nPACKING.\n")
+print("{} fully packed to \'Sv\': {}".format(num6, pack(num6, "Sv", full=True)))
+print("{} packed to \'J\': {}".format(num7, pack(num7, "J")))
 
 # Automatic conversion with (un)packing.
-print(num8 + num9)
-print(num9 + num8)
-print(pack(num10, "J", ignore="T"))
+print("\nAUTOMATIC CONVERSION WITH (UN)PACKING.\n")
+print("{} + {}: {}".format(num8, num9, num8 + num9))
+print("{} + {}: {}".format(num9, num8, num9 + num8))
+print("{} packed to \'J\', ignoring \'T\': {}".format(num10, pack(num10, "J", ignore="T")))
 
 # Custom units of measure.
-print(convert(num11, "bnn"))
+print("\nCUSTOM UNITS OF MEASURE.\n")
+print("{} to bnn: {}".format(num11, convert(num11, "bnn")))
 
 # Uncertainty.
-print(num12**2)
-print(num12 / num13)
+print("\nUNCERTAINTY.\n")
+print("({}) ** 2: {}".format(num12, num12**2))
+print("({}) / ({}): {}".format(num12, num13, num12 / num13))
