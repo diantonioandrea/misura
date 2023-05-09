@@ -36,6 +36,9 @@ def dictFromUnit(unit: str) -> dict:
 
     units = dict()
 
+    if not unit:
+        return units
+
     for sym in unit.split(" "):
         candidate = findall(r"-?\d+\.?\d*", sym)
 
