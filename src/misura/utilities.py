@@ -65,6 +65,9 @@ def unitFromDict(units: dict) -> str:
     Returns a properly formatted unit string from a dictionary.
     """
 
+    if not units:
+        return ""
+
     return " ".join(
         sorted(
             [
