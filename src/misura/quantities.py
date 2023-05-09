@@ -530,6 +530,21 @@ class quantity:
 
         return self.value != other.value or self.unit() != other.unit()
 
+    # SHORTCUTS
+
+    def cto(
+        self, targets: str, partial: bool = False, un_pack: bool = True
+    ) -> quantity:  # Convert to.
+        return convert(self, targets, partial, un_pack)
+
+    def uto(self, targets: str = "") -> quantity:  # Unpack to.
+        return unpack(self, targets)
+
+    def pto(
+        self, targets: str, ignore: str = "", full: bool = False
+    ) -> quantity:  # Pack to.
+        return pack(self, targets, ignore, full)
+
 
 # CONVERSION, UNPACKING AND PACKING
 
