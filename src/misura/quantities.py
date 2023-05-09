@@ -165,7 +165,9 @@ class quantity:
         uncert = self.uncertainty
 
         return "{}{}{}".format(
-            self.value, "{}{} ".format(pm, uncert) if uAny(uncert) else " ", unit
+            self.value,
+            "{}{}".format(pm, uncert) if uAny(uncert) else "",
+            (" " + unit) if self.units else "",
         )
 
     def __repr__(self) -> str:
@@ -180,7 +182,7 @@ class quantity:
         return (
             self.value.__format__(string)
             + ((pm + uncert.__format__(string)) if uAny(uncert) else "")
-            + (" " + unit)
+            + ((" " + unit) if self.units else "")
         )
 
     # PYTHON TYPES CONVERSION.

@@ -45,12 +45,8 @@ print("{} != {}: {}".format(num1, num2, num1 != num2))
 # Conversions.
 print("\nCONVERSIONS.\n")
 print("({}) ** 0.5 + {}: {}".format(num0, num1, num0**0.5 + num1))
-print("{} converted to meters: {}".format(num1, convert(num1, "m")))
-print(
-    "{} converted to 'mA' with partial conversion: {}".format(
-        num2, convert(num2, "mA", partial=True)
-    )
-)
+print("{} to 'm': {}".format(num1, convert(num1, "m")))
+print("{} to 'mA', partial: {}".format(num2, convert(num2, "mA", partial=True)))
 
 # Unpacking.
 print("\nUNPACKING.\n")
@@ -71,7 +67,7 @@ print("{} packed to 'J', ignoring 'T': {}".format(num10, pack(num10, "J", ignore
 
 # Custom units of measure.
 print("\nCUSTOM UNITS OF MEASURE.\n")
-print("{} to bnn: {}".format(num11, convert(num11, "bnn")))
+print("{} to 'bnn': {}".format(num11, convert(num11, "bnn")))
 
 # Uncertainty.
 print("\nUNCERTAINTY.\n")
