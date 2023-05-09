@@ -13,7 +13,9 @@ from .exceptions import (
     UncertaintyComparisonError,
 )
 from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
-from .utilities import dictFromUnit, unitFromDict, checkIter, uAll, uAny
+from .utilities import checkIter, uAll, uAny
+from .utilities import unitFromDict as ufd
+from .utilities import dictFromUnit as dfu
 from .globals import style, logic
 
 
@@ -50,7 +52,7 @@ class quantity:
         table.update(getDerived())
 
         # From unit: str to self.units: dict.
-        self.units: dict = dictFromUnit(unit)
+        self.units: dict = dfu(unit)
 
         # Checks whether the unit can be converted with the available units.
         self.convertible: bool = all(
@@ -115,7 +117,7 @@ class quantity:
             return "[" + fraction + "]" if numerator else ""
 
         # {"m": 1, "s": -1} -> "m s-1".
-        return unitFromDict(self.units)
+        return ufd(self.units)
 
     def dimension(self) -> str:
         """
@@ -148,8 +150,8 @@ class quantity:
         # Denominator without exponent
         denominatorWOE = [getFamily(ut) for ut in uts if uts[ut] < 0 and uts[ut] == 1]
 
-        numerator = " ".join(sorted(numeratorWE + numeratorWOE))
-        denominator = " ".join(sorted(denominatorWE + denominatorWOE))
+        numerator = " * ".join(sorted(numeratorWE + numeratorWOE))
+        denominator = " * ".join(sorted(denominatorWE + denominatorWOE))
 
         if not numerator and denominator:
             numerator = "1"
@@ -338,7 +340,7 @@ class quantity:
 
         return quantity(
             self.value * other.value,
-            unitFromDict(newUnits),
+            ufd(newUnits),
             sqrt(
                 (other.value * self.uncertainty) ** 2
                 + (self.value * other.uncertainty) ** 2
@@ -370,7 +372,7 @@ class quantity:
 
         return quantity(
             self.value / other.value,
-            unitFromDict(newUnits),
+            ufd(newUnits),
             sqrt(
                 (self.uncertainty / other.value) ** 2
                 + (self.value * other.uncertainty / (other.value**2)) ** 2
@@ -403,7 +405,7 @@ class quantity:
 
         return quantity(
             self.value**other,
-            unitFromDict(newUnits),
+            ufd(newUnits),
             abs(other) * (self.value ** (other - 1)) * self.uncertainty,
         )
 
@@ -528,6 +530,21 @@ class quantity:
 
         return self.value != other.value or self.unit() != other.unit()
 
+    # SHORTCUTS
+
+    def cto(
+        self, targets: str, partial: bool = False, un_pack: bool = True
+    ) -> quantity:  # Convert to.
+        return convert(self, targets, partial, un_pack)
+
+    def uto(self, targets: str = "") -> quantity:  # Unpack to.
+        return unpack(self, targets)
+
+    def pto(
+        self, targets: str, ignore: str = "", full: bool = False
+    ) -> quantity:  # Pack to.
+        return pack(self, targets, ignore, full)
+
 
 # CONVERSION, UNPACKING AND PACKING
 
@@ -551,24 +568,51 @@ def convert(
         if unpack(qnt).dimension() != unpack(quantity(1, targets)).dimension():
             raise ConversionError(qnt, targets)
 
-    # Automatic (un)packing, version 1.
+    # Automatic (un)packing, version 2.
     if un_pack and not partial:
-        try:
-            # Tries to pack qnt.
-            return convert(pack(qnt, targets), targets, un_pack=False)
+        # Tries to pack qnt.
+        target = quantity(1, targets)
+        packUnits = {ut: target.units[ut] for ut in target.units if ut not in qnt.units}
+        ignoreUnits = {ut: qnt.units[ut] for ut in qnt.units if ut not in target.units}
 
-        except (PackError, ConversionError):
-            pass
+        for tr in range(3):
+            try:
+                if tr == 0:
+                    # First try: uses ignore and full packing.
+                    return convert(
+                        pack(qnt, ufd(packUnits), ignore=ufd(ignoreUnits), full=True),
+                        targets,
+                        un_pack=False,
+                    )
+
+                if tr == 1:
+                    # Second try: uses ignore.
+                    return convert(
+                        pack(qnt, ufd(packUnits), ignore=ufd(ignoreUnits)),
+                        targets,
+                        un_pack=False,
+                    )
+
+                elif tr == 2:
+                    # Third try: does not use ignore.
+                    return convert(
+                        pack(qnt, ufd(packUnits)),
+                        targets,
+                        un_pack=False,
+                    )
+
+            except (PackError, ConversionError):
+                pass
 
         # Completely unpacks units.
         return convert(
             unpack(qnt),
-            unpack(quantity(1, targets)).unit(),
+            unpack(target).unit(),
             un_pack=False,
         )
 
     factor: float = 1.0
-    tUnits: dict = dictFromUnit(targets)  # Target units.
+    tUnits: dict = dfu(targets)  # Target units.
 
     pTargets: dict = dict()  # Partial targets.
 
@@ -614,9 +658,7 @@ def convert(
     return (
         quantity(qnt.value * factor, targets, qnt.uncertainty * factor)
         if not partial
-        else quantity(
-            qnt.value * factor, unitFromDict(pTargets), qnt.uncertainty * factor
-        )
+        else quantity(qnt.value * factor, ufd(pTargets), qnt.uncertainty * factor)
     )
 
 
@@ -639,7 +681,7 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
         if targets == "":
             return qnt
 
-    for target in dictFromUnit(targets):
+    for target in dfu(targets):
         # Checks target.
         if getFamily(target) not in [getFamily(unit) for unit in qnt.units]:
             raise UnpackError(qnt, target)
@@ -668,9 +710,9 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
 
         # Uncertainty should not vary on packing.
         uncertainty = qnt.uncertainty
-        qnt = (
-            quantity(qnt.value, unitFromDict(newUnits)) if len(newUnits) else qnt.value
-        ) * (quantity(1, unpackTable[cTarget]) ** qnt.units[cTarget])
+        qnt = (quantity(qnt.value, ufd(newUnits)) if len(newUnits) else qnt.value) * (
+            quantity(1, unpackTable[cTarget]) ** qnt.units[cTarget]
+        )
         qnt.uncertainty = uncertainty
 
     return qnt
@@ -703,29 +745,23 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
     # Unpack only relevant units.
     if ignore:
-        for ignored in dictFromUnit(ignore):
+        for ignored in dfu(ignore):
             if getFamily(ignored) not in [getFamily(unit) for unit in qnt.units]:
                 raise PackError(qnt, targets, ignore)
 
     qnt = (
         quantity(
             qnt.value,
-            unitFromDict(
-                {
-                    unit: qnt.units[unit]
-                    for unit in qnt.units
-                    if unit in dictFromUnit(ignore)
-                }
-            ),
+            ufd({unit: qnt.units[unit] for unit in qnt.units if unit in dfu(ignore)}),
         )
         * unpack(
             quantity(
                 1,
-                unitFromDict(
+                ufd(
                     {
                         unit: qnt.units[unit]
                         for unit in qnt.units
-                        if unit not in dictFromUnit(ignore)
+                        if unit not in dfu(ignore)
                     }
                 ),
             )
@@ -734,11 +770,11 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         else unpack(qnt)
     )
 
-    for target in dictFromUnit(targets):
+    for target in dfu(targets):
         if target not in packTable:
             continue
 
-        targetUnits = dictFromUnit(packTable[target])
+        targetUnits = dfu(packTable[target])
 
         # Packing powers.
         powers = {
@@ -767,9 +803,7 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
         # Uncertainty should not vary on packing.
         uncertainty = qnt.uncertainty
-        qnt *= (quantity(1, target) / quantity(1, unitFromDict(targetUnits))) ** max(
-            powers
-        )
+        qnt *= (quantity(1, target) / quantity(1, ufd(targetUnits))) ** max(powers)
         qnt.uncertainty = uncertainty
 
     return qnt
