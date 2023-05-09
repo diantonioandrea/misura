@@ -75,30 +75,26 @@ class quantity:
 
         if not len(self.units):
             return ""
-        
-        uts = self.units.copy()
+
+        uts: dict = self.units.copy()
         # ut: short for unit.
 
         if not print:
             # Plain version.
             # {"m": 1, "s": -1} -> "m s-1".
             return ufd(self.units)
-        
+
         # Fancy version.
         # {"m": 1, "s": -1} -> "[m / s]".
 
         # Numerator with exponent
         numeratorWE = [
-            "{}({})".format(ut, uts[ut])
-            for ut in uts
-            if uts[ut] > 0 and uts[ut] != 1
+            "{}({})".format(ut, uts[ut]) for ut in uts if uts[ut] > 0 and uts[ut] != 1
         ]
 
         # Denominator with exponent
         denominatorWE = [
-            "{}({})".format(ut, -uts[ut])
-            for ut in uts
-            if uts[ut] < 0 and uts[ut] != 1
+            "{}({})".format(ut, -uts[ut]) for ut in uts if uts[ut] < 0 and uts[ut] != 1
         ]
 
         # Numerator without exponent
@@ -128,7 +124,7 @@ class quantity:
         if not len(self.dimensions):
             return ""
 
-        uts = self.units.copy()
+        uts: dict = self.units.copy()
         # ut: short for unit.
 
         # Numerator with exponent
@@ -743,28 +739,22 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
             if getFamily(ignored) not in [getFamily(unit) for unit in qnt.units]:
                 raise PackError(qnt, targets, ignore)
 
-    qnt = (
-        quantity(
-            qnt.value,
-            ufd({unit: qnt.units[unit] for unit in qnt.units if unit in dfu(ignore)}),
-        )
-        * unpack(
-            quantity(
-                1,
-                ufd(
-                    {
-                        unit: qnt.units[unit]
-                        for unit in qnt.units
-                        if unit not in dfu(ignore)
-                    }
-                ),
-            )
-        )
-        if ignore
-        else unpack(qnt)
-    )
+        val = qnt.value
+        uts: dict = qnt.units.copy()
+        # ut: short for unit.
+
+        # Does not completely unpack the quantity qnt but unpacks the non-ignored units
+        # and then merges them with the ignored ones.
+        ignored = quantity(val, ufd({ut: uts[ut] for ut in uts if ut in dfu(ignore)}))
+        packed = quantity(1, ufd({ut: uts[ut] for ut in uts if ut not in dfu(ignore)}))
+
+        qnt = ignored * unpack(packed)
+
+    else:
+        qnt = unpack(qnt)
 
     for target in dfu(targets):
+        # Ignores non-packable units.
         if target not in packTable:
             continue
 
@@ -783,8 +773,7 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
         # Full packing is a stricter form of packing which
         # requires that "no other units are produced from the packing process".
-        if full:
-            # Packability check.
+        if full:  # Full-packability check.
             for targetUnit in targetUnits:
                 if targetUnit not in qnt.units:
                     raise PackError(qnt, targets, full=True)
