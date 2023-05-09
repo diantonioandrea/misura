@@ -22,7 +22,7 @@ num12 = quantity(2, "kg", 0.04)
 num13 = quantity(0.8, "m3", 0.16)
 num14 = quantity(3, "", 1)
 
-print("Tests for {}.\n".format(Style.BRIGHT + "misura" + Style.RESET_ALL))
+print("Tests for {}.".format(Style.BRIGHT + "misura" + Style.RESET_ALL))
 
 # Dimensions.
 print("\nDIMENSIONS TESTS.\n")
