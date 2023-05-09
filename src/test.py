@@ -38,7 +38,7 @@ print(num1 != num2)
 
 # Conversions.
 print(num0**0.5 + num1)
-print(convert(num0, "dm2"))
+print(num0.cto("dm2"), num0)  # num0 does not change.
 print(convert(num1, "m"))
 print(convert(num2, "mA", partial=True))
 
