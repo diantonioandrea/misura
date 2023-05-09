@@ -150,8 +150,8 @@ class quantity:
         # Denominator without exponent
         denominatorWOE = [getFamily(ut) for ut in uts if uts[ut] < 0 and uts[ut] == 1]
 
-        numerator = " ".join(sorted(numeratorWE + numeratorWOE))
-        denominator = " ".join(sorted(denominatorWE + denominatorWOE))
+        numerator = " * ".join(sorted(numeratorWE + numeratorWOE))
+        denominator = " * ".join(sorted(denominatorWE + denominatorWOE))
 
         if not numerator and denominator:
             numerator = "1"
@@ -555,47 +555,44 @@ def convert(
 
     # Automatic (un)packing, version 2.
     if un_pack and not partial:
-        # First try: uses ignore.
-        try:
-            # Tries to pack qnt.
-            target = quantity(1, targets)
-            packUnits = {
-                ut: target.units[ut] for ut in target.units if ut not in qnt.units
-            }
-            ignoreUnits = {
-                ut: qnt.units[ut] for ut in qnt.units if ut not in target.units
-            }
+        # Tries to pack qnt.
+        target = quantity(1, targets)
+        packUnits = {ut: target.units[ut] for ut in target.units if ut not in qnt.units}
+        ignoreUnits = {ut: qnt.units[ut] for ut in qnt.units if ut not in target.units}
 
-            return convert(
-                pack(qnt, ufd(packUnits), ignore=ufd(ignoreUnits)),
-                targets,
-                un_pack=False,
-            )
+        for tr in range(3):
+            try:
+                if tr == 0:
+                    # First try: uses ignore and full packing.
+                    return convert(
+                        pack(qnt, ufd(packUnits), ignore=ufd(ignoreUnits), full=True),
+                        targets,
+                        un_pack=False,
+                    )
 
-        except (PackError, ConversionError):
-            pass
+                if tr == 1:
+                    # Second try: uses ignore.
+                    return convert(
+                        pack(qnt, ufd(packUnits), ignore=ufd(ignoreUnits)),
+                        targets,
+                        un_pack=False,
+                    )
 
-        # Second try: does not use ignore.
-        try:
-            # Tries to pack qnt.
-            target = quantity(1, targets)
-            packUnits = {
-                ut: target.units[ut] for ut in target.units if ut not in qnt.units
-            }
+                elif tr == 2:
+                    # Third try: does not use ignore.
+                    return convert(
+                        pack(qnt, ufd(packUnits)),
+                        targets,
+                        un_pack=False,
+                    )
 
-            return convert(
-                pack(qnt, ufd(packUnits)),
-                targets,
-                un_pack=False,
-            )
-
-        except (PackError, ConversionError):
-            pass
+            except (PackError, ConversionError):
+                pass
 
         # Completely unpacks units.
         return convert(
             unpack(qnt),
-            unpack(quantity(1, targets)).unit(),
+            unpack(target).unit(),
             un_pack=False,
         )
 

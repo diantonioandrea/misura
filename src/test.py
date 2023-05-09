@@ -11,7 +11,7 @@ num2 = quantity(12, "A s")
 num3 = quantity(1, "C mW")
 num4 = quantity(900, "J")
 num5 = quantity(15, "H TT")
-num6 = quantity(12, "m2 s-2")
+num6 = quantity(12, "km2 s-2")
 num7 = quantity(3, "kg km2")
 num8 = quantity(13, "J")
 num9 = quantity(0.9, "mN km")
@@ -22,7 +22,7 @@ num13 = quantity(0.7, "m3", 0.15)
 num14 = quantity(3, "", 1)
 
 # Dimensions.
-print(num0.dimension())
+print(num10.dimension())
 
 # Math.
 print(num0**0.5)
