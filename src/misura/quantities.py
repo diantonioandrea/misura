@@ -417,7 +417,7 @@ class quantity:
             other**self.value,
             "",
             abs(log(other) * (other**self.value) * self.uncertainty),
-        ) * (other != 1) + self * (other == 1)
+        ) * (other != 1) + quantity(1) * (other == 1)
 
     # Modulo.
     def __mod__(self, other: any) -> quantity:
