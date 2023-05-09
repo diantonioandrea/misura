@@ -22,12 +22,10 @@ num12 = quantity(2, "kg", 0.04)
 num13 = quantity(0.8, "m3", 0.16)
 num14 = quantity(3, "", 1)
 
+print("Tests for {}.\n".format(Style.BRIGHT + "misura" + Style.RESET_ALL))
+
 # Dimensions.
-print(
-    "Tests for {}.\n\nDIMENSIONS TESTS.\n".format(
-        Style.BRIGHT + "misura" + Style.RESET_ALL
-    )
-)
+print("\nDIMENSIONS TESTS.\n")
 print("{}: {}".format(num10, num10.dimension()))
 
 # Math.
@@ -48,24 +46,28 @@ print("{} != {}: {}".format(num1, num2, num1 != num2))
 print("\nCONVERSIONS.\n")
 print("({}) ** 0.5 + {}: {}".format(num0, num1, num0**0.5 + num1))
 print("{} converted to meters: {}".format(num1, convert(num1, "m")))
-print("{} converted to \'mA\' with partial conversion: {}".format(num2, convert(num2, "mA", partial=True)))
+print(
+    "{} converted to 'mA' with partial conversion: {}".format(
+        num2, convert(num2, "mA", partial=True)
+    )
+)
 
 # Unpacking.
 print("\nUNPACKING.\n")
 print("{}: {}".format(num3, unpack(num3)))
 print("({}) ** 3: {}".format(num4, unpack(num4**3)))
-print("{} unpacking \'T\': {}".format(num5, unpack(num5, "T")))
+print("{} unpacking 'T': {}".format(num5, unpack(num5, "T")))
 
 # Packing.
 print("\nPACKING.\n")
-print("{} fully packed to \'Sv\': {}".format(num6, pack(num6, "Sv", full=True)))
-print("{} packed to \'J\': {}".format(num7, pack(num7, "J")))
+print("{} fully packed to 'Sv': {}".format(num6, pack(num6, "Sv", full=True)))
+print("{} packed to 'J': {}".format(num7, pack(num7, "J")))
 
 # Automatic conversion with (un)packing.
 print("\nAUTOMATIC CONVERSION WITH (UN)PACKING.\n")
 print("{} + {}: {}".format(num8, num9, num8 + num9))
 print("{} + {}: {}".format(num9, num8, num9 + num8))
-print("{} packed to \'J\', ignoring \'T\': {}".format(num10, pack(num10, "J", ignore="T")))
+print("{} packed to 'J', ignoring 'T': {}".format(num10, pack(num10, "J", ignore="T")))
 
 # Custom units of measure.
 print("\nCUSTOM UNITS OF MEASURE.\n")
