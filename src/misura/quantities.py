@@ -165,7 +165,9 @@ class quantity:
         uncert = self.uncertainty
 
         return "{}{}{}".format(
-            self.value, "{}{} ".format(pm, uncert) if uAny(uncert) else " ", unit
+            self.value,
+            "{}{}".format(pm, uncert) if uAny(uncert) else "",
+            (" " + unit) if self.units else "",
         )
 
     def __repr__(self) -> str:
@@ -180,7 +182,7 @@ class quantity:
         return (
             self.value.__format__(string)
             + ((pm + uncert.__format__(string)) if uAny(uncert) else "")
-            + (" " + unit)
+            + ((" " + unit) if self.units else "")
         )
 
     # PYTHON TYPES CONVERSION.
@@ -415,7 +417,7 @@ class quantity:
             other**self.value,
             "",
             abs(log(other) * (other**self.value) * self.uncertainty),
-        ) * (other != 1) + self * (other == 1)
+        ) * (other != 1) + quantity(1) * (other == 1)
 
     # Modulo.
     def __mod__(self, other: any) -> quantity:
