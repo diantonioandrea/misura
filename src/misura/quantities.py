@@ -5,7 +5,7 @@ from colorama import Style
 from math import sqrt, log
 
 from .exceptions import (
-    UnitError,
+    InitError,
     QuantityError,
     ConversionError,
     UnpackError,
@@ -35,7 +35,7 @@ class quantity:
 
         try:
             assert isinstance(unit, str)
-            assert uAll(uncertainty >= 0) if uAny(uncertainty) else True
+            assert uAll(uncertainty >= 0)
             assert (
                 (checkIter(value) == checkIter(uncertainty))
                 if uAny(uncertainty)
@@ -43,7 +43,7 @@ class quantity:
             )
 
         except AssertionError:
-            raise UnitError(value, unit, uncertainty)  # Needs a better exception.
+            raise InitError(value, unit, uncertainty)
 
         self.value: any = value
         self.uncertainty = uncertainty
@@ -76,48 +76,45 @@ class quantity:
         if not len(self.units):
             return ""
 
+        uts: dict = self.units.copy()
+        # ut: short for unit.
+
+        if not print:
+            # Plain version.
+            # {"m": 1, "s": -1} -> "m s-1".
+            return ufd(self.units)
+
         # Fancy version.
-        if print:
-            # {"m": 1, "s": -1} -> "[m / s]".
+        # {"m": 1, "s": -1} -> "[m / s]".
 
-            uts = self.units.copy()
-            # ut: short for unit.
+        # Numerator with exponent
+        numeratorWE = [
+            "{}({})".format(ut, uts[ut]) for ut in uts if uts[ut] > 0 and uts[ut] != 1
+        ]
 
-            # Numerator with exponent
-            numeratorWE = [
-                "{}({})".format(ut, uts[ut])
-                for ut in uts
-                if uts[ut] > 0 and uts[ut] != 1
-            ]
+        # Denominator with exponent
+        denominatorWE = [
+            "{}({})".format(ut, -uts[ut]) for ut in uts if uts[ut] < 0 and uts[ut] != 1
+        ]
 
-            # Denominator with exponent
-            denominatorWE = [
-                "{}({})".format(ut, -uts[ut])
-                for ut in uts
-                if uts[ut] < 0 and uts[ut] != 1
-            ]
+        # Numerator without exponent
+        numeratorWOE = [ut for ut in uts if uts[ut] > 0 and uts[ut] == 1]
 
-            # Numerator without exponent
-            numeratorWOE = [ut for ut in uts if uts[ut] > 0 and uts[ut] == 1]
+        # Denominator without exponent
+        denominatorWOE = [ut for ut in uts if uts[ut] < 0 and uts[ut] == 1]
 
-            # Denominator without exponent
-            denominatorWOE = [ut for ut in uts if uts[ut] < 0 and uts[ut] == 1]
+        numerator = " ".join(sorted(numeratorWE + numeratorWOE))
+        denominator = " ".join(sorted(denominatorWE + denominatorWOE))
 
-            numerator = " ".join(sorted(numeratorWE + numeratorWOE))
-            denominator = " ".join(sorted(denominatorWE + denominatorWOE))
+        if not numerator and denominator:
+            numerator = "1"
 
-            if not numerator and denominator:
-                numerator = "1"
+        fraction = numerator + " / " + denominator if denominator else numerator
 
-            fraction = numerator + " / " + denominator if denominator else numerator
+        if style.quantityHighlighting:
+            return Style.BRIGHT + fraction + Style.RESET_ALL if numerator else ""
 
-            if style.quantityHighlighting:
-                return Style.BRIGHT + fraction + Style.RESET_ALL if numerator else ""
-
-            return "[" + fraction + "]" if numerator else ""
-
-        # {"m": 1, "s": -1} -> "m s-1".
-        return ufd(self.units)
+        return "[" + fraction + "]" if numerator else ""
 
     def dimension(self) -> str:
         """
@@ -127,7 +124,7 @@ class quantity:
         if not len(self.dimensions):
             return ""
 
-        uts = self.units.copy()
+        uts: dict = self.units.copy()
         # ut: short for unit.
 
         # Numerator with exponent
@@ -163,8 +160,6 @@ class quantity:
     # STRINGS.
 
     def __str__(self) -> str:
-        from .globals import style
-
         pm = style.quantityPlusMinus
         unit = self.unit(print=True)
         uncert = self.uncertainty
@@ -177,8 +172,6 @@ class quantity:
         return str(self)
 
     def __format__(self, string) -> str:  # Unit highlighting works for print only.
-        from .globals import style
-
         pm = style.quantityPlusMinus
         unit = self.unit(print=True)
         uncert = self.uncertainty
@@ -673,13 +666,10 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
     unpackTable: dict = getDerivedUnpacking()
     derivedTable: dict = getDerived()
 
-    if targets == "":  # Unpacks all derived units.
+    if not targets:  # Unpacks all derived units.
         targets = " ".join(
             [unit for unit in qnt.units if getFamily(unit) in derivedTable]
         )
-
-        if targets == "":
-            return qnt
 
     for target in dfu(targets):
         # Checks target.
@@ -749,28 +739,22 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
             if getFamily(ignored) not in [getFamily(unit) for unit in qnt.units]:
                 raise PackError(qnt, targets, ignore)
 
-    qnt = (
-        quantity(
-            qnt.value,
-            ufd({unit: qnt.units[unit] for unit in qnt.units if unit in dfu(ignore)}),
-        )
-        * unpack(
-            quantity(
-                1,
-                ufd(
-                    {
-                        unit: qnt.units[unit]
-                        for unit in qnt.units
-                        if unit not in dfu(ignore)
-                    }
-                ),
-            )
-        )
-        if ignore
-        else unpack(qnt)
-    )
+        val = qnt.value
+        uts: dict = qnt.units.copy()
+        # ut: short for unit.
+
+        # Does not completely unpack the quantity qnt but unpacks the non-ignored units
+        # and then merges them with the ignored ones.
+        ignored = quantity(val, ufd({ut: uts[ut] for ut in uts if ut in dfu(ignore)}))
+        packed = quantity(1, ufd({ut: uts[ut] for ut in uts if ut not in dfu(ignore)}))
+
+        qnt = ignored * unpack(packed)
+
+    else:
+        qnt = unpack(qnt)
 
     for target in dfu(targets):
+        # Ignores non-packable units.
         if target not in packTable:
             continue
 
@@ -789,8 +773,7 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
         # Full packing is a stricter form of packing which
         # requires that "no other units are produced from the packing process".
-        if full:
-            # Packability check.
+        if full:  # Full-packability check.
             for targetUnit in targetUnits:
                 if targetUnit not in qnt.units:
                     raise PackError(qnt, targets, full=True)
