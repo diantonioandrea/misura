@@ -1,7 +1,7 @@
 # Tables.
 from .exceptions import DefinitionError
-from .utilities import dictFromUnit
 from .globals import defined
+from .utilities import dictFromUnit
 
 # Tables utilities
 
@@ -16,7 +16,7 @@ def getRep(family: str) -> str:
 
     if family in table:
         # This shouldn't raise an IndexError as long as there's a reference unit for every family.
-        return [unit for unit in table[family] if table[family][unit] == 1].pop()
+        return [u for u in table[family] if table[family][u] == 1].pop()
 
 
 def getFamily(unit: str) -> str:
@@ -96,42 +96,42 @@ def addUnit(family: str, units: dict, unpacks: str = ""):
         raise DefinitionError("'{}' already exixts".format(family))
 
     # Checks rep.
-    if len([unit for unit in units if units[unit] == 1]) != 1:
+    if len([u for u in units if units[u] == 1]) != 1:
         raise DefinitionError("missing or invalid rep for family {}".format(family))
 
     # Checks units.
-    for unit in units:
-        if not isinstance(unit, str):
-            raise DefinitionError("invalid unit '{}'".format(unit))
+    for u in units:
+        if not isinstance(u, str):
+            raise DefinitionError("invalid unit '{}'".format(u))
 
-        if not isinstance(units[unit], (int, float)):
+        if not isinstance(units[u], (int, float)):
             raise DefinitionError(
-                "invalid unit factor for '{}: {}'".format(unit, units[unit])
+                "invalid unit factor for '{}: {}'".format(u, units[u])
             )
 
-        if any([unit in table[family] for family in table]):
+        if any([u in table[family] for family in table]):
             raise DefinitionError(
-                "unit already defined in family '{}'".format(getFamily(unit))
+                "unit already defined in family '{}'".format(getFamily(u))
             )
 
     # Derived units checks.
     if unpacks:
-        rep = [unit for unit in units if units[unit] == 1].pop()
+        rep = [u for u in units if units[u] == 1].pop()
 
         if rep in getDerivedUnpacking():
             raise DefinitionError(
                 "unit already defined in the unpacking table '{}'".format(rep)
             )
 
-        for unit in dictFromUnit(unpacks):
-            if not getFamily(unit):
-                raise DefinitionError("invalid unit '{}'".format(unit))
+        for u in dictFromUnit(unpacks):
+            if not getFamily(u):
+                raise DefinitionError("invalid unit '{}'".format(u))
 
     if not unpacks:
-        defined.BASE_TABLE[family] = {unit: units[unit] for unit in units}
+        defined.BASE_TABLE[family] = {u: units[u] for u in units}
 
     else:
-        defined.DERIVED_TABLE[family] = {unit: units[unit] for unit in units}
+        defined.DERIVED_TABLE[family] = {u: units[u] for u in units}
         defined.DERIVED_UNPACKING_TABLE[rep] = unpacks
 
 
