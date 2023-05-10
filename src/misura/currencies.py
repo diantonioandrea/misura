@@ -5,6 +5,7 @@ from misura.quantities import quantity
 
 from .exceptions import InitError, OperationError
 from .quantities import quantity
+from .tables import getCurrencies
 
 
 class currency(quantity):
@@ -21,8 +22,29 @@ class currency(quantity):
         except AssertionError:
             raise InitError(value, symbol)
 
+        table: dict = getCurrencies()
+        if not any([any([u in table[family] for u in self.units]) for family in table]):
+            raise InitError(value, symbol)
+        
+        else:
+            # Valid currencies are always convertible.
+            self.convertible = True
+
     # MATH
     # Some modifications to quantities.
+
+    # Basics.
+    def __add__(self, other: any) -> quantity:
+        pass
+    
+    def __radd__(self, other: quantity) -> quantity:
+        return self.__add__(other)
+    
+    def __sub__(self, other: any) -> quantity:
+        pass
+    
+    def __rsub__(self, other: quantity) -> quantity:
+        return self.__sub__(other) * (-1)
 
     # Multiplication.
     def __mul__(self, other: any) -> currency:

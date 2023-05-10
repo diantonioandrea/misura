@@ -26,6 +26,7 @@ def getFamily(unit: str) -> str:
 
     table = getBase()
     table.update(getDerived())
+    table.update(getCurrencies())
 
     for family in table:
         if unit in table[family]:
@@ -63,6 +64,13 @@ def getDerivedUnpacking() -> dict:
 
     # User defined derived units.
     table.update(defined.DERIVED_UNPACKING_TABLE)
+
+    return table
+
+
+def getCurrencies() -> dict:
+    # Standard currencies.
+    table = CURRENCIES_TABLE.copy()
 
     return table
 
@@ -925,3 +933,5 @@ SI_DERIVED_UNPACKING_TABLE = {
 }
 
 # CURRENCIES
+
+CURRENCIES_TABLE = {"currency": {"EUR": 0.91, "USD": 1.0}}

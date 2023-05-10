@@ -24,6 +24,7 @@ num13 = quantity(0.8, "m3", 0.16)
 num14 = quantity(3, "", 1)
 
 cur0 = currency(2, "EUR")
+cur1 = currency(3, "USD")
 
 print("Tests for {}.".format(Style.BRIGHT + "misura" + Style.RESET_ALL))
 
@@ -80,3 +81,4 @@ print("({}) / ({}): {}".format(num12, num13, num12 / num13))
 # Currencies.
 print("\nCURRENCIES.\n")
 print("({}) * 2: {}".format(cur0, cur0 * 2))
+print("({}) + ({}): {}".format(cur0, cur1, cur0 + cur1))

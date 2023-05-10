@@ -12,9 +12,11 @@ from .exceptions import (
     QuantityError,
     UncertaintyComparisonError,
     UnpackError,
+    CurrencyPackingError,
+    MixingError,
 )
 from .globals import logic, style
-from .tables import getBase, getDerived, getDerivedUnpacking
+from .tables import getBase, getDerived, getDerivedUnpacking, getCurrencies
 from .tables import getFamily as gf
 from .tables import getRep
 from .utilities import checkIter
@@ -84,6 +86,14 @@ class quantity:
         self.dimensions: dict = (
             {gf(u): self.units[u] for u in us} if self.convertible else dict()
         )
+
+        # Checks currencies.
+        if type(self) == quantity:
+            table: dict = getCurrencies()
+            if uAny(
+                [uAny([u in table[family] for u in self.units]) for family in table]
+            ):
+                raise MixingError()
 
     # PRINTERS.
 
@@ -564,12 +574,25 @@ def convert(
     "partial = True" converts only the specified units and "un_pack = True" enables automatic (un)packing.
     """
 
+    from .currencies import currency
+
+    if isinstance(qnt, currency):
+        partial = False
+        un_pack = False
+
+        table: dict = getCurrencies()
+
+    else:
+        table: dict = getBase()
+        table.update(getDerived())
+
     # Cannot convert non-convertible units.
     if not qnt.convertible:
         raise ConversionError(qnt, targets)
 
     # Check dimension.
-    if not partial:
+    if not partial and not isinstance(qnt, currency):
+        # Currencies cannot be unpacked but are always compatible.
         if unpack(qnt).dimension() != unpack(quantity(1, targets)).dimension():
             raise ConversionError(qnt, targets)
 
@@ -621,9 +644,6 @@ def convert(
 
     pTargets: dict = dict()  # Partial targets.
 
-    table: dict = getBase()
-    table.update(getDerived())
-
     for unit in qnt.units.keys():
         family = gf(unit)
 
@@ -660,6 +680,9 @@ def convert(
         elif partial:
             pTargets[unit] = qnt.units[unit]
 
+    if isinstance(qnt, currency):
+        return currency(qnt.value * factor, targets)
+
     return (
         quantity(qnt.value * factor, targets, qnt.uncertainty * factor)
         if not partial
@@ -674,6 +697,11 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
 
     'targets = ""' completely unpacks the quantity.
     """
+
+    from .currencies import currency
+
+    if isinstance(qnt, currency):
+        raise CurrencyPackingError(qnt)
 
     unpackTable: dict = getDerivedUnpacking()
     derivedTable: dict = getDerived()
@@ -729,6 +757,11 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
     'full = True' fully pack a unit.
     """
+
+    from .currencies import currency
+
+    if isinstance(qnt, currency):
+        raise CurrencyPackingError(qnt)
 
     packTable: dict = getDerivedUnpacking()
 
