@@ -81,8 +81,8 @@ def addUnit(family: str, units: dict, unpacks: str = ""):
     try:
         assert isinstance(family, str)
         assert isinstance(units, dict)
-        assert family != ""
-        assert len(units)
+        assert family
+        assert units
 
         assert isinstance(unpacks, str) if unpacks else True
 
