@@ -1,22 +1,33 @@
 # Quantities.
 from __future__ import annotations
 
+from math import log, sqrt
+
 from colorama import Style
-from math import sqrt, log
 
 from .exceptions import (
-    InitError,
-    QuantityError,
     ConversionError,
-    UnpackError,
+    InitError,
     PackError,
+    QuantityError,
     UncertaintyComparisonError,
+    UnpackError,
 )
-from .tables import getBase, getDerived, getDerivedUnpacking, getFamily, getRep
-from .utilities import checkIter, uAll, uAny
-from .utilities import unitFromDict as ufd
+from .globals import logic, style
+from .tables import getBase, getDerived, getDerivedUnpacking
+from .tables import getFamily as gf
+from .tables import getRep
+from .utilities import checkIter
 from .utilities import dictFromUnit as dfu
-from .globals import style, logic
+from .utilities import uAll, uAny
+from .utilities import unitFromDict as ufd
+
+"""
+'for' convention.
+
+u : short for unit.
+us: short for units.
+"""
 
 
 class quantity:
@@ -45,27 +56,39 @@ class quantity:
         except AssertionError:
             raise InitError(value, unit, uncertainty)
 
+        # Value.
         self.value: any = value
-        self.uncertainty = uncertainty
 
+        # Uncertainty.
+        if not uAny(uncertainty):
+            # For when value is iterable.
+            self.uncertainty = 0 * self.value
+
+        else:
+            self.uncertainty = uncertainty
+
+        # Units of measure's table.
         table: dict = getBase()
         table.update(getDerived())
 
         # From unit: str to self.units: dict.
         self.units: dict = dfu(unit)
+        us = self.units.copy()
 
-        # Checks whether the unit can be converted with the available units.
+        # Checks whether the quantity can be converted with the defined units.
         self.convertible: bool = all(
-            [any([unit in table[family] for family in table]) for unit in self.units]
+            [any([u in table[family] for family in table]) for u in us]
         )
 
-        # Define quantity's dimentsionality based on self.units.
+        # Define quantity's dimentsions based on self.units.
         self.dimensions: dict = (
-            {getFamily(unit): self.units[unit] for unit in self.units}
-            if self.convertible
-            else dict()
+            {gf(u): self.units[u] for u in us} if self.convertible else dict()
         )
 
+    # PRINTERS.
+
+    # this is unique as per 'sorted'.
+    # {"m": 1, "s": -1} and {"s": -1, "m": 1} return the same unit.
     def unit(self, print: bool = False) -> str:
         """
         Returns a readable version of the quantity's unit.
@@ -76,45 +99,41 @@ class quantity:
         if not len(self.units):
             return ""
 
-        uts: dict = self.units.copy()
-        # ut: short for unit.
+        us: dict = self.units.copy()
 
         if not print:
             # Plain version.
             # {"m": 1, "s": -1} -> "m s-1".
+            # The plain version is the same as the definition one.
             return ufd(self.units)
 
         # Fancy version.
         # {"m": 1, "s": -1} -> "[m / s]".
 
         # Numerator with exponent
-        numeratorWE = [
-            "{}({})".format(ut, uts[ut]) for ut in uts if uts[ut] > 0 and uts[ut] != 1
-        ]
+        numWE = ["{}({})".format(u, us[u]) for u in us if us[u] > 0 and us[u] != 1]
 
         # Denominator with exponent
-        denominatorWE = [
-            "{}({})".format(ut, -uts[ut]) for ut in uts if uts[ut] < 0 and uts[ut] != 1
-        ]
+        denWE = ["{}({})".format(u, -us[u]) for u in us if us[u] < 0 and us[u] != 1]
 
         # Numerator without exponent
-        numeratorWOE = [ut for ut in uts if uts[ut] > 0 and uts[ut] == 1]
+        numWOE = [u for u in us if us[u] > 0 and us[u] == 1]
 
         # Denominator without exponent
-        denominatorWOE = [ut for ut in uts if uts[ut] < 0 and uts[ut] == 1]
+        denWOE = [u for u in us if us[u] < 0 and us[u] == 1]
 
-        numerator = " ".join(sorted(numeratorWE + numeratorWOE))
-        denominator = " ".join(sorted(denominatorWE + denominatorWOE))
+        num = " ".join(sorted(numWE + numWOE))
+        den = " ".join(sorted(denWE + denWOE))
 
-        if not numerator and denominator:
-            numerator = "1"
+        if not num and den:
+            num = "1"
 
-        fraction = numerator + " / " + denominator if denominator else numerator
+        fraction = num + " / " + den if den else num
 
         if style.quantityHighlighting:
-            return Style.BRIGHT + fraction + Style.RESET_ALL if numerator else ""
+            return Style.BRIGHT + fraction + Style.RESET_ALL if num else ""
 
-        return "[" + fraction + "]" if numerator else ""
+        return "[" + fraction + "]" if num else ""
 
     def dimension(self) -> str:
         """
@@ -124,38 +143,29 @@ class quantity:
         if not len(self.dimensions):
             return ""
 
-        uts: dict = self.units.copy()
-        # ut: short for unit.
+        us: dict = self.units.copy()
 
         # Numerator with exponent
-        numeratorWE = [
-            "{}({})".format(getFamily(ut), uts[ut])
-            for ut in uts
-            if uts[ut] > 0 and uts[ut] != 1
-        ]
+        numWE = ["{}({})".format(gf(u), us[u]) for u in us if us[u] > 0 and us[u] != 1]
 
         # Denominator with exponent
-        denominatorWE = [
-            "{}({})".format(getFamily(ut), -uts[ut])
-            for ut in uts
-            if uts[ut] < 0 and uts[ut] != 1
-        ]
+        denWE = ["{}({})".format(gf(u), -us[u]) for u in us if us[u] < 0 and us[u] != 1]
 
         # Numerator without exponent
-        numeratorWOE = [getFamily(ut) for ut in uts if uts[ut] > 0 and uts[ut] == 1]
+        numWOE = [gf(u) for u in us if us[u] > 0 and us[u] == 1]
 
         # Denominator without exponent
-        denominatorWOE = [getFamily(ut) for ut in uts if uts[ut] < 0 and uts[ut] == 1]
+        denWOE = [gf(u) for u in us if us[u] < 0 and us[u] == 1]
 
-        numerator = " * ".join(sorted(numeratorWE + numeratorWOE))
-        denominator = " * ".join(sorted(denominatorWE + denominatorWOE))
+        num = " * ".join(sorted(numWE + numWOE))
+        den = " * ".join(sorted(denWE + denWOE))
 
-        if not numerator and denominator:
-            numerator = "1"
+        if not num and den:
+            num = "1"
 
-        fraction = numerator + " / " + denominator if denominator else numerator
+        fraction = num + " / " + den if den else num
 
-        return "[" + fraction + "]" if numerator else ""
+        return "[" + fraction + "]" if num else ""
 
     # STRINGS.
 
@@ -256,7 +266,7 @@ class quantity:
 
             return quantity(self.value + other, "", self.uncertainty)
 
-        if self.unit() != other.unit():
+        if not compare(self, other):
             if self.convertible and other.convertible:
                 # Chooses the one to convert based on unit length.
                 first = convert(self, other.unit())
@@ -289,7 +299,7 @@ class quantity:
 
             return quantity(self.value - other, "", self.uncertainty)
 
-        if self.unit() != other.unit():
+        if not compare(self, other):
             if self.convertible and other.convertible:
                 # Chooses the one to convert based on unit length.
                 first = convert(self, other.unit())
@@ -430,7 +440,7 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value < other
 
-        if self.unit() != other.unit():
+        if not compare(self, other):
             if self.convertible and other.convertible:
                 other = convert(other, self.unit())
 
@@ -449,7 +459,7 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value <= other
 
-        if self.unit() != other.unit():
+        if not compare(self, other):
             if self.convertible and other.convertible:
                 other = convert(other, self.unit())
 
@@ -468,7 +478,7 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value > other
 
-        if self.unit() != other.unit():
+        if not compare(self, other):
             if self.convertible and other.convertible:
                 other = convert(other, self.unit())
 
@@ -487,7 +497,7 @@ class quantity:
         if not isinstance(other, quantity):
             return self.value >= other
 
-        if self.unit() != other.unit():
+        if not compare(self, other):
             if self.convertible and other.convertible:
                 other = convert(other, self.unit())
 
@@ -511,7 +521,7 @@ class quantity:
         ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "==")
 
-        return self.value == other.value and self.unit() == other.unit()
+        return self.value == other.value and compare(self, other)
 
     # Not equal.
     def __ne__(self, other: any) -> quantity:
@@ -523,7 +533,7 @@ class quantity:
         ) and not logic.ignoreUncertainty:
             raise UncertaintyComparisonError(self, other, "!=")
 
-        return self.value != other.value or self.unit() != other.unit()
+        return self.value != other.value or not compare(self, other)
 
     # SHORTCUTS
 
@@ -567,8 +577,8 @@ def convert(
     if un_pack and not partial:
         # Tries to pack qnt.
         target = quantity(1, targets)
-        packUnits = {ut: target.units[ut] for ut in target.units if ut not in qnt.units}
-        ignoreUnits = {ut: qnt.units[ut] for ut in qnt.units if ut not in target.units}
+        packUnits = {u: target.units[u] for u in target.units if u not in qnt.units}
+        ignoreUnits = {u: qnt.units[u] for u in qnt.units if u not in target.units}
 
         for tr in range(3):
             try:
@@ -615,7 +625,7 @@ def convert(
     table.update(getDerived())
 
     for unit in qnt.units.keys():
-        family = getFamily(unit)
+        family = gf(unit)
 
         # Number of corresponding families.
         families = len([tgt for tgt in tUnits if tgt in table[family]])
@@ -669,20 +679,20 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
     derivedTable: dict = getDerived()
 
     if not targets:  # Unpacks all derived units.
-        targets = " ".join(
-            [unit for unit in qnt.units if getFamily(unit) in derivedTable]
-        )
+        us: dict = qnt.units.copy()
+
+        targets = " ".join([u for u in us if gf(u) in derivedTable])
 
     for target in dfu(targets):
+        us: dict = qnt.units.copy()
+
         # Checks target.
-        if getFamily(target) not in [getFamily(unit) for unit in qnt.units]:
+        if gf(target) not in [gf(u) for u in us]:
             raise UnpackError(qnt, target)
 
-        cTarget = getRep(getFamily(target))  # Conversion target.
+        cTarget = getRep(gf(target))  # Conversion target.
         cTargetPower = [  # Conversion target's power.
-            qnt.units[unit]
-            for unit in qnt.units
-            if getFamily(unit) == getFamily(target)
+            us[u] for u in us if gf(u) == gf(target)
         ].pop()
 
         # Raises an error if the program does not know how to unpack a unit.
@@ -697,13 +707,15 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
             un_pack=False,
         )
 
+        us: dict = qnt.units.copy()
+
         # Units that werent't involved in the previous conversion.
-        newUnits = {key: qnt.units[key] for key in qnt.units if key != cTarget}
+        newUnits = {u: us[u] for u in us if u != cTarget}
 
         # Uncertainty should not vary on packing.
         uncertainty = qnt.uncertainty
         qnt = (quantity(qnt.value, ufd(newUnits)) if len(newUnits) else qnt.value) * (
-            quantity(1, unpackTable[cTarget]) ** qnt.units[cTarget]
+            quantity(1, unpackTable[cTarget]) ** us[cTarget]
         )
         qnt.uncertainty = uncertainty
 
@@ -729,26 +741,23 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
     # Simplify qnt -> base unit.
     for unit in qnt.units:
         cTarget = [
-            unit
-            for unit in unitsTable[getFamily(unit)]
-            if unitsTable[getFamily(unit)][unit] == 1
+            unit for unit in unitsTable[gf(unit)] if unitsTable[gf(unit)][unit] == 1
         ].pop()
         qnt = convert(qnt, cTarget + str(qnt.units[unit]), partial=True, un_pack=False)
 
     # Unpack only relevant units.
     if ignore:
         for ignored in dfu(ignore):
-            if getFamily(ignored) not in [getFamily(unit) for unit in qnt.units]:
+            if gf(ignored) not in [gf(unit) for unit in qnt.units]:
                 raise PackError(qnt, targets, ignore)
 
         val = qnt.value
-        uts: dict = qnt.units.copy()
-        # ut: short for unit.
+        us: dict = qnt.units.copy()
 
         # Does not completely unpack the quantity qnt but unpacks the non-ignored units
         # and then merges them with the ignored ones.
-        ignored = quantity(val, ufd({ut: uts[ut] for ut in uts if ut in dfu(ignore)}))
-        packed = quantity(1, ufd({ut: uts[ut] for ut in uts if ut not in dfu(ignore)}))
+        ignored = quantity(val, ufd({u: us[u] for u in us if u in dfu(ignore)}))
+        packed = quantity(1, ufd({u: us[u] for u in us if u not in dfu(ignore)}))
 
         qnt = ignored * unpack(packed)
 
@@ -792,3 +801,11 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
         qnt.uncertainty = uncertainty
 
     return qnt
+
+
+# QUANTITIES UTILITIES.
+
+
+# Compares units of measure between two quantities.
+def compare(first: quantity, second: quantity) -> bool:
+    return first.unit() == second.unit()
