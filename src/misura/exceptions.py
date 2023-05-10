@@ -19,7 +19,7 @@ class InitError(Exception):
         from .utilities import uAny
 
         super().__init__(
-            "wrong parameters on quantity definition\nraised by: quantity({}{}{})".format(
+            "wrong parameters on quantity definition\nraised by: {}{}{}".format(
                 value,
                 ", {}".format(unit) if unit else "",
                 ", {}".format(uncertainty) if uAny(uncertainty) else "",
@@ -116,3 +116,19 @@ class DefinitionError(Exception):
     # Custom error defined in tables.py.
     def __init__(self, error: str = "") -> None:
         super().__init__(error)
+
+
+# CURRENCIES.
+
+
+class OperationError(Exception):
+    """
+    Raised on illegal operations with currencies.
+    """
+
+    def __init__(self, first, second, operator: str) -> None:
+        super().__init__(
+            "unsupported operand type(s) for {0}\nraised by: '{1}' {0} '{2}'".format(
+                operator, first, second
+            )
+        )

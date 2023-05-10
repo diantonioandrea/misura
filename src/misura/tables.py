@@ -135,6 +135,8 @@ def addUnit(family: str, units: dict, unpacks: str = ""):
         defined.DERIVED_UNPACKING_TABLE[rep] = unpacks
 
 
+# QUANTITIES
+
 # Base units - SI.
 SI_TABLE = {
     "time": {
@@ -921,3 +923,5 @@ SI_DERIVED_UNPACKING_TABLE = {
     "Sv": "m2 s-2",
     "kat": "mol s-1",
 }
+
+# CURRENCIES
