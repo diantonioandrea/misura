@@ -239,10 +239,6 @@ class quantity:
     def __neg__(self) -> quantity:
         return quantity(-self.value, self.unit(), self.uncertainty)
 
-    # Invert.
-    # def __invert__(self) -> quantity:
-    #     return quantity(~self.value, self.unit())
-
     # Round.
     def __round__(self, number: int) -> quantity:
         return quantity(

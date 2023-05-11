@@ -27,6 +27,7 @@ class currency(quantity):
         else:
             # Valid currencies are always convertible.
             self.convertible = True
+            self.dimensions = {"currency": 1}
 
     # STRINGS.
     # Removed uncertainty.
@@ -51,7 +52,41 @@ class currency(quantity):
     # MATH
     # Some modifications to quantities' math.
 
-    # Basics.
+    # Abs.
+    def __abs__(self) -> currency:
+        return currency(abs(self.value), self.unit())
+
+    # Positive.
+    def __pos__(self) -> currency:
+        return currency(+self.value, self.unit())
+
+    # Negative.
+    def __neg__(self) -> currency:
+        return currency(-self.value, self.unit())
+
+    # Round.
+    def __round__(self, number: int) -> currency:
+        return currency(round(self.value, number), self.unit())
+
+    # Floor.
+    def __floor__(self) -> currency:
+        from math import floor
+
+        return currency(floor(self.value), self.unit())
+
+    # Ceil.
+    def __ceil__(self) -> currency:
+        from math import ceil
+
+        return currency(ceil(self.value), self.unit())
+
+    # Trunc.
+    def __trunc__(self) -> currency:
+        from math import trunc
+
+        return currency(trunc(self.value), self.unit())
+
+    # Addition.
     def __add__(self, other: currency) -> currency:
         if not isinstance(other, currency):
             raise OperationError(self, other, "+")
@@ -61,6 +96,7 @@ class currency(quantity):
 
         return currency(self.value + other.value, self.unit())
 
+    # Subtraction.
     def __sub__(self, other: currency) -> currency:
         if not isinstance(other, currency):
             raise OperationError(self, other, "-")
