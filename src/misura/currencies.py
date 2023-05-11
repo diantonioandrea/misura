@@ -34,7 +34,7 @@ class currency(quantity):
     def __str__(self) -> str:
         unit = self.unit(print=True)
 
-        return "{}{}{}".format(
+        return "{}{}".format(
             self.value,
             (" " + unit) if self.units else "",
         )
