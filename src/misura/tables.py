@@ -2,6 +2,7 @@
 from .exceptions import DefinitionError
 from .globals import defined
 from .utilities import dictFromUnit
+import requests
 
 # Tables utilities
 
@@ -73,6 +74,20 @@ def getCurrencies() -> dict:
     table = CURRENCIES_TABLE.copy()
 
     return table
+
+
+def fetchCurrencies() -> None:
+    from .globals import currencies
+
+    if currencies.key == "":
+        return
+
+    rates = requests.get(
+        "https://api.freecurrencyapi.com/v1/latest?apikey={}".format(currencies.key)
+    )
+
+    for curr in rates.json()["data"]:
+        CURRENCIES_TABLE["currency"][curr] = 1 / rates.json()["data"][curr]
 
 
 # Conversion tables.
@@ -934,4 +949,4 @@ SI_DERIVED_UNPACKING_TABLE = {
 
 # CURRENCIES
 
-CURRENCIES_TABLE = {"currency": {"EUR": 1.10, "USD": 1.0}}
+CURRENCIES_TABLE = {"currency": dict()}

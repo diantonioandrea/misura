@@ -18,6 +18,14 @@ class logic:
     ignoreUncertainty = False
 
 
+class currencies:
+    """
+    Currency global options.
+    """
+
+    key = ""
+
+
 class defined:
     """
     User defined units.

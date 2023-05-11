@@ -36,7 +36,7 @@ class currency(quantity):
         unit = self.unit(print=True)
 
         return "{}{}".format(
-            self.value,
+            round(self.value, 2),  # Default behaviour.
             (" " + unit) if self.units else "",
         )
 

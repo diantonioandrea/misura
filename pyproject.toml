@@ -11,7 +11,7 @@ authors = [
 description = "Python library for easy unit handling and conversion for scientific & engineering applications."
 readme = "README.md"
 requires-python = ">=3.7"
-dependencies = ["colorama", "setuptools"]
+dependencies = ["colorama", "setuptools", "requests"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
