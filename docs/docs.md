@@ -14,6 +14,7 @@
 - [Units of measure](#units-of-measure)
 	- [Defaults](#defaults)
 	- [User defined units of measure](#user-defined-units-of-measure)
+- [Currencies](#currencies)
 - [Conversions, unpacking and packing](#conversions-unpacking-and-packing)
 	- [Conversion](#conversion)
 	- [Unpacking](#unpacking)
@@ -184,6 +185,10 @@ The function `addUnit` takes a string `family`, a dictionary `units` and an opti
 Note that the `units` dictionary must have a **reference unit**, a defining unit for that family, for which its factor is equal to `1`.
 
 Take a look at these [examples](#units-of-measure-1)
+
+## Currencies
+
+[Go back to ToC](#table-of-contents)
 
 ## Conversions, unpacking and packing
 
