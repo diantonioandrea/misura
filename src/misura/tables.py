@@ -934,4 +934,4 @@ SI_DERIVED_UNPACKING_TABLE = {
 
 # CURRENCIES
 
-CURRENCIES_TABLE = {"currency": {"EUR": 0.91, "USD": 1.0}}
+CURRENCIES_TABLE = {"currency": {"EUR": 1.10, "USD": 1.0}}

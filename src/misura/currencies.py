@@ -4,7 +4,7 @@ from __future__ import annotations
 from misura.quantities import quantity
 
 from .exceptions import InitError, OperationError
-from .quantities import quantity
+from .quantities import compare, quantity
 from .tables import getCurrencies
 
 
@@ -13,11 +13,9 @@ class currency(quantity):
         super().__init__(value, symbol)
 
         try:
+            # Currencies should have one single unit.
             assert len(self.units) == 1
-
-            self.symbol = list(self.units.copy()).pop()
-
-            assert self.units[self.symbol] == 1
+            assert all(self.units[u] == 1 for u in self.units)
 
         except AssertionError:
             raise InitError(value, symbol)
@@ -25,26 +23,52 @@ class currency(quantity):
         table: dict = getCurrencies()
         if not any([any([u in table[family] for u in self.units]) for family in table]):
             raise InitError(value, symbol)
-        
+
         else:
             # Valid currencies are always convertible.
             self.convertible = True
 
+    # STRINGS.
+    # Removed uncertainty.
+
+    def __str__(self) -> str:
+        unit = self.unit(print=True)
+
+        return "{}{}{}".format(
+            self.value,
+            (" " + unit) if self.units else "",
+        )
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __format__(self, string) -> str:  # Unit highlighting works for print only.
+        unit = self.unit(print=True)
+
+        # This works best with print.
+        return self.value.__format__(string) + ((" " + unit) if self.units else "")
+
     # MATH
-    # Some modifications to quantities.
+    # Some modifications to quantities' math.
 
     # Basics.
-    def __add__(self, other: any) -> quantity:
-        pass
-    
-    def __radd__(self, other: quantity) -> quantity:
-        return self.__add__(other)
-    
-    def __sub__(self, other: any) -> quantity:
-        pass
-    
-    def __rsub__(self, other: quantity) -> quantity:
-        return self.__sub__(other) * (-1)
+    def __add__(self, other: currency) -> currency:
+        if not isinstance(other, currency):
+            raise OperationError(self, other, "+")
+
+        if not compare(self, other):
+            other = other.cto(self.unit())
+
+        return currency(self.value + other.value, self.unit())
+
+    def __sub__(self, other: currency) -> currency:
+        if not isinstance(other, currency):
+            raise OperationError(self, other, "-")
+
+        if not compare(self, other):
+            other = other.cto(self.unit())
+
+        return currency(self.value + other.value, self.unit())
 
     # Multiplication.
     def __mul__(self, other: any) -> currency:
