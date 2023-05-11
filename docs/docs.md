@@ -77,7 +77,6 @@ def __bool__(self) -> bool
 def __abs__(self) -> any
 def __pos__(self) -> any
 def __neg__(self) -> any
-# def __invert__(self) -> any
 def __round__(self, number: int) -> any
 def __floor__(self, number: int) -> any
 def __ceil__(self, number: int) -> any
