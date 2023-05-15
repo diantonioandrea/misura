@@ -24,6 +24,7 @@ class currencies:
     """
 
     key = ""
+    path = ""  # File path for local rates.
 
 
 class defined:

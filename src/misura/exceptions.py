@@ -150,3 +150,12 @@ class MixingError(Exception):
 
     def __init__(self) -> None:
         super().__init__("quantities and currencies should not be mixed")
+
+
+class MissingKey(Exception):
+    """
+    Raised on missing API key.
+    """
+
+    def __init__(self) -> None:
+        super().__init__("missing API key")

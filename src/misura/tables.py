@@ -1,8 +1,10 @@
 # Tables.
-from .exceptions import DefinitionError
+from .exceptions import DefinitionError, MissingKey
 from .globals import defined
 from .utilities import dictFromUnit
 import requests
+from time import time
+import json
 
 # Tables utilities
 
@@ -79,12 +81,30 @@ def getCurrencies() -> dict:
 def fetchCurrencies() -> None:
     from .globals import currencies
 
-    if currencies.key == "":
-        return
+    if not currencies.key:
+        raise MissingKey
 
-    rates = requests.get(
-        "https://api.freecurrencyapi.com/v1/latest?apikey={}".format(currencies.key)
-    )
+    try:
+        file = open(currencies.path, "r")
+        data = json.load(file)
+
+        # Reload rates older than 2 hours.
+        if data["time"] - time() < 7200:
+            rates = data["rates"]
+
+        else:
+            raise FileNotFoundError
+
+    except FileNotFoundError:
+        rates = requests.get(
+            "https://api.freecurrencyapi.com/v1/latest?apikey={}".format(currencies.key)
+        ).json()["data"]
+
+        file = open(currencies.path, "w")
+        data = {"time": time(), "rates": rates}
+        json.dump(data, file)
+
+    file.close()
 
     for curr in rates.json()["data"]:
         CURRENCIES_TABLE["currency"][curr] = 1 / rates.json()["data"][curr]
