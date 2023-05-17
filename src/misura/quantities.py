@@ -16,9 +16,15 @@ from .exceptions import (
     MixingError,
 )
 from .globals import logic, style
-from .tables import getBase, getDerived, getDerivedUnpacking, getCurrencies
+from .tables import (
+    getBase,
+    getDerived,
+    getDerivedUnpacking,
+    getRep,
+    getCurrencies,
+    fetchCurrencies,
+)
 from .tables import getFamily as gf
-from .tables import getRep
 from .utilities import checkIter
 from .utilities import dictFromUnit as dfu
 from .utilities import uAll, uAny
@@ -576,6 +582,7 @@ def convert(
         partial = False
         un_pack = False
 
+        fetchCurrencies()  # Checks conversion rates.
         table: dict = getCurrencies()
 
     else:

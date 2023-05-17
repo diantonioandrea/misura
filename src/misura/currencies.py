@@ -5,8 +5,10 @@ from misura.quantities import quantity
 
 from .exceptions import InitError, OperationError
 from .quantities import compare, quantity
-from .tables import getCurrencies
+from .tables import getCurrencies, fetchCurrencies
 
+# Checks currency rates on import.
+fetchCurrencies()
 
 class currency(quantity):
     def __init__(self, value: any, symbol: str = "") -> None:

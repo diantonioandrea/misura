@@ -95,7 +95,8 @@ def fetchCurrencies() -> None:
         else:
             raise FileNotFoundError
 
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
+        # Temporary solution.
         rates = requests.get(
             "https://api.freecurrencyapi.com/v1/latest?apikey={}".format(currencies.key)
         ).json()["data"]
@@ -106,8 +107,8 @@ def fetchCurrencies() -> None:
 
     file.close()
 
-    for curr in rates.json()["data"]:
-        CURRENCIES_TABLE["currency"][curr] = 1 / rates.json()["data"][curr]
+    for curr in rates:
+        CURRENCIES_TABLE["currency"][curr] = 1 / rates[curr]
 
 
 # Conversion tables.

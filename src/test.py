@@ -3,6 +3,10 @@
 from colorama import Style
 from misura.quantities import quantity, convert, unpack, pack
 from misura.tables import addUnit
+
+from misura.globals import currencies
+currencies.key = "API_KEY_HERE"
+
 from misura.currencies import currency
 
 addUnit("bananas", {"bnn": 1, "dabnn": 10, "hbnn": 100, "kbnn": 1000})
