@@ -5,6 +5,7 @@ from misura.quantities import quantity, convert, unpack, pack
 from misura.tables import addUnit
 
 from misura.globals import currencies
+
 currencies.key = "API_KEY_HERE"
 
 from misura.currencies import currency

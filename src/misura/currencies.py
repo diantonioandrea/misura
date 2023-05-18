@@ -10,6 +10,7 @@ from .tables import getCurrencies, fetchCurrencies
 # Checks currency rates on import.
 fetchCurrencies()
 
+
 class currency(quantity):
     def __init__(self, value: any, symbol: str = "") -> None:
         super().__init__(value, symbol)
