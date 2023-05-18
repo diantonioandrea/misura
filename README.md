@@ -125,6 +125,28 @@ The output is:
 4 ± 2.0 s(2)
 ```
 
+### Currencies
+
+```python
+from misura.globals import currencies
+currencies.key = "API_KEY_HERE"
+
+from misura.currencies import currency
+
+cur1 = currency(2, "EUR")
+cur2 = currency(3, "USD")
+
+print(cur0 * 2)
+print(cur1 + cur0)
+```
+
+The output is:
+
+```
+4 EUR
+5.17 USD
+```
+
 ### Working with other libraries
 
 ```python

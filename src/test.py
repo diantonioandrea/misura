@@ -85,4 +85,4 @@ print("({}) / ({}): {}".format(num12, num13, num12 / num13))
 # Currencies.
 print("\nCURRENCIES.\n")
 print("({}) * 2: {}".format(cur0, cur0 * 2))
-print("({}) + ({}): {}".format(cur1, cur0, cur1 + cur0))
+print("({}) + ({}): {:.2f}".format(cur1, cur0, cur1 + cur0))

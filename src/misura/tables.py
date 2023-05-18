@@ -89,7 +89,7 @@ def fetchCurrencies() -> None:
         data = json.load(file)
 
         # Reload rates older than 2 hours.
-        if data["time"] - time() < 7200:
+        if time() - data["time"] < 7200:
             rates = data["rates"]
 
         else:
