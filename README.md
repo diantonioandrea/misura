@@ -3,7 +3,7 @@
 ![PyPI](https://img.shields.io/pypi/v/misura?label=misura%20on%20pypi)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/misura)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/misura)
-
+x
 ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/diantonioandrea/misura)
 ![GitHub last commit](https://img.shields.io/github/last-commit/diantonioandrea/misura)
 ![GitHub Release Date](https://img.shields.io/github/release-date/diantonioandrea/misura)
@@ -29,11 +29,12 @@ Make sure to take a look at the [documentation](https://github.com/diantonioandr
 ### Features
 
 - Mathematical and logical operations between quantities: [Example](#mathematical-operations), [example](#comparisons)
+- Currencies handling with updated exchange rates. ![New feature](https://img.shields.io/badge/new-green)
 - Uncertainty handling: [Example](#mathematical-operations) ![New feature](https://img.shields.io/badge/new-green)
 - Manual conversions: [Example](#manual-and-automatic-conversion)
 - Automatic conversions on operations: [Example](#manual-and-automatic-conversion)
 - Unpack and pack derived units: [Example](#unpack-derived-units), [example](#pack-units)
-- User defined base and derived units: [Example](#user-defined-units-of-measure) ![New feature](https://img.shields.io/badge/new-green)
+- User defined base and derived units: [Example](#user-defined-units-of-measure)
 - Large compatibility with other libraries: [Example](#working-with-other-libraries)
 - Custom exceptions: [Example](#comparisons)
 
