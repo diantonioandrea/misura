@@ -1,5 +1,6 @@
 # Currencies.
 from __future__ import annotations
+from typing import Any
 
 from misura.quantities import quantity
 
@@ -12,7 +13,7 @@ fetchCurrencies()
 
 
 class currency(quantity):
-    def __init__(self, value: any, symbol: str = "") -> None:
+    def __init__(self, value: Any, symbol: str = "") -> None:
         super().__init__(value, symbol)
 
         try:
@@ -110,28 +111,28 @@ class currency(quantity):
         return currency(self.value + other.value, self.unit())
 
     # Multiplication.
-    def __mul__(self, other: any) -> currency:
+    def __mul__(self, other: Any) -> currency:
         if not isinstance(other, currency):
             return currency(self.value * other, self.unit())
 
         raise OperationError(self, other, "*")
 
-    def __rmul__(self, other: any) -> any:
+    def __rmul__(self, other: Any) -> any:
         return self.__mul__(other)
 
     # Division.
-    def __truediv__(self, other: any) -> any:
+    def __truediv__(self, other: Any) -> any:
         if not isinstance(other, currency):
             return currency(self.value / other, self.unit())
 
         raise OperationError(self, other, "/")
 
-    def __rtruediv__(self, other: any) -> any:
+    def __rtruediv__(self, other: Any) -> any:
         raise OperationError(other, self, "/")
 
     # Power.
-    def __pow__(self, other: any) -> quantity:
+    def __pow__(self, other: Any) -> quantity:
         raise OperationError(self, other, "**")
 
-    def __rpow__(self, other: any) -> quantity:
+    def __rpow__(self, other: Any) -> quantity:
         raise OperationError(other, self, "**")

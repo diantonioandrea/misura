@@ -1,5 +1,6 @@
 # Quantities.
 from __future__ import annotations
+from typing import Any
 
 from math import log, sqrt
 
@@ -43,7 +44,7 @@ class quantity:
     misura's quantity class.
     """
 
-    def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
+    def __init__(self, value: Any, unit: str = "", uncertainty: Any = 0) -> None:
         """
         Quantity initialization.
 
@@ -65,7 +66,7 @@ class quantity:
             raise InitError(value, unit, uncertainty)
 
         # Value.
-        self.value: any = value
+        self.value: Any = value
 
         # Uncertainty.
         if not uAny(uncertainty):
@@ -270,7 +271,7 @@ class quantity:
         return quantity(trunc(self.value), self.unit(), trunc(self.uncertainty))
 
     # Addition.
-    def __add__(self, other: any) -> quantity:
+    def __add__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             # Addition between pure numbers.
             if self.unit():
@@ -303,7 +304,7 @@ class quantity:
         return self.__add__(other)
 
     # Subtraction.
-    def __sub__(self, other: any) -> quantity:
+    def __sub__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             # Subtraction between pure numbers.
             if self.unit():
@@ -336,7 +337,7 @@ class quantity:
         return self.__sub__(other) * (-1)
 
     # Multiplication.
-    def __mul__(self, other: any) -> any:
+    def __mul__(self, other: Any) -> any:
         if not isinstance(other, quantity):
             return quantity(
                 self.value * other, self.unit(), abs(self.uncertainty * other)
@@ -364,11 +365,11 @@ class quantity:
             ),
         )
 
-    def __rmul__(self, other: any) -> any:
+    def __rmul__(self, other: Any) -> any:
         return self.__mul__(other)
 
     # Division.
-    def __truediv__(self, other: any) -> any:
+    def __truediv__(self, other: Any) -> any:
         if not isinstance(other, quantity):
             return quantity(
                 self.value / other, self.unit(), abs(self.uncertainty / other)
@@ -396,16 +397,16 @@ class quantity:
             ),
         )
 
-    def __floordiv__(self, other: any) -> quantity:
+    def __floordiv__(self, other: Any) -> quantity:
         return quantity(
             self.value // other, self.unit(), abs(self.uncertainty // other)
         )
 
-    def __rtruediv__(self, other: any) -> any:
+    def __rtruediv__(self, other: Any) -> any:
         return self**-1 * other
 
     # Power.
-    def __pow__(self, other: any) -> quantity:
+    def __pow__(self, other: Any) -> quantity:
         if isinstance(other, quantity):
             raise QuantityError(self, other, "**")
 
@@ -426,7 +427,7 @@ class quantity:
             abs(other) * (self.value ** (other - 1)) * self.uncertainty,
         )
 
-    def __rpow__(self, other: any) -> quantity:
+    def __rpow__(self, other: Any) -> quantity:
         if isinstance(other, quantity):
             raise QuantityError(other, self, "**")
 
@@ -442,13 +443,13 @@ class quantity:
         ) * (other != 1) + quantity(1) * (other == 1)
 
     # Modulo.
-    def __mod__(self, other: any) -> quantity:
+    def __mod__(self, other: Any) -> quantity:
         return quantity(self.value % other, self.unit(), self.uncertainty % other)
 
     # COMPARISONS.
 
     # Less than.
-    def __lt__(self, other: any) -> quantity:
+    def __lt__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value < other
 
@@ -467,7 +468,7 @@ class quantity:
         return self.value < other.value
 
     # Less or equal.
-    def __le__(self, other: any) -> quantity:
+    def __le__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value <= other
 
@@ -486,7 +487,7 @@ class quantity:
         return self.value <= other.value
 
     # Greater than.
-    def __gt__(self, other: any) -> quantity:
+    def __gt__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value > other
 
@@ -505,7 +506,7 @@ class quantity:
         return self.value > other.value
 
     # Greater or equal.
-    def __ge__(self, other: any) -> quantity:
+    def __ge__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value >= other
 
@@ -524,7 +525,7 @@ class quantity:
         return self.value >= other.value
 
     # Equal.
-    def __eq__(self, other: any) -> quantity:
+    def __eq__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value == other
 
@@ -536,7 +537,7 @@ class quantity:
         return self.value == other.value and compare(self, other)
 
     # Not equal.
-    def __ne__(self, other: any) -> quantity:
+    def __ne__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value != other
 

@@ -1,4 +1,5 @@
 # Exceptions.
+from typing import Any
 
 
 class UnitError(Exception):
@@ -15,7 +16,7 @@ class InitError(Exception):
     Raised on invalid parameters passed to quantity/currency.__init__().
     """
 
-    def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
+    def __init__(self, value: Any, unit: str = "", uncertainty: Any = 0) -> None:
         from .utilities import uAny
 
         super().__init__(
