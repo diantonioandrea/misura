@@ -8,13 +8,13 @@ from .exceptions import InitError, OperationError
 from .quantities import compare, quantity
 from .tables import getCurrencies, fetchCurrencies
 
-# Checks currency rates on import.
-fetchCurrencies()
-
 
 class currency(quantity):
     def __init__(self, value: Any, symbol: str = "") -> None:
         super().__init__(value, symbol)
+
+        # Checks currency rates on currencies creation.
+        fetchCurrencies()
 
         try:
             # Currencies should have one single unit.
