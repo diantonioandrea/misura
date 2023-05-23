@@ -1,16 +1,16 @@
 from colorama import init
 from .globals import currencies
-import os
+from os import path, makedirs
 
 init()
 
 # Safe place to store currency exchange rates.
 # Set to $HOME/.misura/misura.json.
-currencies.path = os.path.expanduser("~") + "/.misura/"
+currencies.path = path.expanduser("~") + "/.misura/"
 
 # Creates the directory ".misura" and defines the full path.
-os.makedirs(currencies.path, exist_ok=True)
+makedirs(currencies.path, exist_ok=True)
 currencies.path += "misura.json"
 
 # Removes init imports.
-del os, currencies, init
+del path, makedirs, currencies, init
