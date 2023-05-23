@@ -11,3 +11,6 @@ currencies.path = os.path.expanduser("~") + "/.misura/"
 # Creates the directory ".misura" and defines the full path.
 os.makedirs(currencies.path, exist_ok=True)
 currencies.path += "misura.json"
+
+# Removes init imports.
+del os, currencies, init
