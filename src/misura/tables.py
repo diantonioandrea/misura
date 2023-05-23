@@ -1,10 +1,12 @@
 # Tables.
+import json
+from time import time
+
+import requests
+
 from .exceptions import DefinitionError, MissingKey
 from .globals import defined
 from .utilities import dictFromUnit
-import requests
-from time import time
-import json
 
 # Tables utilities
 

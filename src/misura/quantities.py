@@ -1,31 +1,31 @@
 # Quantities.
 from __future__ import annotations
-from typing import Any
 
 from math import log, sqrt
+from typing import Any
 
 from colorama import Style
 
 from .exceptions import (
     ConversionError,
+    CurrencyPackingError,
     InitError,
+    MixingError,
     PackError,
     QuantityError,
     UncertaintyComparisonError,
     UnpackError,
-    CurrencyPackingError,
-    MixingError,
 )
 from .globals import logic, style
 from .tables import (
+    fetchCurrencies,
     getBase,
+    getCurrencies,
     getDerived,
     getDerivedUnpacking,
-    getRep,
-    getCurrencies,
-    fetchCurrencies,
 )
 from .tables import getFamily as gf
+from .tables import getRep
 from .utilities import checkIter
 from .utilities import dictFromUnit as dfu
 from .utilities import uAll, uAny

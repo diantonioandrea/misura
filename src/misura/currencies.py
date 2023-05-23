@@ -1,12 +1,13 @@
 # Currencies.
 from __future__ import annotations
+
 from typing import Any
 
 from misura.quantities import quantity
 
 from .exceptions import InitError, OperationError
 from .quantities import compare, quantity
-from .tables import getCurrencies, fetchCurrencies
+from .tables import fetchCurrencies, getCurrencies
 
 
 class currency(quantity):
