@@ -1,9 +1,5 @@
-build:
-	make clean
-	python3 -m build
+# API key for testing purposes.
+KEY ?= 
 
 test:
-	python3 src/test.py
-
-clean:
-	rm -rf dist
+	python3 src/test.py	$(KEY)

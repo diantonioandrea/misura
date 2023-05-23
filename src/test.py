@@ -77,7 +77,12 @@ print("({}) ** 2: {}".format(num12, num12**2))
 print("({}) / ({}): {}".format(num12, num13, num12 / num13))
 
 # Currencies.
-currencies.key = ""
+try:
+    from sys import argv
+
+    currencies.key = argv[1]
+except IndexError:
+    pass
 
 if currencies.key:
     # Tests currencies on available key.
