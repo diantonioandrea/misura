@@ -29,7 +29,7 @@ Make sure to take a look at the [documentation](https://misura.diantonioandrea.c
 ### Features
 
 - Mathematical and logical operations between quantities: [Example](#mathematical-operations), [example](#comparisons)
-- Currencies handling with updated exchange rates. ![New feature](https://img.shields.io/badge/new-green)
+- Currencies handling with hourly updated exchange rates. ![New feature](https://img.shields.io/badge/new-green)
 - Uncertainty handling: [Example](#mathematical-operations) ![New feature](https://img.shields.io/badge/new-green)
 - Manual conversions: [Example](#manual-and-automatic-conversion)
 - Automatic conversions on operations: [Example](#manual-and-automatic-conversion)
