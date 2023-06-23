@@ -20,5 +20,5 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/diantonioandrea/misura"
-"Documentation" = "https://github.com/diantonioandrea/misura/blob/main/docs/docs.md"
+"Documentation" = "https://misura.diantonioandrea.com"
 "Bug Tracker" = "https://github.com/diantonioandrea/misura/issues"
