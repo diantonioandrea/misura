@@ -23,7 +23,6 @@ class currencies:
     Currency global options.
     """
 
-    key = ""
     path = ""  # File path for local rates.
 
 

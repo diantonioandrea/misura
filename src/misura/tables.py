@@ -4,7 +4,7 @@ from time import time
 
 import requests
 
-from .exceptions import DefinitionError, MissingKey
+from .exceptions import DefinitionError
 from .globals import defined
 from .utilities import dictFromUnit
 
@@ -83,9 +83,6 @@ def getCurrencies() -> dict:
 def fetchCurrencies() -> None:
     from .globals import currencies
 
-    if not currencies.key:
-        raise MissingKey
-
     try:
         file = open(currencies.path, "r")
         data = json.load(file)
@@ -98,9 +95,8 @@ def fetchCurrencies() -> None:
             raise FileNotFoundError
 
     except (FileNotFoundError, json.JSONDecodeError):
-        # Temporary solution.
         rates = requests.get(
-            "https://api.freecurrencyapi.com/v1/latest?apikey={}".format(currencies.key)
+            "https://misura.diantonioandrea.com/currencies/rates.json"
         ).json()["data"]
 
         file = open(currencies.path, "w")
