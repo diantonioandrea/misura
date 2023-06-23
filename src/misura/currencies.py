@@ -130,6 +130,15 @@ class currency(quantity):
 
     def __rtruediv__(self, other: Any) -> any:
         raise OperationError(other, self, "/")
+    
+    def __floordiv__(self, other: Any) -> any:
+        if not isinstance(other, currency):
+            return currency(self.value // other, self.unit())
+
+        raise OperationError(self, other, "//")
+
+    def __rfloordiv__(self, other: Any) -> any:
+        raise OperationError(other, self, "//")
 
     # Power.
     def __pow__(self, other: Any) -> quantity:

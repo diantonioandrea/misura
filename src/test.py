@@ -4,7 +4,6 @@ from colorama import Style
 from misura.quantities import quantity, convert, unpack, pack
 from misura.tables import addUnit
 from misura.currencies import currency
-from misura.globals import currencies
 
 addUnit("bananas", {"bnn": 1, "dabnn": 10, "hbnn": 100, "kbnn": 1000})
 
@@ -82,4 +81,5 @@ cur1 = currency(3, "USD")
 
 print("\nCURRENCIES.\n")
 print("({}) * 2: {}".format(cur0, cur0 * 2))
+print("({}) // 3: {}".format(cur1, cur1 // 3))
 print("({}) + ({}): {:.2f}".format(cur1, cur0, cur1 + cur0))
