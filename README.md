@@ -56,34 +56,18 @@ By:
 python -m misura
 ```
 
-you'll be able to verify the installation of **misura** along getting some informations about the library and on the available units of measure[^1]:
+you'll be able to verify the installation of **misura** along getting some informations about the library[^1]:
 
-[^1]: Example referring to version 1.3.1
+[^1]: Example referring to version 1.6.0
 
 ```
-misura v1.3.1
+misura v1.6.0
 
 Python library for easy unit handling and conversion for scientific & engineering applications.
 
 Developed by Andrea Di Antonio, more on https://github.com/diantonioandrea/misura
-Documentation on https://github.com/diantonioandrea/misura/blob/main/docs/docs.md
+Documentation on https://misura.diantonioandrea.com
 Bug tracker on https://github.com/diantonioandrea/misura/issues
-
-Here's the list of available units.
-
-BASE UNITS
-
-Time: s.
-Length: m.
-Mass: kg.
-Electric current: A.
-Thermodynamic temperature: K.
-Amount of substance: mol.
-Luminous intensity: cd.
-
-DERIVED UNITS
-
-...
 ```
 
 ### Importing misura
@@ -128,9 +112,6 @@ The output is:
 ### Currencies
 
 ```python
-from misura.globals import currencies
-currencies.key = "API_KEY_HERE"
-
 from misura.currencies import currency
 
 cur1 = currency(2, "EUR")
