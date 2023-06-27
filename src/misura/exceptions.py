@@ -1,4 +1,5 @@
 # Exceptions.
+from typing import Any
 
 
 class UnitError(Exception):
@@ -12,14 +13,14 @@ class UnitError(Exception):
 
 class InitError(Exception):
     """
-    Raised on invalid parameters passed to quantity.__init__().
+    Raised on invalid parameters passed to quantity/currency.__init__().
     """
 
-    def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
+    def __init__(self, value: Any, unit: str = "", uncertainty: Any = 0) -> None:
         from .utilities import uAny
 
         super().__init__(
-            "wrong parameters on quantity definition\nraised by: quantity({}{}{})".format(
+            "wrong parameters on quantity definition\nraised by passing: ({}{}{})".format(
                 value,
                 ", {}".format(unit) if unit else "",
                 ", {}".format(uncertainty) if uAny(uncertainty) else "",
@@ -116,3 +117,37 @@ class DefinitionError(Exception):
     # Custom error defined in tables.py.
     def __init__(self, error: str = "") -> None:
         super().__init__(error)
+
+
+# CURRENCIES.
+
+
+class OperationError(Exception):
+    """
+    Raised on illegal operations with currencies.
+    """
+
+    def __init__(self, first, second, operator: str) -> None:
+        super().__init__(
+            "unsupported operand type(s) for {0}\nraised by: '{1}' {0} '{2}'".format(
+                operator, first, second
+            )
+        )
+
+
+class CurrencyPackingError(Exception):
+    """
+    Raised on (un)packing currencies.
+    """
+
+    def __init__(self, crn) -> None:
+        super().__init__("cannot (un)pack a currency\nraised by '{}'".format(crn))
+
+
+class MixingError(Exception):
+    """
+    Raised on mixing quantities and currencies.
+    """
+
+    def __init__(self) -> None:
+        super().__init__("quantities and currencies should not be mixed")

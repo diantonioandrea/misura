@@ -3,6 +3,7 @@
 from colorama import Style
 from misura.quantities import quantity, convert, unpack, pack
 from misura.tables import addUnit
+from misura.currencies import currency
 
 addUnit("bananas", {"bnn": 1, "dabnn": 10, "hbnn": 100, "kbnn": 1000})
 
@@ -73,3 +74,12 @@ print("{} to 'bnn': {}".format(num11, convert(num11, "bnn")))
 print("\nUNCERTAINTY.\n")
 print("({}) ** 2: {}".format(num12, num12**2))
 print("({}) / ({}): {}".format(num12, num13, num12 / num13))
+
+# Currencies.
+cur0 = currency(2, "EUR")
+cur1 = currency(3, "USD")
+
+print("\nCURRENCIES.\n")
+print("({}) * 2: {}".format(cur0, cur0 * 2))
+print("({}) // 3: {}".format(cur1, cur1 // 3))
+print("({}) + ({}): {:.2f}".format(cur1, cur0, cur1 + cur0))

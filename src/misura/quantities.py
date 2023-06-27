@@ -2,19 +2,28 @@
 from __future__ import annotations
 
 from math import log, sqrt
+from typing import Any
 
 from colorama import Style
 
 from .exceptions import (
     ConversionError,
+    CurrencyPackingError,
     InitError,
+    MixingError,
     PackError,
     QuantityError,
     UncertaintyComparisonError,
     UnpackError,
 )
 from .globals import logic, style
-from .tables import getBase, getDerived, getDerivedUnpacking
+from .tables import (
+    fetchCurrencies,
+    getBase,
+    getCurrencies,
+    getDerived,
+    getDerivedUnpacking,
+)
 from .tables import getFamily as gf
 from .tables import getRep
 from .utilities import checkIter
@@ -35,7 +44,7 @@ class quantity:
     misura's quantity class.
     """
 
-    def __init__(self, value: any, unit: str = "", uncertainty: any = 0) -> None:
+    def __init__(self, value: Any, unit: str = "", uncertainty: Any = 0) -> None:
         """
         Quantity initialization.
 
@@ -57,7 +66,7 @@ class quantity:
             raise InitError(value, unit, uncertainty)
 
         # Value.
-        self.value: any = value
+        self.value: Any = value
 
         # Uncertainty.
         if not uAny(uncertainty):
@@ -84,6 +93,14 @@ class quantity:
         self.dimensions: dict = (
             {gf(u): self.units[u] for u in us} if self.convertible else dict()
         )
+
+        # Checks currencies.
+        if type(self) == quantity:
+            table: dict = getCurrencies()
+            if uAny(
+                [uAny([u in table[family] for u in self.units]) for family in table]
+            ):
+                raise MixingError()
 
     # PRINTERS.
 
@@ -229,10 +246,6 @@ class quantity:
     def __neg__(self) -> quantity:
         return quantity(-self.value, self.unit(), self.uncertainty)
 
-    # Invert.
-    # def __invert__(self) -> quantity:
-    #     return quantity(~self.value, self.unit())
-
     # Round.
     def __round__(self, number: int) -> quantity:
         return quantity(
@@ -258,7 +271,7 @@ class quantity:
         return quantity(trunc(self.value), self.unit(), trunc(self.uncertainty))
 
     # Addition.
-    def __add__(self, other: any) -> quantity:
+    def __add__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             # Addition between pure numbers.
             if self.unit():
@@ -291,7 +304,7 @@ class quantity:
         return self.__add__(other)
 
     # Subtraction.
-    def __sub__(self, other: any) -> quantity:
+    def __sub__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             # Subtraction between pure numbers.
             if self.unit():
@@ -324,7 +337,7 @@ class quantity:
         return self.__sub__(other) * (-1)
 
     # Multiplication.
-    def __mul__(self, other: any) -> any:
+    def __mul__(self, other: Any) -> any:
         if not isinstance(other, quantity):
             return quantity(
                 self.value * other, self.unit(), abs(self.uncertainty * other)
@@ -352,11 +365,11 @@ class quantity:
             ),
         )
 
-    def __rmul__(self, other: any) -> any:
+    def __rmul__(self, other: Any) -> any:
         return self.__mul__(other)
 
     # Division.
-    def __truediv__(self, other: any) -> any:
+    def __truediv__(self, other: Any) -> any:
         if not isinstance(other, quantity):
             return quantity(
                 self.value / other, self.unit(), abs(self.uncertainty / other)
@@ -384,16 +397,16 @@ class quantity:
             ),
         )
 
-    def __floordiv__(self, other: any) -> quantity:
+    def __floordiv__(self, other: Any) -> quantity:
         return quantity(
             self.value // other, self.unit(), abs(self.uncertainty // other)
         )
 
-    def __rtruediv__(self, other: any) -> any:
+    def __rtruediv__(self, other: Any) -> any:
         return self**-1 * other
 
     # Power.
-    def __pow__(self, other: any) -> quantity:
+    def __pow__(self, other: Any) -> quantity:
         if isinstance(other, quantity):
             raise QuantityError(self, other, "**")
 
@@ -414,7 +427,7 @@ class quantity:
             abs(other) * (self.value ** (other - 1)) * self.uncertainty,
         )
 
-    def __rpow__(self, other: any) -> quantity:
+    def __rpow__(self, other: Any) -> quantity:
         if isinstance(other, quantity):
             raise QuantityError(other, self, "**")
 
@@ -430,13 +443,13 @@ class quantity:
         ) * (other != 1) + quantity(1) * (other == 1)
 
     # Modulo.
-    def __mod__(self, other: any) -> quantity:
+    def __mod__(self, other: Any) -> quantity:
         return quantity(self.value % other, self.unit(), self.uncertainty % other)
 
     # COMPARISONS.
 
     # Less than.
-    def __lt__(self, other: any) -> quantity:
+    def __lt__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value < other
 
@@ -455,7 +468,7 @@ class quantity:
         return self.value < other.value
 
     # Less or equal.
-    def __le__(self, other: any) -> quantity:
+    def __le__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value <= other
 
@@ -474,7 +487,7 @@ class quantity:
         return self.value <= other.value
 
     # Greater than.
-    def __gt__(self, other: any) -> quantity:
+    def __gt__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value > other
 
@@ -493,7 +506,7 @@ class quantity:
         return self.value > other.value
 
     # Greater or equal.
-    def __ge__(self, other: any) -> quantity:
+    def __ge__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value >= other
 
@@ -512,7 +525,7 @@ class quantity:
         return self.value >= other.value
 
     # Equal.
-    def __eq__(self, other: any) -> quantity:
+    def __eq__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value == other
 
@@ -524,7 +537,7 @@ class quantity:
         return self.value == other.value and compare(self, other)
 
     # Not equal.
-    def __ne__(self, other: any) -> quantity:
+    def __ne__(self, other: Any) -> quantity:
         if not isinstance(other, quantity):
             return self.value != other
 
@@ -564,12 +577,26 @@ def convert(
     "partial = True" converts only the specified units and "un_pack = True" enables automatic (un)packing.
     """
 
+    from .currencies import currency
+
+    if isinstance(qnt, currency):
+        partial = False
+        un_pack = False
+
+        fetchCurrencies()  # Checks conversion rates.
+        table: dict = getCurrencies()
+
+    else:
+        table: dict = getBase()
+        table.update(getDerived())
+
     # Cannot convert non-convertible units.
     if not qnt.convertible:
         raise ConversionError(qnt, targets)
 
     # Check dimension.
-    if not partial:
+    if not partial and not isinstance(qnt, currency):
+        # Currencies cannot be unpacked but are always compatible.
         if unpack(qnt).dimension() != unpack(quantity(1, targets)).dimension():
             raise ConversionError(qnt, targets)
 
@@ -621,9 +648,6 @@ def convert(
 
     pTargets: dict = dict()  # Partial targets.
 
-    table: dict = getBase()
-    table.update(getDerived())
-
     for unit in qnt.units.keys():
         family = gf(unit)
 
@@ -660,6 +684,9 @@ def convert(
         elif partial:
             pTargets[unit] = qnt.units[unit]
 
+    if isinstance(qnt, currency):
+        return currency(qnt.value * factor, targets)
+
     return (
         quantity(qnt.value * factor, targets, qnt.uncertainty * factor)
         if not partial
@@ -674,6 +701,11 @@ def unpack(qnt: quantity, targets: str = "") -> quantity:
 
     'targets = ""' completely unpacks the quantity.
     """
+
+    from .currencies import currency
+
+    if isinstance(qnt, currency):
+        raise CurrencyPackingError(qnt)
 
     unpackTable: dict = getDerivedUnpacking()
     derivedTable: dict = getDerived()
@@ -729,6 +761,11 @@ def pack(qnt: quantity, targets: str, ignore: str = "", full: bool = False) -> q
 
     'full = True' fully pack a unit.
     """
+
+    from .currencies import currency
+
+    if isinstance(qnt, currency):
+        raise CurrencyPackingError(qnt)
 
     packTable: dict = getDerivedUnpacking()
 

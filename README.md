@@ -20,20 +20,21 @@
 3.5 ± 0.75 m / s
 ```
 
-Python library for easy unit handling and conversion for scientific & engineering applications.
+Python library providing effortless unit handling and currency conversion for scientific and engineering purposes.
 
-**misura** is a powerful Python library designed to streamline the *handling of units of measure for scientific and engineering applications*. It offers a unified interface for dealing with *different units and their conversions*, so you can quickly and accurately *perform calculations without the need for complex manual conversions*. Additionally, **misura** provides *uncertainty handling*, so *you can work with physical quantities and their associated uncertainties in a consistent and intuitive way*. On top of that, **misura** enables you to *define your own custom units of measure*, giving you the flexibility to work in your preferred units.
+**Misura** is a powerful Python library designed to facilitate the efficient handling of units of measure for scientific and engineering applications, including currencies handling and conversion with constantly updated exchange rates. With its unified interface for dealing with different units and their conversions, you can quickly and accurately complete calculations without the need for complex manual conversions. Additionally, **Misura** supports uncertainty handling allowing you to work with physical quantities and their associated uncertainties in a user-friendly and intuitive fashion. What's more, **Misura** grants you the flexibility to create custom units of measure, so you can work in your preferred units.
 
-Make sure to take a look at the [documentation](https://github.com/diantonioandrea/misura/blob/main/docs/docs.md), at the [contributing guidelines](https://github.com/diantonioandrea/.github/blob/main/CONTRIBUTING.md) and at the [examples](#examples).
+Make sure to take a look at the [documentation](https://misura.diantonioandrea.com), at the [contributing guidelines](https://github.com/diantonioandrea/.github/blob/main/CONTRIBUTING.md) and at the [examples](#examples).
 
 ### Features
 
 - Mathematical and logical operations between quantities: [Example](#mathematical-operations), [example](#comparisons)
+- Currencies handling with daily updated exchange rates. ![New feature](https://img.shields.io/badge/new-green)
 - Uncertainty handling: [Example](#mathematical-operations) ![New feature](https://img.shields.io/badge/new-green)
 - Manual conversions: [Example](#manual-and-automatic-conversion)
 - Automatic conversions on operations: [Example](#manual-and-automatic-conversion)
 - Unpack and pack derived units: [Example](#unpack-derived-units), [example](#pack-units)
-- User defined base and derived units: [Example](#user-defined-units-of-measure) ![New feature](https://img.shields.io/badge/new-green)
+- User defined base and derived units: [Example](#user-defined-units-of-measure)
 - Large compatibility with other libraries: [Example](#working-with-other-libraries)
 - Custom exceptions: [Example](#comparisons)
 
@@ -82,27 +83,7 @@ Luminous intensity: cd.
 
 DERIVED UNITS
 
-Plane angle: rad.
-Solid angle: sr.
-Frequency: Hz [s-1].
-Force: N [kg m s-2].
-Pressure: Pa [kg m-1 s-2].
-Energy: J [kg m2 s-2].
-Power: W [kg m2 s-3].
-Electric charge: C [A s].
-Electric potential: V [kg m2 s-3 A-1].
-Capacitance: F [kg-1 m-2 s4 A2].
-Resistance: Ω [kg m2 s-3 A-2].
-Electrical conductance: S [kg-1 m-2 s3 A2].
-Magnetic flux: Wb [kg m2 s-2 A-1].
-Magnetic flux density: T [kg s-2 A-1].
-Inductance: H [kg m2 s-2 A-2].
-Luminous flux: lm [cd sr].
-Illuminance: lx [cd sr m-2].
-Radionuclide activity: Bq [s-1].
-Absorbed dose: Gy [m2 s-2].
-Equivalent dose: Sv [m2 s-2].
-Catalyc activity: kat [mol s-1].
+...
 ```
 
 ### Importing misura
@@ -142,6 +123,28 @@ The output is:
 8 m(2) / s(2)
 1.0 ± 0.25 m / s(2)
 4 ± 2.0 s(2)
+```
+
+### Currencies
+
+```python
+from misura.globals import currencies
+currencies.key = "API_KEY_HERE"
+
+from misura.currencies import currency
+
+cur1 = currency(2, "EUR")
+cur2 = currency(3, "USD")
+
+print(cur0 * 2)
+print(cur1 + cur0)
+```
+
+The output is:
+
+```
+4 EUR
+5.17 USD
 ```
 
 ### Working with other libraries

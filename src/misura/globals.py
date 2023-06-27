@@ -18,6 +18,14 @@ class logic:
     ignoreUncertainty = False
 
 
+class currencies:
+    """
+    Currency global options.
+    """
+
+    path = ""  # File path for local rates.
+
+
 class defined:
     """
     User defined units.

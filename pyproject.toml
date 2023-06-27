@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "misura"
-version = "1.5.6"
+version = "1.6.0"
 authors = [
   { name="Andrea Di Antonio", email="mail@diantonioandrea.com" },
 ]
 description = "Python library for easy unit handling and conversion for scientific & engineering applications."
 readme = "README.md"
 requires-python = ">=3.7"
-dependencies = ["colorama", "setuptools"]
+dependencies = ["colorama", "setuptools", "requests"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -20,5 +20,5 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/diantonioandrea/misura"
-"Documentation" = "https://github.com/diantonioandrea/misura/blob/main/docs/docs.md"
+"Documentation" = "https://misura.diantonioandrea.com"
 "Bug Tracker" = "https://github.com/diantonioandrea/misura/issues"

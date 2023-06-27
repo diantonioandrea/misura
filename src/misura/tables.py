@@ -1,4 +1,9 @@
 # Tables.
+import json
+from time import time
+
+import requests
+
 from .exceptions import DefinitionError
 from .globals import defined
 from .utilities import dictFromUnit
@@ -26,6 +31,7 @@ def getFamily(unit: str) -> str:
 
     table = getBase()
     table.update(getDerived())
+    table.update(getCurrencies())
 
     for family in table:
         if unit in table[family]:
@@ -65,6 +71,42 @@ def getDerivedUnpacking() -> dict:
     table.update(defined.DERIVED_UNPACKING_TABLE)
 
     return table
+
+
+def getCurrencies() -> dict:
+    # Standard currencies.
+    table = CURRENCIES_TABLE.copy()
+
+    return table
+
+
+def fetchCurrencies() -> None:
+    from .globals import currencies
+
+    try:
+        file = open(currencies.path, "r")
+        data = json.load(file)
+
+        # Reload rates older than 6 hours.
+        if time() - data["time"] < 3600 * 6:
+            rates = data["rates"]
+
+        else:
+            raise FileNotFoundError
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        rates = requests.get(
+            "https://misura.diantonioandrea.com/currencies/rates.json"
+        ).json()["data"]
+
+        file = open(currencies.path, "w")
+        data = {"time": time(), "rates": rates}
+        json.dump(data, file)
+
+    file.close()
+
+    for curr in rates:
+        CURRENCIES_TABLE["currency"][curr] = 1 / rates[curr]
 
 
 # Conversion tables.
@@ -134,6 +176,8 @@ def addUnit(family: str, units: dict, unpacks: str = ""):
         defined.DERIVED_TABLE[family] = {u: units[u] for u in units}
         defined.DERIVED_UNPACKING_TABLE[rep] = unpacks
 
+
+# QUANTITIES
 
 # Base units - SI.
 SI_TABLE = {
@@ -921,3 +965,7 @@ SI_DERIVED_UNPACKING_TABLE = {
     "Sv": "m2 s-2",
     "kat": "mol s-1",
 }
+
+# CURRENCIES
+
+CURRENCIES_TABLE = {"currency": dict()}

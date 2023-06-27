@@ -1,8 +1,9 @@
 # Utilities.
 from re import findall
+from typing import Any
 
 
-def checkIter(obj: any) -> bool:
+def checkIter(obj: Any) -> bool:
     try:
         _ = iter(obj)
         return True
@@ -11,7 +12,7 @@ def checkIter(obj: any) -> bool:
         return False
 
 
-def uAll(obj: any) -> bool:
+def uAll(obj: Any) -> bool:
     """
     Python's 'all' for (non)iterable objects.
     """
@@ -19,7 +20,7 @@ def uAll(obj: any) -> bool:
     return all(obj) if checkIter(obj) else bool(obj)
 
 
-def uAny(obj: any) -> bool:
+def uAny(obj: Any) -> bool:
     """
     Python's 'any' for (non)iterable objects.
     """
