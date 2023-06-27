@@ -18,6 +18,10 @@
 >>> from misura.quantities import quantity
 >>> quantity(7, "m", 1.5) / quantity(2, "s")
 3.5 ± 0.75 m / s
+
+>>> from misura.currencies import currency
+>>> currency(2, "EUR") + currency(3, "USD")
+5.17 USD
 ```
 
 Python library providing effortless unit handling and currency conversion for scientific and engineering purposes.
