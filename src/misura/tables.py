@@ -106,7 +106,7 @@ def fetchCurrencies() -> None:
     file.close()
 
     for curr in rates:
-        CURRENCIES_TABLE["currency"][curr] = 1 / rates[curr]
+        CURRENCIES_TABLE["currency"][curr] = 1 / rates[curr]["value"]
 
 
 # Conversion tables.
