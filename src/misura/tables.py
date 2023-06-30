@@ -97,7 +97,7 @@ def fetchCurrencies() -> None:
     except (FileNotFoundError, json.JSONDecodeError):
         rates = requests.get(
             "https://misura.diantonioandrea.com/currencies/rates.json"
-        ).json()["data"]
+        ).json()["rates"]
 
         file = open(currencies.path, "w")
         data = {"time": time(), "rates": rates}
@@ -106,7 +106,7 @@ def fetchCurrencies() -> None:
     file.close()
 
     for curr in rates:
-        CURRENCIES_TABLE["currency"][curr] = 1 / rates[curr]["value"]
+        CURRENCIES_TABLE["currency"][curr] = 1 / rates[curr]
 
 
 # Conversion tables.
