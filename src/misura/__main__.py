@@ -1,14 +1,13 @@
 # misura
 
-import pkg_resources
 from colorama import Style, init
 
 init()
 
-print("misura v" + pkg_resources.get_distribution("misura").version)
+print("misura")
 
 print(
-    "\nPython library for easy unit handling and conversion for scientific & engineering applications."
+    "\nPython library providing effortless unit handling and currency conversion for scientific and engineering purposes."
 )
 print(
     "\nDeveloped by "

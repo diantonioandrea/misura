@@ -60,14 +60,12 @@ By:
 python -m misura
 ```
 
-you'll be able to verify the installation of **misura** along getting some informations about the library[^1]:
-
-[^1]: Example referring to version 1.6.0
+you'll be able to verify the installation of **misura** along getting some informations about the library:
 
 ```
-misura v1.6.0
+misura
 
-Python library for easy unit handling and conversion for scientific & engineering applications.
+Python library providing effortless unit handling and currency conversion for scientific and engineering purposes.
 
 Developed by Andrea Di Antonio, more on https://github.com/diantonioandrea/misura
 Documentation on https://misura.diantonioandrea.com
